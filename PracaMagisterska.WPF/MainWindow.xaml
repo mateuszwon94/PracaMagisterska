@@ -1,14 +1,160 @@
-﻿<Window x:Class="PracaMagisterska.WPF.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PracaMagisterska.WPF"
-        mc:Ignorable="d"
-        Title="Praca Magisterska"
-        Height="720"
-        Width="1080">
-    <Grid>
+﻿<controls:MetroWindow x:Class="PracaMagisterska.WPF.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:local="clr-namespace:PracaMagisterska.WPF"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      mc:Ignorable="d"
+                      ShowIconOnTitleBar="True"
+                      TitleForeground="Black"
+                      TitleAlignment="Center"
+                      TitleCharacterCasing="Normal"
+                      BorderBrush="LimeGreen"
+                      GlowBrush="LimeGreen"
+                      BorderThickness="1"
+                      ResizeMode="CanResizeWithGrip"
+                      Title="Praca Magisterska"
+                      Height="720"
+                      Width="1080"
+                      MinHeight="600"
+                      MinWidth="800">
+    <controls:MetroWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <!-- this window should be blue -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Green.xaml" />
+                <!-- and should use the light theme -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </controls:MetroWindow.Resources>
 
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Grid.Resources>
+            <!--  HamburgerMenu item template  -->
+            <DataTemplate x:Key="MenuItemTemplate"
+                          DataType="{x:Type controls:HamburgerMenuGlyphItem}">
+                <Grid x:Name="RootGrid"
+                      Height="48">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="48" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               FontSize="25"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontFamily="{StaticResource SegoeFont}"
+                               Foreground="Black"
+                               Text="{Binding Glyph}" />
+                    <TextBlock Grid.Column="1"
+                               VerticalAlignment="Center"
+                               FontSize="25"
+                               FontFamily="{StaticResource ConsolasFont}"
+                               Foreground="Black"
+                               Text="{Binding Label}" />
+                </Grid>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <controls:HamburgerMenu x:Name="HamburgerMenuControl"
+                                PaneBackground="LightGreen"
+                                PaneForeground="Black"
+                                ItemTemplate="{StaticResource MenuItemTemplate}"
+                                OptionsItemTemplate="{StaticResource MenuItemTemplate}"
+                                IsPaneOpen="False"
+                                ItemClick="HamburgerMenuControl_OnItemClick"
+                                OptionsItemClick="HamburgerMenuControl_OnItemClick"
+                                DisplayMode="CompactOverlay"
+                                SelectedOptionsItem="{x:Reference AboutItem}">
+
+            <!--  Content  -->
+            <controls:HamburgerMenu.ContentTemplate>
+                <DataTemplate DataType="{x:Type controls:HamburgerMenuItem}">
+                    <ContentControl x:Name="TheContent"
+                                    Content="{Binding Tag}"
+                                    Focusable="False"
+                                    Foreground="{DynamicResource BlackBrush}" />
+                </DataTemplate>
+            </controls:HamburgerMenu.ContentTemplate>
+
+            <!--  Items  -->
+            <controls:HamburgerMenu.ItemsSource>
+                <controls:HamburgerMenuItemCollection>
+                    <controls:HamburgerMenuGlyphItem x:Name="CodeItem"
+                                                     Glyph="&#xEDB5;"
+                                                     Label="Kodujmy!">
+                        <controls:HamburgerMenuGlyphItem.Tag>
+                            <Frame Background="Red" />
+                        </controls:HamburgerMenuGlyphItem.Tag>
+                    </controls:HamburgerMenuGlyphItem>
+                </controls:HamburgerMenuItemCollection>
+            </controls:HamburgerMenu.ItemsSource>
+
+            <!--  Options  -->
+            <controls:HamburgerMenu.OptionsItemsSource>
+                <controls:HamburgerMenuItemCollection>
+                    <controls:HamburgerMenuGlyphItem x:Name="AboutItem"
+                                                     Glyph="&#xE728;"
+                                                     Label="O aplikacji">
+                        <controls:HamburgerMenuGlyphItem.Tag>
+                            <Frame Background="Blue" />
+                        </controls:HamburgerMenuGlyphItem.Tag>
+                    </controls:HamburgerMenuGlyphItem>
+
+                    <controls:HamburgerMenuGlyphItem x:Name="SettingsItem"
+                                                     Glyph="&#xE115;"
+                                                     Label="Ustawienia">
+                        <controls:HamburgerMenuGlyphItem.Tag>
+                            <Frame Background="Green" />
+                        </controls:HamburgerMenuGlyphItem.Tag>
+                    </controls:HamburgerMenuGlyphItem>
+                </controls:HamburgerMenuItemCollection>
+            </controls:HamburgerMenu.OptionsItemsSource>
+        </controls:HamburgerMenu>
+        
+        <StatusBar Grid.Row="1">
+            <Grid Width="{Binding ActualWidth, RelativeSource = {RelativeSource AncestorType = {x:Type Window}}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="Mateusz Winiarski - 2018 ©"
+                           FontSize="15"
+                           Foreground="Black"
+                           Margin="2,2,2,2"
+                           FontFamily="{StaticResource ConsolasFont}" />
+
+                <TextBlock Grid.Column="1"
+                           Text="Praca Magisterska"
+                           FontSize="15"
+                           Foreground="Black"
+                           Margin="2,2,2,2"
+                           FontFamily="{StaticResource ConsolasFont}"
+                           HorizontalAlignment="Center" />
+
+                <TextBlock Grid.Column="2"
+                           Text="AGH - FiIS"
+                           FontSize="15"
+                           Foreground="Black"
+                           Margin="2,2,22,2"
+                           FontFamily="{StaticResource ConsolasFont}"
+                           HorizontalAlignment="Right"
+                           RenderTransformOrigin="1,0.5" />
+            </Grid>
+        </StatusBar>
     </Grid>
-</Window>
+</controls:MetroWindow>
