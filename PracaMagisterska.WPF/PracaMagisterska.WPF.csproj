@@ -285,6 +285,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Exceptions\CompilationException.cs" />
+    <Compile Include="Utils\CompilationHelper.cs" />
     <Compile Include="Utils\ConsoleHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
