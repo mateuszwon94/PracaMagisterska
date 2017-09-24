@@ -16,8 +16,11 @@ namespace PracaMagisterska.WPF.Utils {
 
         public ConsoleHelper() : this(ConsoleState.Show) { }
 
-        public ConsoleHelper(ConsoleState state) => State = state;
-        
+        public ConsoleHelper(ConsoleState state) {
+            Console.Clear();
+            State = state;
+        }
+
         public static ConsoleState State {
             get => state_;
             set {
