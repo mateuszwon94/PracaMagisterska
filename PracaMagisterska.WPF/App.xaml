@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:PracaMagisterska.WPF"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-
+        <FontFamily x:Key="ConsolasFont">Resources/Consolas.ttf#Consolas</FontFamily>
+        <FontFamily x:Key="SegoeFont">Segoe MDL2 Assets</FontFamily>
     </Application.Resources>
 </Application>
