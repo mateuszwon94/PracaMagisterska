@@ -6,7 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PracaMagisterska.WPF.Utils {
+    /// <inheritdoc />
+    /// <summary>
+    /// Helper class for handle console.
+    /// Napisana jest w taki sposób, żeby móc używać jej ze skladnią using( ... ) { }
+    /// </summary>
     public class ConsoleHelper : IDisposable {
+        #region Constructors and destructors
+
+        /// <summary>
+        /// Static constructor.
+        /// Gets consol handle and disable exit button to prevent app killing.
+        /// </summary>
         static ConsoleHelper() {
             console_ = GetConsoleWindow();
             IntPtr exitButton = GetSystemMenu(console_, false);
@@ -14,13 +25,35 @@ namespace PracaMagisterska.WPF.Utils {
                 DeleteMenu(exitButton, SC_CLOSE, MF_BYCOMMAND);
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Default constructor.
+        /// Shows console.
+        /// </summary>
         public ConsoleHelper() : this(ConsoleState.Show) { }
 
+        /// <summary>
+        /// Constructor, which allows user to define state of console.
+        /// </summary>
+        /// <param name="state">Initial state of console</param>
         public ConsoleHelper(ConsoleState state) {
             Console.Clear();
             State = state;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Hide console.
+        /// </summary>
+        public void Dispose() { State = ConsoleState.Hide; }
+
+        #endregion Constructors and destructors
+
+        #region Static fields
+
+        /// <summary>
+        /// Current console state.
+        /// </summary>
         public static ConsoleState State {
             get => state_;
             set {
@@ -29,9 +62,14 @@ namespace PracaMagisterska.WPF.Utils {
             }
         }
 
-        public void Dispose() { State = ConsoleState.Hide; }
+        /// <summary>
+        /// Returns <value>true</value> if console is visible, elsewhere return <value>false</value>.
+        /// </summary>
+        public static bool IsVisible => State != ConsoleState.Hide;
 
-        public bool IsVisible => State != ConsoleState.Hide;
+        #endregion Static fields
+
+        #region Private members
 
         [DllImport("kernel32.dll")]
         private static extern IntPtr GetConsoleWindow();
@@ -39,18 +77,19 @@ namespace PracaMagisterska.WPF.Utils {
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        // Disable Console Exit Button
         [DllImport("user32.dll")]
-        static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
 
         [DllImport("user32.dll")]
-        static extern IntPtr DeleteMenu(IntPtr hMenu, uint uPosition, uint uFlags);
+        private static extern IntPtr DeleteMenu(IntPtr hMenu, uint uPosition, uint uFlags);
 
-        const uint SC_CLOSE = 0xF060;
-        const uint MF_BYCOMMAND = (uint)0x00000000L;
-        
+        private const uint SC_CLOSE = 0xF060;
+        private const uint MF_BYCOMMAND = (uint)0x00000000L;
+
         private static readonly IntPtr console_;
         private static ConsoleState state_;
+
+        #endregion Private members
 
         public enum ConsoleState {
             Hide = 0,             //Hides the window and activates another window.
