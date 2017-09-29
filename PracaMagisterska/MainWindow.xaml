@@ -96,7 +96,7 @@
                                                      Glyph="&#xEDB5;"
                                                      Label="Kodujmy!">
                         <controls:HamburgerMenuGlyphItem.Tag>
-                            <Frame Background="Red" />
+                            <view:GameMenu />
                         </controls:HamburgerMenuGlyphItem.Tag>
                     </controls:HamburgerMenuGlyphItem>
                 </controls:HamburgerMenuItemCollection>

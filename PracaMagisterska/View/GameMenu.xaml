@@ -1,0 +1,147 @@
+﻿<UserControl x:Class="PracaMagisterska.WPF.View.GameMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:PracaMagisterska.WPF"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:view="clr-namespace:PracaMagisterska.WPF.View"
+             mc:Ignorable="d"
+             Height="400"
+             Width="450"
+             HorizontalAlignment="Left"
+             VerticalAlignment="Top">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                <!-- this window should be green -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Green.xaml" />
+                <!-- and should use the light theme -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Margin="10,10,10,10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+        <TextBlock Grid.Row="0"
+                   Grid.Column="1"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Margin="2.5,2.5,2.5,2.5"
+                   Text="N°"
+                   FontFamily="{StaticResource ConsolasFont}"
+                   FontSize="20" />
+        <TextBlock Grid.Row="0"
+                   Grid.Column="2"
+                   Text="Nazwa lekcji"
+                   FontFamily="{StaticResource ConsolasFont}"
+                   Margin="2.5,2.5,2.5,2.5"
+                   FontSize="20" />
+        <TextBlock Grid.Row="0"
+                   Grid.Column="3"
+                   Text="Trudność"
+                   FontFamily="{StaticResource ConsolasFont}"
+                   Margin="2.5,2.5,2.5,2.5"
+                   FontSize="20" />
+        <Separator Grid.Row="1" 
+                   Grid.Column="0"
+                   Grid.ColumnSpan="4" />
+
+        <!-- COLUMN 1 -->
+        <TextBlock Grid.Row="2"
+                   Grid.Column="0"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   Text="&#xE739;"
+                   Margin="2.5,2.5,2.5,2.5"
+                   FontFamily="{StaticResource SegoeFont}"
+                   FontSize="20" />
+        <TextBlock Grid.Row="2"
+                   Grid.Column="1"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   Margin="2.5,2.5,2.5,2.5"
+                   Text="1."
+                   FontFamily="{StaticResource ConsolasFont}"
+                   FontSize="20" />
+        <Button Grid.Row="2"
+                Grid.Column="2"
+                Name="Lesson1Button"
+                Margin="2.5,2.5,2.5,2.5"
+                Content="Witaj świecie!"
+                HorizontalAlignment="Stretch"
+                FontFamily="{StaticResource ConsolasFont}"
+                FontSize="20"
+                Click="LessonButton_OnClick" />
+        <TextBlock Grid.Row="2"
+                   Grid.Column="3"
+                   VerticalAlignment="Center"
+                   Margin="2.5,2.5,2.5,2.5"
+                   HorizontalAlignment="Left"
+                   Text="&#xF0E5; &#xE24A; &#xE24A; &#xE24A; &#xE24A;"
+                   FontFamily="{StaticResource SegoeFont}"
+                   FontSize="20" />
+        <Separator Grid.Row="3"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="4" />
+
+        <!-- COLUMN 2 -->
+        <TextBlock Grid.Row="4"
+                   Grid.Column="0"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   Margin="2.5,2.5,2.5,2.5"
+                   Text="&#xE739;"
+                   FontFamily="{StaticResource SegoeFont}"
+                   FontSize="20" />
+        <TextBlock Grid.Row="4"
+                   Grid.Column="1"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   Text="2."
+                   Margin="2.5,2.5,2.5,2.5"
+                   FontFamily="{StaticResource ConsolasFont}"
+                   FontSize="20" />
+        <Button Grid.Row="4"
+                Grid.Column="2"
+                Name="Lesson2Button"
+                Margin="2.5,2.5,2.5,2.5"
+                Content="Zmienne i działania!"
+                HorizontalAlignment="Stretch"
+                FontFamily="{StaticResource ConsolasFont}"
+                FontSize="20"
+                Click="LessonButton_OnClick" />
+        <TextBlock Grid.Row="4"
+                   Grid.Column="3"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left"
+                   Text="&#xF0E5; &#xE24A; &#xE24A; &#xE24A; &#xE24A;"
+                   Margin="2.5,2.5,2.5,2.5"
+                   FontFamily="{StaticResource SegoeFont}"
+                   FontSize="20" />
+    </Grid>
+</UserControl>
