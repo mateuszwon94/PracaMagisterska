@@ -1,0 +1,121 @@
+﻿<UserControl x:Class="PracaMagisterska.WPF.View.Credits"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:PracaMagisterska.WPF"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:view="clr-namespace:PracaMagisterska.WPF.View"
+             mc:Ignorable="d"
+             d:DesignHeight="300"
+             d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <!-- this window should be green -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Green.xaml" />
+                <!-- and should use the light theme -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0"
+                   FontFamily="{StaticResource ConsolasFont}"
+                   FontSize="45"
+                   Text="Credits"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Orientation="Vertical">
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="25"
+                           FontWeight="Bold"
+                           Text="Praca magisterska"
+                           HorizontalAlignment="Center"
+                           Margin="0,10,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="15"
+                           Text="Autor:"
+                           HorizontalAlignment="Center"
+                           Margin="0,20,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Text="inż. Mateusz Winiarski"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="20"
+                           Text="Akademia Górniczo-Hutnicza"
+                           HorizontalAlignment="Center"
+                           Margin="0,20,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="20"
+                           Text="im. Stanisława Staszica w Krakowie"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="20"
+                           Text="Wydział Fizyki i Informatyki Stosowanej"
+                           HorizontalAlignment="Center"
+                           Margin="0,20,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="20"
+                           Text="Informatyka Stosowana"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="20"
+                           Text="Grafika Komputerowa i Przetwarzanie Obrazów"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           Margin="0,20,0,0">
+					Platoforma .Net Compiler "Roslyn" -
+                </TextBlock>
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Text="kompilator jako usługa na przykładzie gry wspomagającej naukę języka C#."
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="15"
+                           Text="Opiekun:"
+                           HorizontalAlignment="Center"
+                           Margin="0,20,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="20"
+                           Text="dr inż. Janusz Malinowski"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="15"
+                           Text="Recenzent:"
+                           HorizontalAlignment="Center"
+                           Margin="0,20,0,0" />
+                <TextBlock FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="20"
+                           FontStyle="Italic"
+                           Text="Nieustalony"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

@@ -288,6 +288,9 @@
     <Compile Include="Exceptions\CompilationException.cs" />
     <Compile Include="Utils\CompilationHelper.cs" />
     <Compile Include="Utils\ConsoleHelper.cs" />
+    <Compile Include="View\Credits.xaml.cs">
+      <DependentUpon>Credits.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -307,6 +310,10 @@
     <Page Include="Resources\IconsNonShared.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Credits.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
