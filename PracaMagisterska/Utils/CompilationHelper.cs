@@ -97,10 +97,7 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="assembly">Assembly</param>
         /// <param name="parameters">Parameters of entry method</param>
         public static void RunMain(Assembly assembly, string[] parameters = null) {
-            if ( parameters == null )
-                Run(assembly);
-            else
-                Run(assembly, parameters: new object[] {parameters});
+            Run(assembly, parameters: parameters == null ? new object[] {new string[] { }} : new object[] {parameters});
         }
 
         /// <summary>
@@ -113,10 +110,7 @@ namespace PracaMagisterska.WPF.Utils {
             if ( entryPoint == null )
                 entryPoint = assembly.EntryPoint;
 
-            using ( var ch = new ConsoleHelper() ) {
-                entryPoint.Invoke(null, parameters);
-                Console.ReadKey();
-            }
+            entryPoint.Invoke(null, parameters);
         }
 
         #endregion Helpers function
