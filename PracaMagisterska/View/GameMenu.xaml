@@ -7,10 +7,9 @@
       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
       xmlns:view="clr-namespace:PracaMagisterska.WPF.View"
       mc:Ignorable="d"
-      Height="400"
-      Width="450"
-      HorizontalAlignment="Left"
-      VerticalAlignment="Top">
+      Title="GameMenu"
+      d:DesignHeight="720"
+      d:DesignWidth="1080">
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
