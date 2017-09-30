@@ -39,13 +39,17 @@ namespace PracaMagisterska.WPF.Utils {
         public ConsoleHelper(ConsoleState state) {
             Console.Clear();
             State = state;
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         /// <inheritdoc />
         /// <summary>
         /// Hide console.
         /// </summary>
-        public void Dispose() { State = ConsoleState.Hide; }
+        public void Dispose() {
+            Console.ForegroundColor = ConsoleColor.White;
+            State = ConsoleState.Hide;
+        }
 
         #endregion Constructors and destructors
 
