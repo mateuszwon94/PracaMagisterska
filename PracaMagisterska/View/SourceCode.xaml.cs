@@ -12,17 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PracaMagisterska.WPF.Utils;
 
 namespace PracaMagisterska.WPF.View {
     /// <summary>
-    /// Interaction logic for GameMenu.xaml
+    /// Interaction logic for SourceCode.xaml
     /// </summary>
-    public partial class GameMenu : Page {
-        public GameMenu() { InitializeComponent(); }
+    public partial class SourceCode : Page {
+        public SourceCode() { InitializeComponent(); }
 
-        private void LessonButton_OnClick(object sender, RoutedEventArgs e) {
-            NavigationService?.Navigate(new SourceCode());
-        }
+        private void CompileButton_OnClick(object sender, RoutedEventArgs e) { }
     }
 }

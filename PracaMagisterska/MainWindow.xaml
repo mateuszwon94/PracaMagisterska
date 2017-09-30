@@ -96,7 +96,8 @@
                                                      Glyph="&#xEDB5;"
                                                      Label="Kodujmy!">
                         <controls:HamburgerMenuGlyphItem.Tag>
-                            <Frame Source="View/GameMenu.xaml" />
+                            <Frame Source="View/GameMenu.xaml"
+                                   NavigationUIVisibility="Hidden" />
                         </controls:HamburgerMenuGlyphItem.Tag>
                     </controls:HamburgerMenuGlyphItem>
                 </controls:HamburgerMenuItemCollection>
