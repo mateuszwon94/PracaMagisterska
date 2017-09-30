@@ -6,6 +6,7 @@
       xmlns:local="clr-namespace:PracaMagisterska.WPF"
       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
       xmlns:view="clr-namespace:PracaMagisterska.WPF.View"
+      xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
       mc:Ignorable="d"
       Title="SorceSode"
       d:DesignHeight="720"
@@ -26,41 +27,59 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid>
+    <Grid Margin="10,10,10,10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0"
-                   HorizontalAlignment="Left"
+        <TextBlock x:Name="TitleTextBox"
+                   Grid.Row="0"
+                   HorizontalAlignment="Center"
                    TextWrapping="Wrap"
-                   Text="Source code:"
                    VerticalAlignment="Top"
-                   Margin="10,0,0,0"
+                   Margin="0,0,0,5"
                    Width="Auto"
                    Height="Auto"
-                   FontSize="20"
+                   FontSize="25"
                    FontFamily="{StaticResource ConsolasFont}" />
-        <RichTextBox x:Name="SourceCodeTextBox"
-                     Grid.Row="1"
-                     HorizontalAlignment="Stretch"
-                     VerticalAlignment="Stretch"
-                     FontSize="14"
-                     Margin="10,10,10,10"
-                     FontFamily="{StaticResource ConsolasFont}" />
-        <StackPanel Orientation="Horizontal"
-                    Grid.Row="2"
-                    HorizontalAlignment="Right"
-                    Margin="10,0,10,10">
-            <Button x:Name="CompileButton"
+        <avalonedit:TextEditor x:Name="SourceCodeTextBox"
+                               Grid.Row="1"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
+                               FontSize="14"
+                               ShowLineNumbers="True"
+                               LineNumbersForeground="DarkOliveGreen"
+                               FontFamily="{StaticResource ConsolasFont}"
+                               SyntaxHighlighting="C#" 
+                               BorderBrush="Black"
+                               BorderThickness="1"
+                               HorizontalScrollBarVisibility="Auto"
+                               VerticalScrollBarVisibility="Auto" />
+        <Grid Grid.Row="2"
+              Margin="0,5,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="BackButton"
                     Width="125"
                     FontSize="20"
-                    Margin="5,0,0,0"
-                    FontFamily="{StaticResource ConsolasFont}" 
-                    Content="Kompiluj"
-                    Click="CompileButton_OnClick"/>
-        </StackPanel>
+                    FontFamily="{StaticResource ConsolasFont}"
+                    Content="Wstecz"
+                    Click="BackButton_OnClick" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Grid.Column="1">
+                <Button x:Name="CompileButton"
+                        Width="125"
+                        FontSize="20"
+                        Margin="5,0,0,0"
+                        FontFamily="{StaticResource ConsolasFont}"
+                        Content="Kompiluj"
+                        Click="CompileButton_OnClick" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

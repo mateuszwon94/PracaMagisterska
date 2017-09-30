@@ -18,8 +18,19 @@ namespace PracaMagisterska.WPF.View {
     /// Interaction logic for SourceCode.xaml
     /// </summary>
     public partial class SourceCode : Page {
-        public SourceCode() { InitializeComponent(); }
+        public SourceCode(string title) {
+            InitializeComponent();
+            LessonTitle = title;
+            TitleTextBox.Text = LessonTitle;
+        }
+
+        public string LessonTitle { get; private set; } = string.Empty;
 
         private void CompileButton_OnClick(object sender, RoutedEventArgs e) { }
+
+        private void BackButton_OnClick(object sender, RoutedEventArgs e) {
+            if ( NavigationService != null && NavigationService.CanGoBack )
+                NavigationService?.GoBack();
+        }
     }
 }

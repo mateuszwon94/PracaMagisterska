@@ -22,7 +22,7 @@ namespace PracaMagisterska.WPF.View {
         public GameMenu() { InitializeComponent(); }
 
         private void LessonButton_OnClick(object sender, RoutedEventArgs e) {
-            NavigationService?.Navigate(new SourceCode());
+            NavigationService?.Navigate(new SourceCode("Lekcja n."));
         }
     }
 }
