@@ -6,13 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PracaMagisterska.WPF.Utils {
-    /// <inheritdoc />
     /// <summary>
     /// Helper class for handle console.
     /// Napisana jest w taki sposób, żeby móc używać jej ze skladnią using( ... ) { }
     /// </summary>
-    public class ConsoleHelper : IDisposable {
-        #region Constructors and destructors
+    public static class ConsoleHelper {
+        #region Public
 
         /// <summary>
         /// Static constructor.
@@ -25,33 +24,25 @@ namespace PracaMagisterska.WPF.Utils {
                 DeleteMenu(exitButton, SC_CLOSE, MF_BYCOMMAND);
         }
 
-        /// <inheritdoc />
         /// <summary>
-        /// Default constructor.
-        /// Shows console.
-        /// </summary>
-        public ConsoleHelper() : this(ConsoleState.Show) { }
-
-        /// <summary>
-        /// Constructor, which allows user to define state of console.
+        /// Method, which allows user to show Console and define its state.
         /// </summary>
         /// <param name="state">Initial state of console</param>
-        public ConsoleHelper(ConsoleState state) {
+        public static void Show(ConsoleState state = ConsoleState.Show) {
             Console.Clear();
             State = state;
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        /// <inheritdoc />
         /// <summary>
         /// Hide console.
         /// </summary>
-        public void Dispose() {
+        public static void Hide() {
             Console.ForegroundColor = ConsoleColor.White;
             State = ConsoleState.Hide;
         }
 
-        #endregion Constructors and destructors
+        #endregion Public
 
         #region Static fields
 

@@ -6,6 +6,6 @@ namespace PracaMagisterska.WPF {
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application {
-        static App() => new ConsoleHelper(ConsoleHelper.ConsoleState.Hide);
+        static App() => ConsoleHelper.Hide();
     }
 }

@@ -34,20 +34,21 @@ namespace PracaMagisterska.WPF.View {
         private void CompileButton_OnClick(object sender, RoutedEventArgs e) {
             SyntaxTree code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
 
-            using ( var ch = new ConsoleHelper() ) {
+            ConsoleHelper.Show(); {
                 try {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Compilation starter!");
                     Assembly program = CompilationHelper.Compile(code);
 
                     try {
-                        Console.WriteLine("Execution starter!");
+                        Console.WriteLine("Execution starter!\n\n");
                         Console.ForegroundColor = ConsoleColor.White;
                         CompilationHelper.RunMain(program);
                     } catch ( Exception ex ) {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("There was execution errors!");
                         Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine($"\t{ex}");
                     }
                 } catch ( CompilationException ex ) {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -59,7 +60,14 @@ namespace PracaMagisterska.WPF.View {
                         Console.Write($" - {failure.ToString()}");
                     }
                 }
-            }
+
+                if ( !Settings.AutoCloseConsole ){
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write("\n\tPlease, press ENTER to hide console.");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.ReadLine();
+                }
+            } ConsoleHelper.Hide();
         }
 
         private void BackButton_OnClick(object sender, RoutedEventArgs e) {
