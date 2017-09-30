@@ -118,7 +118,7 @@
                                                      Glyph="&#xE115;"
                                                      Label="Ustawienia">
                         <controls:HamburgerMenuGlyphItem.Tag>
-                            <Frame Background="Green" />
+                            <Frame Source="View/Settings.xaml" />
                         </controls:HamburgerMenuGlyphItem.Tag>
                     </controls:HamburgerMenuGlyphItem>
                 </controls:HamburgerMenuItemCollection>

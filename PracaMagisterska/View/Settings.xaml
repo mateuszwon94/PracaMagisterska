@@ -1,0 +1,77 @@
+﻿<Page x:Class="PracaMagisterska.WPF.View.Settings"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:local="clr-namespace:PracaMagisterska.WPF"
+      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+      xmlns:view="clr-namespace:PracaMagisterska.WPF.View"
+      mc:Ignorable="d"
+      Title="Settings"
+      d:DesignHeight="720"
+      d:DesignWidth="1080">
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                <!-- this window should be green -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Green.xaml" />
+                <!-- and should use the light theme -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0"
+                   FontFamily="{StaticResource ConsolasFont}"
+                   FontSize="45"
+                   Text="Ustawienia"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox x:Name="AutoCloseConsoleCheckBox"
+                          Grid.Row="0"
+                          Grid.Column="0"
+                          FontFamily="{StaticResource ConsolasFont}"
+                          FontSize="15"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center"
+                          Margin="2.5,2.5,2.5,2.5"
+                          IsChecked="False"
+                          Content="Automatyczne chowanie konsoli"
+                          Checked="AutoCloseConsoleCheckBox_Checked"
+                          Unchecked="AutoCloseConsoleCheckBox_Unchecked" />
+                <TextBlock Grid.Row="0"
+                           Grid.Column="1"
+                           Margin="5,2.5,2.5,2.5"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           FontFamily="{StaticResource ConsolasFont}"
+                           FontSize="15"
+                           TextWrapping="WrapWithOverflow"
+                           Text="Jeśli to pole jest zaznaczone konsola będzie się automatycznie chować po zakończeniu programu." />
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>

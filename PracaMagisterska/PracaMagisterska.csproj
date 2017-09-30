@@ -297,6 +297,9 @@
     <Compile Include="View\GameMenu.xaml.cs">
       <DependentUpon>GameMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SourceCode.xaml.cs">
       <DependentUpon>SourceCode.xaml</DependentUpon>
     </Compile>
@@ -325,6 +328,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\GameMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
