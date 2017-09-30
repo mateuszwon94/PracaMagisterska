@@ -18,10 +18,8 @@ namespace PracaMagisterska.WPF.View {
     /// <summary>
     /// Interaction logic for GameMenu.xaml
     /// </summary>
-    public partial class GameMenu : UserControl {
-        public GameMenu() {
-            InitializeComponent();
-        }
+    public partial class GameMenu : Page {
+        public GameMenu() { InitializeComponent(); }
 
         private void LessonButton_OnClick(object sender, RoutedEventArgs e) { }
     }

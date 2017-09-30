@@ -96,7 +96,7 @@
                                                      Glyph="&#xEDB5;"
                                                      Label="Kodujmy!">
                         <controls:HamburgerMenuGlyphItem.Tag>
-                            <view:GameMenu />
+                            <Frame Source="View/GameMenu.xaml" />
                         </controls:HamburgerMenuGlyphItem.Tag>
                     </controls:HamburgerMenuGlyphItem>
                 </controls:HamburgerMenuItemCollection>
@@ -109,7 +109,7 @@
                                                      Glyph="&#xE728;"
                                                      Label="O aplikacji">
                         <controls:HamburgerMenuGlyphItem.Tag>
-                            <view:Credits />
+                            <Frame Source="View/Credits.xaml" />
                         </controls:HamburgerMenuGlyphItem.Tag>
                     </controls:HamburgerMenuGlyphItem>
 

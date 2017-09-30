@@ -4,7 +4,7 @@ namespace PracaMagisterska.WPF.View {
     /// <summary>
     /// Interaction logic for Credits.xaml
     /// </summary>
-    public partial class Credits : UserControl {
+    public partial class Credits : Page {
         public Credits() => InitializeComponent();
     }
 }
