@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace PracaMagisterska.WPF.Utils {
     /// <summary>
     /// Helper class for handle console.
-    /// Napisana jest w taki sposób, żeby móc używać jej ze skladnią using( ... ) { }
     /// </summary>
     public static class ConsoleHelper {
         #region Public
@@ -63,7 +62,7 @@ namespace PracaMagisterska.WPF.Utils {
         public static bool IsVisible => State != ConsoleState.Hide;
 
         #endregion Static fields
-
+        
         #region Private members
 
         [DllImport("kernel32.dll")]
