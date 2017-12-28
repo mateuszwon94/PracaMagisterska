@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +12,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PracaMagisterska.WPF.Utils;
+using static PracaMagisterska.WPF.Utils.LessonsAbout;
 
-namespace PracaMagisterska.WPF.View {
+namespace PracaMagisterska.WPF.View
+{
     /// <summary>
     /// Interaction logic for GameMenu.xaml
     /// </summary>
@@ -22,7 +23,13 @@ namespace PracaMagisterska.WPF.View {
         public GameMenu() { InitializeComponent(); }
 
         private void LessonButton_OnClick(object sender, RoutedEventArgs e) {
-            NavigationService?.Navigate(new SourceCode("Lekcja n."));
+            if ( sender is Button b ) {
+                int lessonNo = int.Parse(b.Name
+                                          .Replace("Lesson", string.Empty)
+                                          .Replace("Button", string.Empty));
+
+                NavigationService?.Navigate(new SourceCode($"Lekcja {lessonNo}. {LessonTitle[lessonNo]}", LessonInfo[lessonNo]));
+            }
         }
     }
 }

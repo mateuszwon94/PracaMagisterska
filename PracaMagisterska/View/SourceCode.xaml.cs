@@ -23,10 +23,17 @@ namespace PracaMagisterska.WPF.View {
     /// Interaction logic for SourceCode.xaml
     /// </summary>
     public partial class SourceCode : Page {
-        public SourceCode(string title) {
+        public SourceCode(string title, string info = null) {
             InitializeComponent();
+
             LessonTitle = title;
             TitleTextBox.Text = LessonTitle;
+
+            if ( !string.IsNullOrEmpty(info) ) {
+                LessonInfoTextBlock.Text = info;
+            } else {
+                LessonInfoTextBlock.Text = "Póki co brak opisu! :(";
+            }
         }
 
         public string LessonTitle { get; private set; } = string.Empty;

@@ -87,7 +87,7 @@
                    FontSize="20" />
         <Button Grid.Row="2"
                 Grid.Column="2"
-                Name="Lesson1Button"
+                Name="Lesson0Button"
                 Margin="2.5,2.5,2.5,2.5"
                 Content="Witaj świecie!"
                 HorizontalAlignment="Stretch"
@@ -127,7 +127,7 @@
                    FontSize="20" />
         <Button Grid.Row="4"
                 Grid.Column="2"
-                Name="Lesson2Button"
+                Name="Lesson1Button"
                 Margin="2.5,2.5,2.5,2.5"
                 Content="Zmienne i działania!"
                 HorizontalAlignment="Stretch"

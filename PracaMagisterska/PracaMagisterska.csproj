@@ -295,6 +295,7 @@
     <Compile Include="View\Credits.xaml.cs">
       <DependentUpon>Credits.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\LessonsAbout.cs" />
     <Compile Include="View\GameMenu.xaml.cs">
       <DependentUpon>GameMenu.xaml</DependentUpon>
     </Compile>
