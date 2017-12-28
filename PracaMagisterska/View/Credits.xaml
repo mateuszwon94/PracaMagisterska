@@ -94,6 +94,8 @@
                            FontWeight="Bold"
                            Text="kompilator jako usługa na przykładzie gry wspomagającej naukę języka C#."
                            HorizontalAlignment="Center"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
                            Margin="0,5,0,0" />
                 <TextBlock FontFamily="{StaticResource ConsolasFont}"
                            FontSize="15"
