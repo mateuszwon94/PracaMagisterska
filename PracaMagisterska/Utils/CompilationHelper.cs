@@ -97,7 +97,8 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="assembly">Assembly</param>
         /// <param name="parameters">Parameters of entry method</param>
         public static void RunMain(Assembly assembly, string[] parameters = null) {
-            Run(assembly, parameters: parameters == null ? new object[] {new string[] { }} : new object[] {parameters});
+            Run(assembly,
+                parameters: parameters == null ? new object[] {new string[] { }} : new object[] {parameters});
         }
 
         /// <summary>
@@ -110,7 +111,10 @@ namespace PracaMagisterska.WPF.Utils {
             if ( entryPoint == null )
                 entryPoint = assembly.EntryPoint;
 
-            entryPoint.Invoke(null, parameters);
+            entryPoint.Invoke(null, 
+                entryPoint.GetParameters().Length > 0 ? 
+                parameters :    // invoked if method is Main(string[] args)
+                null);          // invoked if method is Main()
         }
 
         #endregion Helpers function
