@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,7 +12,7 @@ using Microsoft.CodeAnalysis.Emit;
 using PracaMagisterska.WPF.Exceptions;
 
 namespace PracaMagisterska.WPF.Utils {
-    public class CompilationHelper {
+    public static class CompilationHelper {
         #region Defaults
 
         /// <summary>
@@ -52,11 +53,12 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="additionalNamespace">Additional namespaces used in project</param>
         /// <param name="additionalReferences">Additional Assemblies used in project</param>
         /// <param name="compilationOptions">Specyfic compilation option used in project</param>
-        /// <returns></returns>
-        public static Assembly Compile(SyntaxTree syntaxTree,
-                                       IEnumerable<string> additionalNamespace = null,
-                                       IEnumerable<MetadataReference> additionalReferences = null,
-                                       CSharpCompilationOptions compilationOptions = null) {
+        /// <returns>Assemly with program (or null if builds fails), diagnostic information and bool if build was successful</returns>
+        public static (Assembly assembly, ImmutableArray<Diagnostic> diagnostic, bool isBuildSuccesful) 
+            CompileAneBuild(this SyntaxTree syntaxTree,
+                            IEnumerable<string> additionalNamespace = null,
+                            IEnumerable<MetadataReference> additionalReferences = null,
+                            CSharpCompilationOptions compilationOptions = null) {
             // Preparation
             var allNamespace = additionalNamespace == null
                                    ? DefaultNamespaces
@@ -80,23 +82,27 @@ namespace PracaMagisterska.WPF.Utils {
                 // Compilation to memory
                 EmitResult result = compilation.Emit(ms);
 
-                if ( !result.Success ) // Builds failed
-                    throw new CompilationException("Compilation Faliure",
-                                                   result.Diagnostics.Where(diagnostic => diagnostic.IsWarningAsError || diagnostic.Severity == DiagnosticSeverity.Error));
-                else {
-                    // Build successed 
+                // Get all errors and warnings
+                ImmutableArray<Diagnostic> diagnostic = result.Diagnostics.Where(diag =>
+                                                            diag.IsWarningAsError ||
+                                                            diag.Severity == DiagnosticSeverity.Error ||
+                                                            diag.Severity == DiagnosticSeverity.Warning)
+                                                                          .ToImmutableArray();
+                if ( !result.Success ) { // Builds failed
+                    return (null, diagnostic, false);
+                } else { // Build successed 
                     ms.Seek(0, SeekOrigin.Begin);
-                    return Assembly.Load(ms.ToArray());
+                    return (Assembly.Load(ms.ToArray()), diagnostic, true);
                 }
             }
         }
-
+        
         /// <summary>
         /// Helper function, which runs default EntryPoint of assembly with strings params
         /// </summary>
         /// <param name="assembly">Assembly</param>
         /// <param name="parameters">Parameters of entry method</param>
-        public static void RunMain(Assembly assembly, string[] parameters = null) {
+        public static void RunMain(this Assembly assembly, string[] parameters = null) {
             Run(assembly,
                 parameters: parameters == null ? new object[] {new string[] { }} : new object[] {parameters});
         }
@@ -107,7 +113,7 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="assembly">Assembly</param>
         /// <param name="entryPoint">Method to run</param>
         /// <param name="parameters">Parameters of entry method</param>
-        public static void Run(Assembly assembly, MethodInfo entryPoint = null, object[] parameters = null) {
+        public static void Run(this Assembly assembly, MethodInfo entryPoint = null, object[] parameters = null) {
             if ( entryPoint == null )
                 entryPoint = assembly.EntryPoint;
 
