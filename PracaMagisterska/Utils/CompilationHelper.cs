@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -54,7 +55,8 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="additionalReferences">Additional Assemblies used in project</param>
         /// <param name="compilationOptions">Specyfic compilation option used in project</param>
         /// <returns>Assemly with program (or null if builds fails), diagnostic information and bool if build was successful</returns>
-        public static (Assembly assembly, ImmutableArray<Diagnostic> diagnostic, bool isBuildSuccesful) 
+        public static async 
+            Task<(Assembly assembly, ImmutableArray<Diagnostic> diagnostic, bool isBuildSuccesful)>
             CompileAneBuild(this SyntaxTree syntaxTree,
                             IEnumerable<string> additionalNamespace = null,
                             IEnumerable<MetadataReference> additionalReferences = null,
@@ -78,23 +80,27 @@ namespace PracaMagisterska.WPF.Utils {
             foreach ( MetadataReference reference in allReferences )
                 compilation = compilation.AddReferences(reference);
 
-            using ( var ms = new MemoryStream() ) {
-                // Compilation to memory
-                EmitResult result = compilation.Emit(ms);
+            return await Task.Run(() => {
+                using ( var ms = new MemoryStream() ) {
+                    // Compilation to memory
+                    EmitResult result = compilation.Emit(ms);
 
-                // Get all errors and warnings
-                ImmutableArray<Diagnostic> diagnostic = result.Diagnostics.Where(diag =>
+                    // Get all errors and warnings
+                    ImmutableArray<Diagnostic> diagnostic = result.Diagnostics.Where(diag =>
                                                             diag.IsWarningAsError ||
                                                             diag.Severity == DiagnosticSeverity.Error ||
                                                             diag.Severity == DiagnosticSeverity.Warning)
-                                                                          .ToImmutableArray();
-                if ( !result.Success ) { // Builds failed
-                    return (null, diagnostic, false);
-                } else { // Build successed 
-                    ms.Seek(0, SeekOrigin.Begin);
-                    return (Assembly.Load(ms.ToArray()), diagnostic, true);
+                                                                  .ToImmutableArray();
+                    if ( !result.Success ) {
+                        // Builds failed
+                        return (null, diagnostic, false);
+                    } else {
+                        // Build successed 
+                        ms.Seek(0, SeekOrigin.Begin);
+                        return (Assembly.Load(ms.ToArray()), diagnostic, true);
+                    }
                 }
-            }
+            });
         }
         
         /// <summary>
@@ -102,8 +108,8 @@ namespace PracaMagisterska.WPF.Utils {
         /// </summary>
         /// <param name="assembly">Assembly</param>
         /// <param name="parameters">Parameters of entry method</param>
-        public static void RunMain(this Assembly assembly, string[] parameters = null) {
-            Run(assembly,
+        public static async Task RunMain(this Assembly assembly, string[] parameters = null) {
+            await Run(assembly,
                 parameters: parameters == null ? new object[] {new string[] { }} : new object[] {parameters});
         }
 
@@ -113,14 +119,15 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="assembly">Assembly</param>
         /// <param name="entryPoint">Method to run</param>
         /// <param name="parameters">Parameters of entry method</param>
-        public static void Run(this Assembly assembly, MethodInfo entryPoint = null, object[] parameters = null) {
+        public static async Task Run(this Assembly assembly, MethodInfo entryPoint = null, object[] parameters = null) {
             if ( entryPoint == null )
                 entryPoint = assembly.EntryPoint;
 
-            entryPoint.Invoke(null, 
-                entryPoint.GetParameters().Length > 0 ? 
-                parameters :    // invoked if method is Main(string[] args)
-                null);          // invoked if method is Main()
+            await Task.Run(() => {
+                entryPoint.Invoke(null, entryPoint.GetParameters().Length > 0 ? 
+                                      parameters : // invoked if method is Main(string[] args)
+                                      null); // invoked if method is Main()
+            });
         }
 
         #endregion Helpers function

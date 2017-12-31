@@ -54,15 +54,40 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <ScrollViewer Grid.Column="0">
-                <TextBlock x:Name="LessonInfoTextBlock"
-                           Margin="0,0,5,0"
-                           FontSize="15"
-                           TextWrapping="Wrap"
-                           MaxWidth="400"
-                           MinWidth="200"
-                           FontFamily="{StaticResource ConsolasFont}" />
-            </ScrollViewer>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="3*" />
+                </Grid.RowDefinitions>
+
+                <ScrollViewer Grid.Row="0">
+                    <TextBlock x:Name="LessonInfoTextBlock"
+                               Margin="0,0,5,0"
+                               FontSize="15"
+                               TextWrapping="Wrap"
+                               MaxWidth="400"
+                               MinWidth="200"
+                               FontFamily="{StaticResource ConsolasFont}" />
+                </ScrollViewer>
+
+                <ListView x:Name="DiagnosticListView"
+                          Grid.Row="1"
+                          SelectionMode="Single"
+                          Margin="0,5,5,0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Error ID"
+                                            DisplayMemberBinding="{Binding Path=Id}"  />
+                            <GridViewColumn Header="Type"
+                                            DisplayMemberBinding="{Binding Path=Severity}" />
+                            <GridViewColumn Header="Location"
+                                            DisplayMemberBinding="{Binding Path=Location}" />
+                            <GridViewColumn Header="Information"
+                                            DisplayMemberBinding="{Binding Path=Information}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
 
             <GridSplitter Grid.Column="1"
                           Margin="5,0,0,0"
@@ -83,7 +108,6 @@
                                    BorderThickness="1"
                                    HorizontalScrollBarVisibility="Auto"
                                    VerticalScrollBarVisibility="Auto" />
-
         </Grid>
 
         <Grid Grid.Row="2"
@@ -94,6 +118,7 @@
             </Grid.ColumnDefinitions>
             <Button x:Name="BackButton"
                     Width="125"
+                    Height="35"
                     FontSize="20"
                     FontFamily="{StaticResource ConsolasFont}"
                     Content="Wstecz"
@@ -103,11 +128,16 @@
                         Grid.Column="1">
                 <Button x:Name="CompileButton"
                         Width="125"
+                        Height="35"
                         FontSize="20"
-                        Margin="5,0,0,0"
+                        Margin="5,0,5,0"
                         FontFamily="{StaticResource ConsolasFont}"
                         Content="Kompiluj"
                         Click="CompileButton_OnClick" />
+                <controls:ProgressRing x:Name="CompileingIndicator"
+                                       IsActive="False"
+                                       Width="35"
+                                       Height="35" />
             </StackPanel>
         </Grid>
     </Grid>
