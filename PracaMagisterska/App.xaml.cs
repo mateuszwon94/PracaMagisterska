@@ -6,6 +6,10 @@ namespace PracaMagisterska.WPF {
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application {
+        /// <inheritdoc />
+        /// <summary>
+        /// Static constructor. Hiding console at program startup.
+        /// </summary>
         static App() => ConsoleHelper.Hide();
     }
 }

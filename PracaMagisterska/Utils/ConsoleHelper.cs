@@ -23,8 +23,15 @@ namespace PracaMagisterska.WPF.Utils {
                 DeleteMenu(exitButton, SC_CLOSE, MF_BYCOMMAND);
         }
 
+        /// <summary>
+        /// Cunstructor. Implemented only to be used in using() syntax.
+        /// </summary>
         public ConsoleHelper() => Show();
-        
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Destructor. Implemented only to be used in using() syntax.
+        /// </summary>
         public void Dispose() => Hide();
 
         /// <summary>

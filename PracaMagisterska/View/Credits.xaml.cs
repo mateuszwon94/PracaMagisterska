@@ -5,6 +5,10 @@ namespace PracaMagisterska.WPF.View {
     /// Interaction logic for Credits.xaml
     /// </summary>
     public partial class Credits : Page {
+        /// <inheritdoc />
+        /// <summary>
+        /// Constructor. Initialize all components
+        /// </summary>
         public Credits() => InitializeComponent();
     }
 }

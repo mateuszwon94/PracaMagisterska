@@ -125,6 +125,7 @@
             </controls:HamburgerMenu.OptionsItemsSource>
         </controls:HamburgerMenu>
         
+        <!--  Status bar  -->
         <StatusBar Grid.Row="1">
             <Grid Width="{Binding ActualWidth, RelativeSource = {RelativeSource AncestorType = {x:Type Window}}}">
                 <Grid.ColumnDefinitions>

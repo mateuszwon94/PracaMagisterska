@@ -60,6 +60,7 @@
                     <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
 
+                <!--  Lesson information  -->
                 <ScrollViewer Grid.Row="0">
                     <TextBlock x:Name="LessonInfoTextBlock"
                                Margin="0,0,5,0"
@@ -70,6 +71,7 @@
                                FontFamily="{StaticResource ConsolasFont}" />
                 </ScrollViewer>
 
+                <!--  Diagnostic information from compilation  -->
                 <ListView x:Name="DiagnosticListView"
                           Grid.Row="1"
                           SelectionMode="Single"
@@ -93,7 +95,8 @@
                           Margin="5,0,0,0"
                           Width="5"
                           HorizontalAlignment="Stretch" />
-
+            
+            <!--  Editor  -->
             <avalonedit:TextEditor x:Name="SourceCodeTextBox"
                                    Grid.Column="2"
                                    HorizontalAlignment="Stretch"
