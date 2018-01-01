@@ -76,10 +76,9 @@ namespace PracaMagisterska.WPF.Utils {
 
             CSharpCompilation compilation = CSharpCompilation.Create("Code")
                                                              .WithOptions(properCompilationOptions)
+                                                             .AddReferences(allReferences)
                                                              .AddSyntaxTrees(syntaxTree);
-            foreach ( MetadataReference reference in allReferences )
-                compilation = compilation.AddReferences(reference);
-
+            
             return await Task.Run(() => {
                 using ( var ms = new MemoryStream() ) {
                     // Compilation to memory
@@ -128,6 +127,20 @@ namespace PracaMagisterska.WPF.Utils {
                                       parameters : // invoked if method is Main(string[] args)
                                       null); // invoked if method is Main()
             });
+        }
+
+        /// <summary>
+        /// Simple extension method for <see cref="CSharpCompilation"/> which adds to compilation multiple references.
+        /// </summary>
+        /// <param name="compilation">Compilation to which references would be added</param>
+        /// <param name="references">References to be added</param>
+        /// <returns>A new <see cref="CSharpCompilation"/> with added references</returns>
+        public static CSharpCompilation AddReferences(this CSharpCompilation compilation,
+                                                      IEnumerable<MetadataReference> references) {
+            foreach ( MetadataReference reference in references )
+                compilation = compilation.AddReferences(reference);
+
+            return compilation;
         }
 
         #endregion Helpers function
