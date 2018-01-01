@@ -15,8 +15,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using MahApps.Metro.Controls.Dialogs;
 using PracaMagisterska.WPF.Exceptions;
 using PracaMagisterska.WPF.Utils;
 using static PracaMagisterska.WPF.Utils.CompilationHelper;
@@ -47,9 +49,9 @@ namespace PracaMagisterska.WPF.View {
         private async void CompileButton_OnClick(object sender, RoutedEventArgs e) {
             DiagnosticListView.DataContext = null;
             SyntaxTree code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
-
+            
             lastDiagnostics_.Clear();
-
+            
             CompileingIndicator.IsActive = true;
             CompileButton.IsEnabled = false;
             (Assembly program, var diagnostics, bool isBuildSuccessful) = await code.CompileAneBuild();
@@ -82,6 +84,9 @@ namespace PracaMagisterska.WPF.View {
                         Console.ReadLine();
                     }
                 } ConsoleHelper.Hide();
+            } else {
+                await this.TryFindParent<MainWindow>()
+                          .ShowMessageAsync("Kompilacja zakończona", "Kompilacja niepowiodła się");
             }
         }
 
