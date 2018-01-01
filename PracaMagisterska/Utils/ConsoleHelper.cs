@@ -9,7 +9,7 @@ namespace PracaMagisterska.WPF.Utils {
     /// <summary>
     /// Helper class for handle console.
     /// </summary>
-    public static class ConsoleHelper {
+    public class ConsoleHelper : IDisposable {
         #region Public
 
         /// <summary>
@@ -22,6 +22,10 @@ namespace PracaMagisterska.WPF.Utils {
             if ( exitButton != IntPtr.Zero )
                 DeleteMenu(exitButton, SC_CLOSE, MF_BYCOMMAND);
         }
+
+        public ConsoleHelper() => Show();
+        
+        public void Dispose() => Hide();
 
         /// <summary>
         /// Method, which allows user to show Console and define its state.

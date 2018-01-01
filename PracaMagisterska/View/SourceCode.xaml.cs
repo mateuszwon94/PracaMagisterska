@@ -66,7 +66,7 @@ namespace PracaMagisterska.WPF.View {
                             DiagnosticHelper.Type.Info);
 
             if ( isBuildSuccessful ) {
-                ConsoleHelper.Show(); {
+                using (ConsoleHelper vh = new ConsoleHelper()) {
                     try {
                         await program.RunMain();
                     } catch ( Exception ex ) {
@@ -83,7 +83,7 @@ namespace PracaMagisterska.WPF.View {
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.ReadLine();
                     }
-                } ConsoleHelper.Hide();
+                }
             } else {
                 await this.TryFindParent<MainWindow>()
                           .ShowMessageAsync("Kompilacja zakończona", "Kompilacja niepowiodła się");
