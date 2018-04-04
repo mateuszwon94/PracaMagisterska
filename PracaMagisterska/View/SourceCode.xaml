@@ -75,7 +75,8 @@
                 <ListView x:Name="DiagnosticListView"
                           Grid.Row="1"
                           SelectionMode="Single"
-                          Margin="0,5,5,0">
+                          Margin="0,5,5,0" 
+                          SelectionChanged="DiagnosticListView_OnSelectionChanged">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Error ID"

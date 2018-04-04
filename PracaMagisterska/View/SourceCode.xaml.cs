@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ICSharpCode.AvalonEdit.Document;
 using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -73,12 +74,9 @@ namespace PracaMagisterska.WPF.View {
             CompileButton.IsEnabled = true;
 
             // Write new diagnostic information
-            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticSeverity.Error),
-                            DiagnosticHelper.Type.Error);
-            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticSeverity.Warning),
-                            DiagnosticHelper.Type.Warning);
-            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticSeverity.Info),
-                            DiagnosticHelper.Type.Info);
+            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticSeverity.Error));
+            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticSeverity.Warning));
+            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticSeverity.Info));
 
             if ( isBuildSuccessful ) {
                 using (ConsoleHelper vh = new ConsoleHelper()) {
@@ -102,6 +100,7 @@ namespace PracaMagisterska.WPF.View {
                         Console.ReadLine();
                     }
                 }
+                SourceCodeTextBox.Focus();
             } else {
                 // Display PopUp information about failed compilation
                 await this.TryFindParent<MainWindow>()
@@ -114,16 +113,9 @@ namespace PracaMagisterska.WPF.View {
         /// </summary>
         /// <param name="diagnostics">Diagnostic to be written</param>
         /// <param name="severity">Severity of diagnostic</param>
-        private void WriteDiagnostic(IEnumerable<Diagnostic> diagnostics,
-                                     DiagnosticHelper.Type severity) {
+        private void WriteDiagnostic(IEnumerable<Diagnostic> diagnostics) {
             foreach ( Diagnostic diagnostic in diagnostics ) {
-                string[] infos = diagnostic.ToString().Split(':');
-                lastDiagnostics_.Add(new DiagnosticHelper {
-                    Id = diagnostic.Id,
-                    Severity = severity,
-                    Location = infos.First().Trim().Trim('(', ')'),
-                    Information = infos.Last().Trim()
-                });
+                lastDiagnostics_.Add(DiagnosticHelper.Create(diagnostic));
             }
         }
 
@@ -142,5 +134,18 @@ namespace PracaMagisterska.WPF.View {
         /// </summary>
         private readonly ObservableCollection<DiagnosticHelper> lastDiagnostics_ 
             = new ObservableCollection<DiagnosticHelper>();
+
+        private void DiagnosticListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if ( e.AddedItems.Count > 0 ) {
+                DiagnosticHelper selectedItem = (DiagnosticHelper)e.AddedItems[0];
+
+                if ( selectedItem.Location.IsValid ) {
+                    DocumentLine line = SourceCodeTextBox.Document
+                                                         .GetLineByNumber(selectedItem.Location.Line);
+
+                    SourceCodeTextBox.Select(line.Offset, line.Length);
+                }
+            }
+        }
     }
 }
