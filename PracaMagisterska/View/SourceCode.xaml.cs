@@ -45,21 +45,18 @@ namespace PracaMagisterska.WPF.View {
 
             DiagnosticListView.ItemsSource = lastDiagnostics_;
 
-            if ( !string.IsNullOrEmpty(info) ) {
-                LessonInfoTextBlock.Text = info;
-            } else {
-                LessonInfoTextBlock.Text = "Póki co brak opisu! :(";
-            }
+            LessonInfoTextBlock.Text = !string.IsNullOrEmpty(info) ? info : "Póki co brak opisu! :(";
 
-            var textMarkerService = new TextMarkerService(SourceCodeTextBox.Document);
-            SourceCodeTextBox.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
-            SourceCodeTextBox.TextArea.TextView.LineTransformers.Add(textMarkerService);
-            IServiceContainer services = (IServiceContainer)SourceCodeTextBox.Document
-                                                                             .ServiceProvider
-                                                                             .GetService(typeof(IServiceContainer));
-            services?.AddService(typeof(ITextMarkerService), textMarkerService);
+            // Create marker service
+            textMarkerService_ = new TextMarkerService(SourceCodeTextBox.Document);
+            SourceCodeTextBox.TextArea.TextView.BackgroundRenderers.Add(textMarkerService_);
+            SourceCodeTextBox.TextArea.TextView.LineTransformers.Add(textMarkerService_);
 
-            textMarkerService_ = textMarkerService;
+            // Add service to document
+            ((IServiceContainer)SourceCodeTextBox.Document
+                                                 .ServiceProvider
+                                                 .GetService(typeof(IServiceContainer)))
+                                                 ?.AddService(typeof(ITextMarkerService), textMarkerService_);
         }
 
         /// <summary>
@@ -73,7 +70,8 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private async void CompileButton_OnClick(object sender, RoutedEventArgs e) {
-            textMarkerService_.RemoveAll(m => true);
+            // Remove all markers from code
+            textMarkerService_.RemoveAll(marker => true);
 
             // Get SyntaxTree from code
             SyntaxTree code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
@@ -132,6 +130,7 @@ namespace PracaMagisterska.WPF.View {
             foreach ( Diagnostic diagnostic in diagnostics ) {
                 lastDiagnostics_.Add(DiagnosticHelper.Create(diagnostic));
 
+                // Create and display markers in document
                 if ( diagnostic.Location.IsInSource ) {
                     DocumentLine line = SourceCodeTextBox.Document
                                                          .GetLineByNumber(diagnostic.Location
@@ -162,16 +161,16 @@ namespace PracaMagisterska.WPF.View {
         }
 
         /// <summary>
-        /// Collectione used by DiagnosticListView to display diagnostic info
+        /// Event function. Called when selected in DiagnosticListView item has changed.
+        /// Select line in source code depending on currently selected item. 
         /// </summary>
-        private readonly ObservableCollection<DiagnosticHelper> lastDiagnostics_ = new ObservableCollection<DiagnosticHelper>();
-        private readonly TextMarkerService textMarkerService_;
-
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
         private void DiagnosticListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
             if ( e.AddedItems.Count > 0 ) {
                 DiagnosticHelper selectedItem = (DiagnosticHelper)e.AddedItems[0];
 
-                if ( selectedItem.Location.IsValid ) {
+                if ( selectedItem.Location.Location == CodeLocation.LocationType.InSource ) {
                     DocumentLine line = SourceCodeTextBox.Document
                                                          .GetLineByNumber(selectedItem.Location.Line);
 
@@ -179,5 +178,16 @@ namespace PracaMagisterska.WPF.View {
                 }
             }
         }
+
+        /// <summary>
+        /// Collectione used by DiagnosticListView to display diagnostic info
+        /// </summary>
+        private readonly ObservableCollection<DiagnosticHelper> lastDiagnostics_ = new ObservableCollection<DiagnosticHelper>();
+
+        /// <summary>
+        /// Text marker service use to display errors and warnings in code
+        /// </summary>
+        private readonly TextMarkerService textMarkerService_;
+
     }
 }

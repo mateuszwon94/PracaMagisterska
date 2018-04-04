@@ -8,33 +8,40 @@ namespace PracaMagisterska.WPF.Utils {
     /// <summary>
     /// Diagnostic helper class used by DiagnosticListView in <see cref="SourceCode"/>
     /// </summary>
-    public class DiagnosticHelper {
-        public static DiagnosticHelper Create(Diagnostic diagnostic, Type severity = Type.None) {
-            CodeLocation location;
+    public struct DiagnosticHelper {
+        /// <summary>
+        /// Create DiagnosticHelper instance based on Microsoft.CodeAnalysis.<see cref="Diagnostic"/> class.
+        /// </summary>
+        /// <param name="diagnostic">Diagnostic info, which is use to create helper object</param>
+        /// <returns>Helper object based on <see cref="diagnostic"/></returns>
+        public static DiagnosticHelper Create(Diagnostic diagnostic) {
+            // Default location
+            CodeLocation location = new CodeLocation {
+                Location          = CodeLocation.LocationType.None,
+                Line              = -1,
+                Column            = -1
+            };
+
+            // Specific location based on lacation of diagnostic
             if ( diagnostic.Location.IsInSource ) {
                 FileLinePositionSpan pos = diagnostic.Location.GetLineSpan();
-                location    = new CodeLocation {
-                    IsValid = true,
-                    Line    = pos.StartLinePosition.Line + 1,
-                    Column  = pos.StartLinePosition.Character + 1
-                };
-            } else {
-                location    = new CodeLocation {
-                    IsValid = false,
-                    Line    = -1,
-                    Column  = -1
-                };
+                location.Location        = CodeLocation.LocationType.InSource;
+                location.Line            = pos.StartLinePosition.Line + 1;
+                location.Column          = pos.StartLinePosition.Character + 1;
+            } else if ( diagnostic.Location.IsInMetadata ) {
+                location.Location = CodeLocation.LocationType.InMetadata;
             }
 
-            if ( severity == Type.None ) {
-                if ( diagnostic.Severity == DiagnosticSeverity.Error )
-                    severity = Type.Error;
-                else if ( diagnostic.Severity == DiagnosticSeverity.Warning )
-                    severity = Type.Warning;
-                else if ( diagnostic.Severity == DiagnosticSeverity.Info )
-                    severity = Type.Info;
-            }
+            // Set proper severity type
+            SeverityType severity = SeverityType.None;
+            if ( diagnostic.Severity == DiagnosticSeverity.Error )
+                severity = SeverityType.Error;
+            else if ( diagnostic.Severity == DiagnosticSeverity.Warning )
+                severity = SeverityType.Warning;
+            else if ( diagnostic.Severity == DiagnosticSeverity.Info )
+                severity = SeverityType.Info;
 
+            // Create helper object
             return new DiagnosticHelper {
                 Id          = diagnostic.Id,
                 Severity    = severity,
@@ -49,9 +56,9 @@ namespace PracaMagisterska.WPF.Utils {
         public string Id { get; set; }
 
         /// <summary>
-        /// Type of information
+        /// SeverityType of information
         /// </summary>
-        public Type Severity { get; set; }
+        public SeverityType Severity { get; set; }
 
         /// <summary>
         /// Location in code
@@ -66,22 +73,12 @@ namespace PracaMagisterska.WPF.Utils {
         /// <summary>
         /// Possible type of information
         /// </summary>
-        public enum Type {
+        public enum SeverityType {
             None = 0,
             ExecutionError = 1,
             Error = 2,
             Warning = 3,
             Info = 4
-        }
-
-        public struct CodeLocation {
-            public bool IsValid { get; set; }
-
-            public int Line { get; set; }
-
-            public int Column { get; set; }
-
-            public override string ToString() => IsValid ? $"{Line}, {Column}" : "N/A";
         }
     }
 }

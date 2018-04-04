@@ -277,6 +277,7 @@
     <Compile Include="Exceptions\CompilationException.cs" />
     <Compile Include="SharpDevelop\ITextMarker.cs" />
     <Compile Include="SharpDevelop\TextMarkerService.cs" />
+    <Compile Include="Utils\CodeLocation.cs" />
     <Compile Include="Utils\CompilationHelper.cs" />
     <Compile Include="Utils\ConsoleHelper.cs" />
     <Compile Include="Utils\DiagnosticHelper.cs" />

@@ -81,7 +81,7 @@
                         <GridView>
                             <GridViewColumn Header="Error ID"
                                             DisplayMemberBinding="{Binding Path=Id}"  />
-                            <GridViewColumn Header="Type"
+                            <GridViewColumn Header="SeverityType"
                                             DisplayMemberBinding="{Binding Path=Severity}" />
                             <GridViewColumn Header="Location"
                                             DisplayMemberBinding="{Binding Path=Location}" />
