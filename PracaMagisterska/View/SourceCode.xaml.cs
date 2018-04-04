@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -15,7 +16,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.SharpDevelop.Editor;
 using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -37,9 +40,9 @@ namespace PracaMagisterska.WPF.View {
         public SourceCode(string title, string info = null) {
             InitializeComponent();
 
-            LessonTitle = title;
+            LessonTitle       = title;
             TitleTextBox.Text = LessonTitle;
-            
+
             DiagnosticListView.ItemsSource = lastDiagnostics_;
 
             if ( !string.IsNullOrEmpty(info) ) {
@@ -47,6 +50,16 @@ namespace PracaMagisterska.WPF.View {
             } else {
                 LessonInfoTextBlock.Text = "Póki co brak opisu! :(";
             }
+
+            var textMarkerService = new TextMarkerService(SourceCodeTextBox.Document);
+            SourceCodeTextBox.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
+            SourceCodeTextBox.TextArea.TextView.LineTransformers.Add(textMarkerService);
+            IServiceContainer services = (IServiceContainer)SourceCodeTextBox.Document
+                                                                             .ServiceProvider
+                                                                             .GetService(typeof(IServiceContainer));
+            services?.AddService(typeof(ITextMarkerService), textMarkerService);
+
+            textMarkerService_ = textMarkerService;
         }
 
         /// <summary>
@@ -60,6 +73,8 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private async void CompileButton_OnClick(object sender, RoutedEventArgs e) {
+            textMarkerService_.RemoveAll(m => true);
+
             // Get SyntaxTree from code
             SyntaxTree code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
             
@@ -116,6 +131,23 @@ namespace PracaMagisterska.WPF.View {
         private void WriteDiagnostic(IEnumerable<Diagnostic> diagnostics) {
             foreach ( Diagnostic diagnostic in diagnostics ) {
                 lastDiagnostics_.Add(DiagnosticHelper.Create(diagnostic));
+
+                if ( diagnostic.Location.IsInSource ) {
+                    DocumentLine line = SourceCodeTextBox.Document
+                                                         .GetLineByNumber(diagnostic.Location
+                                                                                    .GetLineSpan()
+                                                                                    .StartLinePosition
+                                                                                    .Line +1);
+
+                    ITextMarker marker = textMarkerService_.Create(line.Offset, line.Length);
+                    marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
+                    if (diagnostic.Severity == DiagnosticSeverity.Error)
+                        marker.MarkerColor = Colors.Red;
+                    else if ( diagnostic.Severity == DiagnosticSeverity.Warning )
+                        marker.MarkerColor = Colors.Yellow;
+                    else if ( diagnostic.Severity == DiagnosticSeverity.Info )
+                        marker.MarkerColor = Colors.Blue;
+                }
             }
         }
 
@@ -132,8 +164,8 @@ namespace PracaMagisterska.WPF.View {
         /// <summary>
         /// Collectione used by DiagnosticListView to display diagnostic info
         /// </summary>
-        private readonly ObservableCollection<DiagnosticHelper> lastDiagnostics_ 
-            = new ObservableCollection<DiagnosticHelper>();
+        private readonly ObservableCollection<DiagnosticHelper> lastDiagnostics_ = new ObservableCollection<DiagnosticHelper>();
+        private readonly TextMarkerService textMarkerService_;
 
         private void DiagnosticListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
             if ( e.AddedItems.Count > 0 ) {
