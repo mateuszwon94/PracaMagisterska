@@ -10,6 +10,9 @@ namespace PracaMagisterska.WPF {
         /// <summary>
         /// Static constructor. Hiding console at program startup.
         /// </summary>
-        static App() => ConsoleHelper.Hide();
+        static App() {
+            ConsoleHelper.Hide();
+            CompilationHelper.GetRecmoendations("", 0);
+        }
     }
 }

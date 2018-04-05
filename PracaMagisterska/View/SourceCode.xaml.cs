@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,14 +21,19 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.SharpDevelop.Editor;
 using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MahApps.Metro.Controls.Dialogs;
+using Microsoft.CodeAnalysis.Editing;
+using Microsoft.CodeAnalysis.MSBuild;
+using Microsoft.CodeAnalysis.Text;
 using PracaMagisterska.WPF.Exceptions;
 using PracaMagisterska.WPF.Utils;
-using static PracaMagisterska.WPF.Utils.CompilationHelper;
+using PracaMagisterska.WPF.Utils.Completion;
 
 namespace PracaMagisterska.WPF.View {
     /// <summary>
@@ -36,13 +44,15 @@ namespace PracaMagisterska.WPF.View {
         /// Constructor. Initialize all components and sets basic fields.
         /// </summary>
         /// <param name="title">Title of the page</param>
+        /// <param name="lessonNo">Lesson number</param>
         /// <param name="info">Info about the lesson</param>
-        public SourceCode(string title, string info = null) {
+        public SourceCode(string title, int lessonNo, string info = null) {
             InitializeComponent();
 
+            lessonNo_         = lessonNo;
             LessonTitle       = title;
             TitleTextBox.Text = LessonTitle;
-
+                        
             DiagnosticListView.ItemsSource = lastDiagnostics_;
 
             LessonInfoTextBlock.Text = !string.IsNullOrEmpty(info) ? info : "Póki co brak opisu! :(";
@@ -57,6 +67,10 @@ namespace PracaMagisterska.WPF.View {
                                                  .ServiceProvider
                                                  .GetService(typeof(IServiceContainer)))
                                                  ?.AddService(typeof(ITextMarkerService), textMarkerService_);
+
+            SourceCodeTextBox.TextArea.TextEntered += SourceCodeTextBox_TextArea_TextEntered;
+            
+            SourceCodeTextBox.Focus();
         }
 
         /// <summary>
@@ -82,7 +96,7 @@ namespace PracaMagisterska.WPF.View {
             // Compile and build code
             CompileingIndicator.IsActive = true;
             CompileButton.IsEnabled = false;
-            (Assembly program, var diagnostics, bool isBuildSuccessful) = await code.CompileAneBuild();
+            (Assembly program, var diagnostics, bool isBuildSuccessful) = await code.Compile().Build();
             CompileingIndicator.IsActive = false;
             CompileButton.IsEnabled = true;
 
@@ -136,7 +150,7 @@ namespace PracaMagisterska.WPF.View {
                                                          .GetLineByNumber(diagnostic.Location
                                                                                     .GetLineSpan()
                                                                                     .StartLinePosition
-                                                                                    .Line +1);
+                                                                                    .Line + 1);
 
                     ITextMarker marker = textMarkerService_.Create(line.Offset, line.Length);
                     marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
@@ -180,6 +194,59 @@ namespace PracaMagisterska.WPF.View {
         }
 
         /// <summary>
+        /// Displays completiion options (Intellisense).
+        /// </summary>
+        /// <param name="filterFunction">Function use to filetr displayed options</param>
+        private async void InvokeCompletionWindow(Func<ISymbol, bool> filterFunction = null) {
+            if ( filterFunction == null ) filterFunction = r => true;
+            List<ISymbol> recomendedSymbols = (await CompilationHelper.GetRecmoendations(SourceCodeTextBox.Text,
+                                                                                        SourceCodeTextBox.CaretOffset)).ToList();
+
+            if ( recomendedSymbols.Any(filterFunction) ) {
+                CompletionWindow completionWindow = new CompletionWindow(SourceCodeTextBox.TextArea);
+
+                foreach ( ISymbol recomendation in recomendedSymbols.Where(filterFunction) )
+                    completionWindow.CompletionList
+                                    .CompletionData
+                                    .Add(new SymbolCompletionData(recomendation));
+
+                completionWindow.Show();
+                completionWindow.Closed += (sender, args) => completionWindow = null;
+            }
+        }
+
+        /// <summary>
+        /// Event function. Called when user typed a text in SourceCodeTextBox.
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void SourceCodeTextBox_TextArea_TextEntered(object sender, TextCompositionEventArgs e) {
+            if ( e.Text == "." ) {
+                InvokeCompletionWindow();
+            } else if ( e.Text == "{" ) {
+                SourceCodeTextBox.Document.Insert(SourceCodeTextBox.CaretOffset, "}");
+
+                SourceCodeTextBox.CaretOffset--;
+                e.Handled = true;
+            } else if ( e.Text == "(" ) {
+                SourceCodeTextBox.Document.Insert(SourceCodeTextBox.CaretOffset, ")");
+
+                SourceCodeTextBox.CaretOffset--;
+                e.Handled = true;
+            } else if ( e.Text == "[" ) {
+                SourceCodeTextBox.Document.Insert(SourceCodeTextBox.CaretOffset, "]");
+
+                SourceCodeTextBox.CaretOffset--;
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Lesson number
+        /// </summary>
+        private readonly int lessonNo_;
+
+        /// <summary>
         /// Collectione used by DiagnosticListView to display diagnostic info
         /// </summary>
         private readonly ObservableCollection<DiagnosticHelper> lastDiagnostics_ = new ObservableCollection<DiagnosticHelper>();
@@ -189,5 +256,12 @@ namespace PracaMagisterska.WPF.View {
         /// </summary>
         private readonly TextMarkerService textMarkerService_;
 
+        private void SourceCodeTextBox_OnKeyDown(object sender, KeyEventArgs e) {
+            if ( e.Key == Key.Space && Keyboard.Modifiers == ModifierKeys.Control ) {
+                InvokeCompletionWindow();
+
+                e.Handled = true;
+            }
+        }
     }
 }

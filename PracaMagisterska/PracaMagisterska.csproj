@@ -279,6 +279,7 @@
     <Compile Include="SharpDevelop\TextMarkerService.cs" />
     <Compile Include="Utils\CodeLocation.cs" />
     <Compile Include="Utils\CompilationHelper.cs" />
+    <Compile Include="Utils\Completion\SymbolCompletionData.cs" />
     <Compile Include="Utils\ConsoleHelper.cs" />
     <Compile Include="Utils\DiagnosticHelper.cs" />
     <Compile Include="View\Credits.xaml.cs">
@@ -390,5 +391,6 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

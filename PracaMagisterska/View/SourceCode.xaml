@@ -111,7 +111,8 @@
                                    BorderBrush="Black"
                                    BorderThickness="1"
                                    HorizontalScrollBarVisibility="Auto"
-                                   VerticalScrollBarVisibility="Auto" />
+                                   VerticalScrollBarVisibility="Auto"
+                                   KeyDown="SourceCodeTextBox_OnKeyDown"/>
         </Grid>
 
         <Grid Grid.Row="2"

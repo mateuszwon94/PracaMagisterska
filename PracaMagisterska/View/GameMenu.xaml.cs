@@ -37,7 +37,9 @@ namespace PracaMagisterska.WPF.View {
                                           .Replace("Lesson", string.Empty)
                                           .Replace("Button", string.Empty));
 
-                NavigationService?.Navigate(new SourceCode($"Lekcja {lessonNo}. {LessonTitle[lessonNo]}", LessonInfo[lessonNo]));
+                NavigationService?.Navigate(new SourceCode($"Lekcja {lessonNo}. {LessonTitle[lessonNo]}",
+                                                           lessonNo,
+                                                           LessonInfo[lessonNo]));
             }
         }
     }
