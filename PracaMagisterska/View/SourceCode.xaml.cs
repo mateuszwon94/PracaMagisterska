@@ -101,9 +101,9 @@ namespace PracaMagisterska.WPF.View {
             CompileButton.IsEnabled = true;
 
             // Write new diagnostic information
-            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticSeverity.Error));
-            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticSeverity.Warning));
-            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticSeverity.Info));
+            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticHelper.SeverityType.Error));
+            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticHelper.SeverityType.Warning));
+            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticHelper.SeverityType.Info));
 
             if ( isBuildSuccessful ) {
                 using (ConsoleHelper vh = new ConsoleHelper()) {
@@ -140,25 +140,21 @@ namespace PracaMagisterska.WPF.View {
         /// </summary>
         /// <param name="diagnostics">Diagnostic to be written</param>
         /// <param name="severity">Severity of diagnostic</param>
-        private void WriteDiagnostic(IEnumerable<Diagnostic> diagnostics) {
-            foreach ( Diagnostic diagnostic in diagnostics ) {
-                lastDiagnostics_.Add(DiagnosticHelper.Create(diagnostic));
+        private void WriteDiagnostic(IEnumerable<DiagnosticHelper> diagnostics) {
+            foreach ( DiagnosticHelper diagnostic in diagnostics ) {
+                lastDiagnostics_.Add(diagnostic);
 
                 // Create and display markers in document
-                if ( diagnostic.Location.IsInSource ) {
-                    DocumentLine line = SourceCodeTextBox.Document
-                                                         .GetLineByNumber(diagnostic.Location
-                                                                                    .GetLineSpan()
-                                                                                    .StartLinePosition
-                                                                                    .Line + 1);
+                if ( diagnostic.Location.Location == CodeLocation.LocationType.InSource ) {
+                    DocumentLine line = SourceCodeTextBox.Document.GetLineByNumber(diagnostic.Location.Line);
 
                     ITextMarker marker = textMarkerService_.Create(line.Offset, line.Length);
                     marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
-                    if (diagnostic.Severity == DiagnosticSeverity.Error)
+                    if (diagnostic.Severity == DiagnosticHelper.SeverityType.Error)
                         marker.MarkerColor = Colors.Red;
-                    else if ( diagnostic.Severity == DiagnosticSeverity.Warning )
+                    else if ( diagnostic.Severity == DiagnosticHelper.SeverityType.Warning )
                         marker.MarkerColor = Colors.Yellow;
-                    else if ( diagnostic.Severity == DiagnosticSeverity.Info )
+                    else if ( diagnostic.Severity == DiagnosticHelper.SeverityType.Info )
                         marker.MarkerColor = Colors.Blue;
                 }
             }

@@ -43,17 +43,37 @@ namespace PracaMagisterska.WPF.Utils {
 
             // Create helper object
             return new DiagnosticHelper {
-                Id          = diagnostic.Id,
-                Severity    = severity,
-                Location    = location,
-                Information = diagnostic.GetMessage()
+                Severity           = severity,
+                Location           = location,
+                Information        = diagnostic.GetMessage(),
             };
         }
 
-        /// <summary>
-        /// Id of information
-        /// </summary>
-        public string Id { get; set; }
+        public static DiagnosticHelper Create(SyntaxNode syntaxNode, string information) {
+            // Default location
+            CodeLocation location = new CodeLocation {
+                Location          = CodeLocation.LocationType.None,
+                Line              = -1,
+                Column            = -1
+            };
+
+            // Specific location based on lacation of diagnostic
+            if ( syntaxNode.GetLocation().IsInSource ) {
+                FileLinePositionSpan pos = syntaxNode.GetLocation().GetLineSpan();
+                location.Location        = CodeLocation.LocationType.InSource;
+                location.Line            = pos.StartLinePosition.Line + 1;
+                location.Column          = pos.StartLinePosition.Character + 1;
+            } else if ( syntaxNode.GetLocation().IsInMetadata ) {
+                location.Location = CodeLocation.LocationType.InMetadata;
+            }
+
+            // Create helper object
+            return new DiagnosticHelper {
+                Severity           = SeverityType.Info,
+                Location           = location,
+                Information        = information,
+            };
+        }
 
         /// <summary>
         /// SeverityType of information
@@ -78,7 +98,7 @@ namespace PracaMagisterska.WPF.Utils {
             ExecutionError = 1,
             Error = 2,
             Warning = 3,
-            Info = 4
+            Info = 4,
         }
     }
 }

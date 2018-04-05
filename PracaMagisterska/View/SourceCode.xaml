@@ -79,8 +79,6 @@
                           SelectionChanged="DiagnosticListView_OnSelectionChanged">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Error ID"
-                                            DisplayMemberBinding="{Binding Path=Id}"  />
                             <GridViewColumn Header="SeverityType"
                                             DisplayMemberBinding="{Binding Path=Severity}" />
                             <GridViewColumn Header="Location"

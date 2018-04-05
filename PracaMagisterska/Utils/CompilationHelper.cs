@@ -131,7 +131,7 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="compilationOptions">Specyfic compilation option used in project</param>
         /// <returns>Assemly with program (or null if builds fails), diagnostic information and bool if build was successful</returns>
         public static async
-            Task<(Assembly assembly, ImmutableArray<Diagnostic> diagnostic, bool isBuildSuccesful)>
+            Task<(Assembly assembly, ImmutableArray<DiagnosticHelper> diagnostic, bool isBuildSuccesful)>
             Build(this Compilation compilation) {
             return await Task.Run(() => {
                 using ( var ms = new MemoryStream() ) {
@@ -139,19 +139,21 @@ namespace PracaMagisterska.WPF.Utils {
                     EmitResult result = compilation.Emit(ms);
 
                     // Get all errors and warnings
-                    ImmutableArray<Diagnostic> diagnostic = result.Diagnostics.Where(diag =>
-                                                            diag.IsWarningAsError ||
-                                                            diag.Severity == DiagnosticSeverity.Error ||
-                                                            diag.Severity == DiagnosticSeverity.Warning)
-                                                                  .ToImmutableArray();
+                    var roslynDiagnostic = result.Diagnostics
+                                                 .Where(diag => diag.IsWarningAsError ||
+                                                                diag.Severity == DiagnosticSeverity.Error ||
+                                                                diag.Severity == DiagnosticSeverity.Warning)
+                                                 .Select(DiagnosticHelper.Create);
+
+                    var myDiagnostic = compilation.SyntaxTrees.ElementAt(0).GetRoot().FindMagicalNumbersInExpresions();
 
                     if ( !result.Success ) {
                         // Builds failed
-                        return (null, diagnostic, false);
+                        return (null, roslynDiagnostic.Concat(myDiagnostic).ToImmutableArray(), false);
                     } else {
                         // Build successed 
                         ms.Seek(0, SeekOrigin.Begin);
-                        return (Assembly.Load(ms.ToArray()), diagnostic, true);
+                        return (Assembly.Load(ms.ToArray()), roslynDiagnostic.Concat(myDiagnostic).ToImmutableArray(), true);
                     }
                 }
             });
