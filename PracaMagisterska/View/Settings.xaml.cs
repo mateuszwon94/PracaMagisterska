@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,25 +14,40 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.CodeAnalysis.CSharp;
+using PracaMagisterska.WPF.Utils.Completion;
 
 namespace PracaMagisterska.WPF.View {
     /// <summary>
     /// Interaction logic for Settings.xaml
     /// </summary>
     public partial class Settings : Page {
+        private static readonly ObservableCollection<MagicalNumbersFinderHelper> magicalNumberFinders_ =
+            new ObservableCollection<MagicalNumbersFinderHelper>(MagicalNumbersFinderHelper.All);
+
+        public static readonly HashSet<SyntaxKind> SyntaxKindsForMagicalNumberSearch = new HashSet<SyntaxKind>();
+
         /// <inheritdoc />
         /// <summary>
         /// Static constructor. Sets all settings.
         /// </summary>
         static Settings() {
             AutoCloseConsole = false;
+
+            foreach ( MagicalNumbersFinderHelper magicalNumberFinder in magicalNumberFinders_ ) 
+                SyntaxKindsForMagicalNumberSearch.Add(magicalNumberFinder.SyntaxKind);
         }
 
         /// <inheritdoc />
         /// <summary>
         /// Constructor. Initialize all components
         /// </summary>
-        public Settings() => InitializeComponent();
+        public Settings() {
+            InitializeComponent();
+
+            MagicalNumberFinderListView.ItemsSource = magicalNumberFinders_;
+            MagicalNumberFinderListView.SelectAll();
+        }
 
         /// <summary>
         /// If <value>true</value> then console window will automaticly close after execution of program, else pressing enter will be needed.
@@ -52,5 +69,13 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="e">Arguments</param>
         private void AutoCloseConsoleCheckBox_Unchecked(object sender, RoutedEventArgs e)
             => AutoCloseConsole = false;
+
+        private void MagicalNumberFinderListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            foreach ( MagicalNumbersFinderHelper item in e.AddedItems.Cast<MagicalNumbersFinderHelper>() ) 
+                SyntaxKindsForMagicalNumberSearch.Add(item.SyntaxKind);
+
+            foreach ( MagicalNumbersFinderHelper item in e.RemovedItems.Cast<MagicalNumbersFinderHelper>() ) 
+                SyntaxKindsForMagicalNumberSearch.Remove(item.SyntaxKind);
+        }
     }
 }

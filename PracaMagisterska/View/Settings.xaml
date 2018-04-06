@@ -37,41 +37,73 @@
                    Text="Ustawienia"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center" />
-        <ScrollViewer Grid.Row="1"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
 
-                <CheckBox x:Name="AutoCloseConsoleCheckBox"
-                          Grid.Row="0"
-                          Grid.Column="0"
-                          FontFamily="{StaticResource ConsolasFont}"
-                          FontSize="15"
-                          HorizontalAlignment="Left"
-                          VerticalAlignment="Center"
-                          Margin="2.5,2.5,2.5,2.5"
-                          IsChecked="False"
-                          Content="Automatyczne chowanie konsoli"
-                          Checked="AutoCloseConsoleCheckBox_Checked"
-                          Unchecked="AutoCloseConsoleCheckBox_Unchecked" />
-                <TextBlock Grid.Row="0"
-                           Grid.Column="1"
-                           Margin="5,2.5,2.5,2.5"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           FontFamily="{StaticResource ConsolasFont}"
-                           FontSize="15"
-                           TextWrapping="WrapWithOverflow"
-                           Text="Jeśli to pole jest zaznaczone konsola będzie się automatycznie chować po zakończeniu programu." />
-            </Grid>
-        </ScrollViewer>
+        <TabControl Grid.Row="1"
+                    FontFamily="{StaticResource ConsolasFont}">
+            <TabItem Header="Ogólne">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <Grid Margin="2.5,2.5,2.5,2.5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox x:Name="AutoCloseConsoleCheckBox"
+                                  Grid.Row="0"
+                                  Grid.Column="0"
+                                  FontFamily="{StaticResource ConsolasFont}"
+                                  FontSize="15"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Center"
+                                  IsChecked="False"
+                                  Content="Automatyczne chowanie konsoli"
+                                  Checked="AutoCloseConsoleCheckBox_Checked"
+                                  Unchecked="AutoCloseConsoleCheckBox_Unchecked" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="1"
+                                   Margin="5,0,0,0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   FontFamily="{StaticResource ConsolasFont}"
+                                   FontSize="15"
+                                   TextWrapping="WrapWithOverflow"
+                                   Text="Jeśli to pole jest zaznaczone konsola będzie się automatycznie chować po zakończeniu programu." />
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Dodatkowa diagnostyka">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Vertical"
+                                Margin="2.5,2.5,2.5,2.5">
+                        <TextBlock Text="Wykrywanie magicznych liczb"
+                                   FontFamily="{StaticResource ConsolasFont}"
+                                   FontSize="20" />
+
+                        <ListView x:Name="MagicalNumberFinderListView"
+                                  SelectionMode="Multiple"
+                                  Margin="0,5,5,0"
+                                  SelectionChanged="MagicalNumberFinderListView_OnSelectionChanged">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Działanie"
+                                                    DisplayMemberBinding="{Binding Path=Title}" />
+                                    <GridViewColumn Header="Przykład"
+                                                    DisplayMemberBinding="{Binding Path=Example}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Page>

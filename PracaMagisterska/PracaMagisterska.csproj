@@ -280,6 +280,7 @@
     <Compile Include="SharpDevelop\TextMarkerService.cs" />
     <Compile Include="Utils\CodeLocation.cs" />
     <Compile Include="Utils\CompilationHelper.cs" />
+    <Compile Include="Utils\Completion\MagicalNumbersFinderHelper.cs" />
     <Compile Include="Utils\Completion\SymbolCompletionData.cs" />
     <Compile Include="Utils\ConsoleHelper.cs" />
     <Compile Include="Utils\DiagnosticHelper.cs" />
