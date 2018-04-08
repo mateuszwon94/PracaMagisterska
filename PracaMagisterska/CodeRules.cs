@@ -10,6 +10,29 @@ using PracaMagisterska.WPF.View;
 namespace PracaMagisterska.WPF {
     public static class CodeRules {
         /// <summary>
+        /// Counts lines of code for all method
+        /// </summary>
+        /// <param name="root"><see cref="SyntaxNode"/> in which methods are searched</param>
+        /// <returns>LOC in methods in given <see cref="SyntaxNode"/></returns>
+        public static Dictionary<string, int> GetLinesOfCodeByMethod(this SyntaxNode root)
+            => root.DescendantNodes()
+                   .OfType<MethodDeclarationSyntax>()
+                   .ToDictionary(method => method.Identifier.ValueText,
+                                 method => method.Body.SyntaxTree.GetLineSpan(method.FullSpan).EndLinePosition.Line -
+                                           method.Body.SyntaxTree.GetLineSpan(method.FullSpan).StartLinePosition.Line);
+
+        /// <summary>
+        /// Counts statements for all method
+        /// </summary>
+        /// <param name="root"><see cref="SyntaxNode"/> in which methods are searched</param>
+        /// <returns>Number of sttements in methods in given <see cref="SyntaxNode"/></returns>
+        public static Dictionary<string, int> GetNumberOfStatementsByMethod(this SyntaxNode root)
+            => root.DescendantNodes()
+                   .OfType<MethodDeclarationSyntax>()
+                   .ToDictionary(method => method.Identifier.ValueText,
+                                 method => method.Body.Statements.Count);
+
+        /// <summary>
         /// This method concatinate all of custom diagnostics
         /// </summary>
         /// <param name="root"><see cref="SyntaxNode"/> in which diagnostics are searched</param>
