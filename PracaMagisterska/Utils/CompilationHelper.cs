@@ -145,7 +145,7 @@ namespace PracaMagisterska.WPF.Utils {
                                                                 diag.Severity == DiagnosticSeverity.Warning)
                                                  .Select(DiagnosticHelper.Create);
 
-                    var myDiagnostic = compilation.SyntaxTrees.ElementAt(0).GetRoot().GetAllCustomDiagnostic();
+                    var myDiagnostic = compilation.SyntaxTrees.ElementAt(0).GetRoot().GetAllCustomDiagnostic(compilation.GetSemanticModel(compilation.SyntaxTrees.ElementAt(0)));
 
                     if ( !result.Success ) {
                         // Builds failed

@@ -36,10 +36,12 @@ namespace PracaMagisterska.WPF {
         /// This method concatinate all of custom diagnostics
         /// </summary>
         /// <param name="root"><see cref="SyntaxNode"/> in which diagnostics are searched</param>
+        /// <param name="semanticModel"><see cref="semanticModel"/> which is used to flow analysis</param>
         /// <returns>All diagnostic found</returns>
-        public static IEnumerable<DiagnosticHelper> GetAllCustomDiagnostic(this SyntaxNode root)
+        public static IEnumerable<DiagnosticHelper> GetAllCustomDiagnostic(this SyntaxNode root, SemanticModel semanticModel)
             => root.FindMagicalNumbersInExpresions()
-                   .Concat(root.FindMethodsNotUsingAllParameters());
+                   .Concat(root.FindMethodsNotUsingAllParameters())
+                   .Concat(root.FindPossibleConstVariables(semanticModel));
 
         /// <summary>
         /// This method finds all magical number used in code
@@ -67,5 +69,42 @@ namespace PracaMagisterska.WPF {
                                                                    .Distinct()
                                                                    .Contains(parameter.Identifier.ValueText)))
                    .Select(method => DiagnosticHelper.Create(method, "Method not using all given parrameters"));
+
+        /// <summary>
+        /// This method finds all posible const value
+        /// </summary>
+        /// <param name="root"><see cref="SyntaxNode"/> in which diagnostics are searched</param>
+        /// <param name="semanticModel"><see cref="semanticModel"/> which is used to flow analysis</param>
+        /// <returns>Diagnostics with possible const values</returns>
+        public static IEnumerable<DiagnosticHelper> FindPossibleConstVariables(
+            this SyntaxNode root, SemanticModel semanticModel)
+            => root.DescendantNodes()
+                   .OfType<LocalDeclarationStatementSyntax>()
+                   .Where(declaration => {
+                       // Only consider local variasble declarations that aren't already const.
+                       if ( declaration.Modifiers.Any(SyntaxKind.ConstKeyword) ) return false;
+
+                       // Ensure that all variables in the local declaration have initializers 
+                       // that are assigned with constant values.
+                       foreach ( VariableDeclaratorSyntax variable in declaration.Declaration.Variables ) {
+                           EqualsValueClauseSyntax initializer = variable.Initializer;
+                           if ( initializer == null ||
+                                !semanticModel.GetConstantValue(initializer.Value).HasValue )
+                               return false;
+                       }
+
+                       // Perform data flow analysis on the local declarartion.
+                       var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(declaration);
+
+                       // Retrieve the local symbol for each variable in the local declaration
+                       // and ensure that it is not written outside of the data flow analysis region.
+                       foreach ( var variable in declaration.Declaration.Variables ) {
+                           var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
+                           if ( dataFlowAnalysis.WrittenOutside.Contains(variableSymbol) )
+                               return false;
+                       }
+
+                       return true;
+                   }).Select(declaration => DiagnosticHelper.Create(declaration, "Variable can be cons"));
     }
 }
