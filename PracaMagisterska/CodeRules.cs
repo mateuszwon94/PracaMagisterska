@@ -41,7 +41,8 @@ namespace PracaMagisterska.WPF {
         public static IEnumerable<DiagnosticHelper> GetAllCustomDiagnostic(this SyntaxNode root, SemanticModel semanticModel)
             => root.FindMagicalNumbersInExpresions()
                    .Concat(root.FindMethodsNotUsingAllParameters())
-                   .Concat(root.FindPossibleConstVariables(semanticModel));
+                   .Concat(root.FindPossibleConstVariables(semanticModel))
+                   .Concat(root.FindEmptyStatement());
 
         /// <summary>
         /// This method finds all magical number used in code
@@ -64,11 +65,21 @@ namespace PracaMagisterska.WPF {
                    .OfType<MethodDeclarationSyntax>()
                    .Where(method => !method.ParameterList.Parameters
                                            .All(parameter => method.Body.Statements
-                                                                   .SelectMany(statement=> statement.DescendantTokens())
+                                                                   .SelectMany(statement => statement.DescendantTokens())
                                                                    .Select(s => s.ValueText)
                                                                    .Distinct()
                                                                    .Contains(parameter.Identifier.ValueText)))
                    .Select(method => DiagnosticHelper.Create(method, "Method not using all given parrameters"));
+
+        /// <summary>
+        /// This method finds all empty statements
+        /// </summary>
+        /// <param name="root"><see cref="SyntaxNode"/> in which diagnostics are searched</param>
+        /// <returns>Diagnostics with empty statements</returns>
+        public static IEnumerable<DiagnosticHelper> FindEmptyStatement(this SyntaxNode root)
+            => root.DescendantNodes()
+                   .OfType<EmptyStatementSyntax>()
+                   .Select(statement => DiagnosticHelper.Create(statement, "Empty statement"));
 
         /// <summary>
         /// This method finds all posible const value

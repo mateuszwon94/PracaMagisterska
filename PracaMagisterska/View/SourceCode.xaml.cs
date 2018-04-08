@@ -199,7 +199,9 @@ namespace PracaMagisterska.WPF.View {
                                                                                         SourceCodeTextBox.CaretOffset)).ToList();
 
             if ( recomendedSymbols.Any(filterFunction) ) {
-                CompletionWindow completionWindow = new CompletionWindow(SourceCodeTextBox.TextArea);
+                CompletionWindow completionWindow = new CompletionWindow(SourceCodeTextBox.TextArea) {
+                    FontFamily                    = SourceCodeTextBox.FontFamily
+                };
 
                 foreach ( ISymbol recomendation in recomendedSymbols.Where(filterFunction) )
                     completionWindow.CompletionList
@@ -218,21 +220,21 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="e">Arguments</param>
         private void SourceCodeTextBox_TextArea_TextEntered(object sender, TextCompositionEventArgs e) {
             if ( e.Text == "." ) {
+                // Display completation window
                 InvokeCompletionWindow();
-            } else if ( e.Text == "{" ) {
-                SourceCodeTextBox.Document.Insert(SourceCodeTextBox.CaretOffset, "}");
+            }
+        }
 
-                SourceCodeTextBox.CaretOffset--;
-                e.Handled = true;
-            } else if ( e.Text == "(" ) {
-                SourceCodeTextBox.Document.Insert(SourceCodeTextBox.CaretOffset, ")");
+        /// <summary>
+        /// Event function. Called when user press a button when SourceCodeTextBox has focus.
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void SourceCodeTextBox_OnKeyDown(object sender, KeyEventArgs e) {
+            if ( e.Key == Key.Space && Keyboard.Modifiers == ModifierKeys.Control ) {
+                // Display completation window
+                InvokeCompletionWindow();
 
-                SourceCodeTextBox.CaretOffset--;
-                e.Handled = true;
-            } else if ( e.Text == "[" ) {
-                SourceCodeTextBox.Document.Insert(SourceCodeTextBox.CaretOffset, "]");
-
-                SourceCodeTextBox.CaretOffset--;
                 e.Handled = true;
             }
         }
@@ -251,13 +253,5 @@ namespace PracaMagisterska.WPF.View {
         /// Text marker service use to display errors and warnings in code
         /// </summary>
         private readonly TextMarkerService textMarkerService_;
-
-        private void SourceCodeTextBox_OnKeyDown(object sender, KeyEventArgs e) {
-            if ( e.Key == Key.Space && Keyboard.Modifiers == ModifierKeys.Control ) {
-                InvokeCompletionWindow();
-
-                e.Handled = true;
-            }
-        }
     }
 }
