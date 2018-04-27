@@ -70,7 +70,7 @@ namespace PracaMagisterska.WPF {
                                                                    .Select(s => s.ValueText)
                                                                    .Distinct()
                                                                    .Contains(parameter.Identifier.ValueText)))
-                   .Select(method => DiagnosticHelper.Create(method, "Method not using all given parrameters", null));
+                   .Select(method => DiagnosticHelper.Create(method, "Method not using all given parrameters", new NotUsedParameterRemoval()));
 
         /// <summary>
         /// This method finds all empty statements
@@ -93,30 +93,41 @@ namespace PracaMagisterska.WPF {
             => root.DescendantNodes()
                    .OfType<LocalDeclarationStatementSyntax>()
                    .Where(declaration => {
-                       // Only consider local variasble declarations that aren't already const.
-                       if ( declaration.Modifiers.Any(SyntaxKind.ConstKeyword) ) return false;
+                       // already const?
+                       if ( declaration.Modifiers.Any(SyntaxKind.ConstKeyword) )
+                           return false;
 
-                       // Ensure that all variables in the local declaration have initializers 
-                       // that are assigned with constant values.
+                       // Ensure that all variables in the local declaration have initializers that
+                       // are assigned with constant values.
                        foreach ( VariableDeclaratorSyntax variable in declaration.Declaration.Variables ) {
                            EqualsValueClauseSyntax initializer = variable.Initializer;
-                           if ( initializer == null ||
-                                !semanticModel.GetConstantValue(initializer.Value).HasValue )
+                           if ( initializer == null )
                                return false;
-                       }
 
-                       // Perform data flow analysis on the local declarartion.
-                       var dataFlowAnalysis = semanticModel.AnalyzeDataFlow(declaration);
+                           Optional<object> constantValue = semanticModel.GetConstantValue(initializer.Value);
+                           if ( !constantValue.HasValue )
+                               return false;
 
-                       // Retrieve the local symbol for each variable in the local declaration
-                       // and ensure that it is not written outside of the data flow analysis region.
-                       foreach ( var variable in declaration.Declaration.Variables ) {
-                           var variableSymbol = semanticModel.GetDeclaredSymbol(variable);
-                           if ( dataFlowAnalysis.WrittenOutside.Contains(variableSymbol) )
+                           TypeSyntax variableTypeName = declaration.Declaration.Type;
+                           ITypeSymbol variableType = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;
+
+                           // Ensure that the initializer value can be converted to the type of the
+                           // local declaration without a user-defined conversion.
+                           Conversion conversion = semanticModel.ClassifyConversion(initializer.Value, variableType);
+                           if ( !conversion.Exists || conversion.IsUserDefined )
+                               return false;
+
+                           // Special cases:
+                           //   * If the constant value is a string, the type of the local declaration must be System.String.
+                           //   * If the constant value is null, the type of the local declaration must be a reference type.
+                           if ( constantValue.Value is string ) {
+                               if ( variableType.SpecialType != SpecialType.System_String )
+                                   return false;
+                           } else if ( variableType.IsReferenceType && constantValue.Value != null )
                                return false;
                        }
 
                        return true;
-                   }).Select(declaration => DiagnosticHelper.Create(declaration, "Variable can be cons", null));
+                   }).Select(declaration => DiagnosticHelper.Create(declaration, "Variable can be cons", new AddConstModifier(semanticModel)));
     }
 }

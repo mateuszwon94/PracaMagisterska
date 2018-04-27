@@ -31,6 +31,10 @@ namespace PracaMagisterska.WPF.Utils {
                 Severity    = severity,
                 Location    = new CodeLocation(diagnostic.Location),
                 Information = diagnostic.GetMessage(),
+                SyntaxNode  = diagnostic.Location
+                                        .SourceTree
+                                        ?.GetRoot()
+                                        .FindNode(diagnostic.Location.SourceSpan),
             };
         }
 

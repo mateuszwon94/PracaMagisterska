@@ -160,7 +160,7 @@ namespace PracaMagisterska.WPF.Utils {
                     EmitResult result = compilation.Emit(ms);
 
                     // Get all errors and warnings
-                    var diagnostic = result.Diagnostics
+                    var diagnostics = result.Diagnostics
                                            .Where(diag => diag.IsWarningAsError ||
                                                           diag.Severity == DiagnosticSeverity.Error ||
                                                           diag.Severity == DiagnosticSeverity.Warning)
@@ -175,11 +175,11 @@ namespace PracaMagisterska.WPF.Utils {
                     
                     if ( !result.Success ) {
                         // Builds failed
-                        return (null, diagnostic, false);
+                        return (null, diagnostics, false);
                     } else {
                         // Build successed 
                         ms.Seek(0, SeekOrigin.Begin);
-                        return (Assembly.Load(ms.ToArray()), diagnostic, true);
+                        return (Assembly.Load(ms.ToArray()), diagnostics, true);
                     }
                 }
             });
