@@ -58,6 +58,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="3*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <!--  Lesson information  -->
@@ -88,6 +89,16 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
+
+                <Button Grid.Row="2"
+                        x:Name="FixButton"
+                        FontFamily="{StaticResource ConsolasFont}"
+                        FontSize="20"
+                        Margin="0,5,5,0"
+                        Height="35"
+                        MinWidth="90"
+                        Content="Napraw"
+                        Click="FixButton_OnClick" />
             </Grid>
 
             <GridSplitter Grid.Column="1"
@@ -110,7 +121,8 @@
                                    BorderThickness="1"
                                    HorizontalScrollBarVisibility="Auto"
                                    VerticalScrollBarVisibility="Auto"
-                                   KeyDown="SourceCodeTextBox_OnKeyDown"/>
+                                   KeyDown="SourceCodeTextBox_OnKeyDown"
+                                   TextChanged="SourceCodeTextBox_OnTextChanged"/>
         </Grid>
 
         <Grid Grid.Row="2"

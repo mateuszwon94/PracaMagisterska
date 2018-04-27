@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PracaMagisterska.WPF.Utils;
+using PracaMagisterska.WPF.Utils.Rewriters;
 using PracaMagisterska.WPF.View;
 
 namespace PracaMagisterska.WPF {
@@ -53,7 +54,7 @@ namespace PracaMagisterska.WPF {
             => root.DescendantNodes()
                    .Where(node => Settings.SyntaxKindsForMagicalNumberSearch.Any(kind => kind == node.Kind()))
                    .Where(node => node.DescendantTokens().Any(s => s.Kind() == SyntaxKind.NumericLiteralToken))
-                   .Select(node => DiagnosticHelper.Create(node, "Numerical literal found in expression"));
+                   .Select(node => DiagnosticHelper.Create(node, "Numerical literal found in expression", null));
 
         /// <summary>
         /// This method finds all method which is not using all of its parameters
@@ -69,7 +70,7 @@ namespace PracaMagisterska.WPF {
                                                                    .Select(s => s.ValueText)
                                                                    .Distinct()
                                                                    .Contains(parameter.Identifier.ValueText)))
-                   .Select(method => DiagnosticHelper.Create(method, "Method not using all given parrameters"));
+                   .Select(method => DiagnosticHelper.Create(method, "Method not using all given parrameters", null));
 
         /// <summary>
         /// This method finds all empty statements
@@ -79,7 +80,7 @@ namespace PracaMagisterska.WPF {
         public static IEnumerable<DiagnosticHelper> FindEmptyStatement(this SyntaxNode root)
             => root.DescendantNodes()
                    .OfType<EmptyStatementSyntax>()
-                   .Select(statement => DiagnosticHelper.Create(statement, "Empty statement"));
+                   .Select(statement => DiagnosticHelper.Create(statement, "Empty statement", new EmtpyStatementRemoval()));
 
         /// <summary>
         /// This method finds all posible const value
@@ -116,6 +117,6 @@ namespace PracaMagisterska.WPF {
                        }
 
                        return true;
-                   }).Select(declaration => DiagnosticHelper.Create(declaration, "Variable can be cons"));
+                   }).Select(declaration => DiagnosticHelper.Create(declaration, "Variable can be cons", null));
     }
 }

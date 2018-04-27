@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.CodeCompletion;
@@ -71,6 +72,17 @@ namespace PracaMagisterska.WPF.View {
             SourceCodeTextBox.TextArea.TextEntered += SourceCodeTextBox_TextArea_TextEntered;
             
             SourceCodeTextBox.Focus();
+
+            dispacherTimer_.Tick += (sender, args) => {
+                if ( timer_.Elapsed >= TimeSpan.FromSeconds(1) ) {
+                    UpdateDiagnostic();
+
+                    timer_.Reset();
+                }
+            };
+
+            dispacherTimer_.Interval = TimeSpan.FromSeconds(2);
+            dispacherTimer_.Start();
         }
 
         /// <summary>
@@ -90,9 +102,6 @@ namespace PracaMagisterska.WPF.View {
             // Get SyntaxTree from code
             SyntaxTree code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
             
-            // Clear all previous diagnostic info
-            lastDiagnostics_.Clear();
-            
             // Compile and build code
             CompileingIndicator.IsActive = true;
             CompileButton.IsEnabled = false;
@@ -101,12 +110,10 @@ namespace PracaMagisterska.WPF.View {
             CompileButton.IsEnabled = true;
 
             // Write new diagnostic information
-            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticHelper.SeverityType.Error));
-            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticHelper.SeverityType.Warning));
-            WriteDiagnostic(diagnostics.Where(diag => diag.Severity == DiagnosticHelper.SeverityType.Info));
+            UpdateDiagnostic(diagnostics);
 
             if ( isBuildSuccessful ) {
-                using (ConsoleHelper vh = new ConsoleHelper()) {
+                using (ConsoleHelper ch = new ConsoleHelper()) {
                     try {
                         // Run Main method
                         await program.RunMain();
@@ -132,6 +139,39 @@ namespace PracaMagisterska.WPF.View {
                 // Display PopUp information about failed compilation
                 await this.TryFindParent<MainWindow>()
                           .ShowMessageAsync("Kompilacja zakończona", "Kompilacja niepowiodła się");
+            }
+        }
+
+        /// <summary>
+        /// Update diagnostic in DiagnosticListView
+        /// </summary>
+        /// <param name="diagnostics">Diagnostic to write</param>
+        private void UpdateDiagnostic(IEnumerable<DiagnosticHelper> diagnostics) {
+            // Clear all previous diagnostic info
+            lastDiagnostics_.Clear();
+
+            // Write new diagnostic information
+            WriteDiagnostic(diagnostics.OrderBy(diag => diag.Priotiy));
+
+            timer_.Reset();
+        }
+
+        /// <summary>
+        /// Update diagnostic in DiagnosticListView
+        /// </summary>
+        private void UpdateDiagnostic() {
+            // Clear all previous diagnostic info
+            lastDiagnostics_.Clear();
+
+            // Remove all markers from code
+            textMarkerService_.RemoveAll(marker => true);
+
+            if ( !string.IsNullOrEmpty(SourceCodeTextBox.Text.Trim()) ) {
+                // Get SyntaxTree from code
+                CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text).Compile(out var diagnostics);
+
+                // Write new diagnostic information
+                UpdateDiagnostic(diagnostics);
             }
         }
 
@@ -186,6 +226,8 @@ namespace PracaMagisterska.WPF.View {
 
                     SourceCodeTextBox.Select(line.Offset, line.Length);
                 }
+            } else if ( e.RemovedItems.Count > 0 && DiagnosticListView.SelectedItem == null ) {
+                SourceCodeTextBox.Select(0, 0);
             }
         }
 
@@ -215,6 +257,7 @@ namespace PracaMagisterska.WPF.View {
 
         /// <summary>
         /// Event function. Called when user typed a text in SourceCodeTextBox.
+        /// Show CompletionWindow if [.] have been typed.
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
@@ -227,6 +270,7 @@ namespace PracaMagisterska.WPF.View {
 
         /// <summary>
         /// Event function. Called when user press a button when SourceCodeTextBox has focus.
+        /// Show CompletionWindow if [CTRL] + [SPACE] have been preesed.
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
@@ -238,6 +282,32 @@ namespace PracaMagisterska.WPF.View {
                 e.Handled = true;
             }
         }
+
+        /// <summary>
+        /// Event function. Called when user clicked Fix button. 
+        /// Fix (if possible) selected diagnostic/
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void FixButton_OnClick(object sender, RoutedEventArgs e) {
+            var diagnostic = (DiagnosticHelper)DiagnosticListView.SelectedItem;
+            var newCode    = diagnostic?.Refactor?.Refactor(diagnostic.SyntaxNode);
+
+            if ( newCode != null ) {
+                SourceCodeTextBox.Text = newCode.GetRoot().ToFullString();
+
+                UpdateDiagnostic();
+            }
+        }
+
+        /// <summary>
+        /// Event funciont. Called when texe have been changed in SourceCodeTextBox.
+        /// Starts timer for future updation of diagnostic
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void SourceCodeTextBox_OnTextChanged(object sender, EventArgs e)
+            => timer_.Start();
 
         /// <summary>
         /// Lesson number
@@ -253,5 +323,15 @@ namespace PracaMagisterska.WPF.View {
         /// Text marker service use to display errors and warnings in code
         /// </summary>
         private readonly TextMarkerService textMarkerService_;
+
+        /// <summary>
+        /// Timer used to update diagnostic
+        /// </summary>
+        private static readonly Stopwatch timer_ = new Stopwatch();
+
+        /// <summary>
+        /// Timer used to update diagnostic
+        /// </summary>
+        private static readonly DispatcherTimer dispacherTimer_ = new DispatcherTimer();
     }
 }

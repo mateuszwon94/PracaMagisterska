@@ -2,36 +2,21 @@
 using System.Dynamic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using PracaMagisterska.WPF.Utils.Rewriters;
 using PracaMagisterska.WPF.View;
 
 namespace PracaMagisterska.WPF.Utils {
     /// <summary>
     /// Diagnostic helper class used by DiagnosticListView in <see cref="SourceCode"/>
     /// </summary>
-    public struct DiagnosticHelper {
+    public class DiagnosticHelper {
         /// <summary>
         /// Create DiagnosticHelper instance based on Microsoft.CodeAnalysis.<see cref="Diagnostic"/> class.
         /// </summary>
         /// <param name="diagnostic">Diagnostic info, which is use to create helper object</param>
         /// <returns>Helper object based on <see cref="diagnostic"/></returns>
         public static DiagnosticHelper Create(Diagnostic diagnostic) {
-            // Default location
-            CodeLocation location = new CodeLocation {
-                Location          = CodeLocation.LocationType.None,
-                Line              = -1,
-                Column            = -1
-            };
-
-            // Specific location based on lacation of diagnostic
-            if ( diagnostic.Location.IsInSource ) {
-                FileLinePositionSpan pos = diagnostic.Location.GetLineSpan();
-                location.Location        = CodeLocation.LocationType.InSource;
-                location.Line            = pos.StartLinePosition.Line + 1;
-                location.Column          = pos.StartLinePosition.Character + 1;
-            } else if ( diagnostic.Location.IsInMetadata ) {
-                location.Location = CodeLocation.LocationType.InMetadata;
-            }
-
             // Set proper severity type
             SeverityType severity = SeverityType.None;
             if ( diagnostic.Severity == DiagnosticSeverity.Error )
@@ -40,55 +25,55 @@ namespace PracaMagisterska.WPF.Utils {
                 severity = SeverityType.Warning;
             else if ( diagnostic.Severity == DiagnosticSeverity.Info )
                 severity = SeverityType.Info;
-
+            
             // Create helper object
             return new DiagnosticHelper {
-                Severity           = severity,
-                Location           = location,
-                Information        = diagnostic.GetMessage(),
+                Severity    = severity,
+                Location    = new CodeLocation(diagnostic.Location),
+                Information = diagnostic.GetMessage(),
             };
         }
 
-        public static DiagnosticHelper Create(SyntaxNode syntaxNode, string information) {
-            // Default location
-            CodeLocation location = new CodeLocation {
-                Location          = CodeLocation.LocationType.None,
-                Line              = -1,
-                Column            = -1
-            };
-
-            // Specific location based on lacation of diagnostic
-            if ( syntaxNode.GetLocation().IsInSource ) {
-                FileLinePositionSpan pos = syntaxNode.GetLocation().GetLineSpan();
-                location.Location        = CodeLocation.LocationType.InSource;
-                location.Line            = pos.StartLinePosition.Line + 1;
-                location.Column          = pos.StartLinePosition.Character + 1;
-            } else if ( syntaxNode.GetLocation().IsInMetadata ) {
-                location.Location = CodeLocation.LocationType.InMetadata;
-            }
-
+        public static DiagnosticHelper Create(SyntaxNode syntaxNode, string information, IRefactor refactor) {
             // Create helper object
             return new DiagnosticHelper {
-                Severity           = SeverityType.Info,
-                Location           = location,
-                Information        = information,
+                Severity    = SeverityType.Info,
+                Location    = new CodeLocation(syntaxNode.GetLocation()),
+                Information = information,
+                Refactor    = refactor,
+                SyntaxNode  = syntaxNode
             };
         }
 
         /// <summary>
         /// SeverityType of information
         /// </summary>
-        public SeverityType Severity { get; set; }
+        public SeverityType Severity { get; private set; }
 
         /// <summary>
         /// Location in code
         /// </summary>
-        public CodeLocation Location { get; set; } 
+        public CodeLocation Location { get; private set; }
+
+        /// <summary>
+        /// Priority of diagnostic
+        /// </summary>
+        public int Priotiy => (int)Severity;
 
         /// <summary>
         /// Information itself
         /// </summary>
-        public string Information { get; set; }
+        public string Information { get; private set; }
+
+        /// <summary>
+        /// Object which represents way of refactoring this type of diagnostic
+        /// </summary>
+        public IRefactor Refactor { get; private set; } = null;
+
+        /// <summary>
+        /// SyntaxNode on which this diagnostic appears
+        /// </summary>
+        public SyntaxNode SyntaxNode { get; private set; } = null;
 
         /// <summary>
         /// Possible type of information
