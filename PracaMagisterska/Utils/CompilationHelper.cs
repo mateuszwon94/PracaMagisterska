@@ -204,7 +204,7 @@ namespace PracaMagisterska.WPF.Utils {
         public static async Task Run(this Assembly assembly, MethodInfo entryPoint = null, object[] parameters = null) {
             if ( entryPoint == null )
                 entryPoint = assembly.EntryPoint;
-
+            
             await Task.Run(() => {
                 entryPoint.Invoke(null, entryPoint.GetParameters().Length > 0 ? 
                                       parameters : // invoked if method is Main(string[] args)
@@ -224,6 +224,33 @@ namespace PracaMagisterska.WPF.Utils {
                 compilation = compilation.AddReferences(reference);
 
             return compilation;
+        }
+
+        /// <summary>
+        /// Extension method for <see cref="Assembly"/> which gets static method need by tests
+        /// </summary>
+        /// <param name="assembly">Assembly in which method should be defined</param>
+        /// <param name="className">Class name in which method should be defined</param>
+        /// <param name="methodName">Method name needed by test</param>
+        /// <param name="parametersType">Method parameters. If null method without parameters will be returned</param>
+        /// <returns>Described method</returns>
+        public static MethodInfo GetTestMethod(this Assembly assembly, string className, string methodName, Type[] parametersType = null) {
+            return assembly.DefinedTypes
+                           .FirstOrDefault(type => type.Name == className)
+                           ?.DeclaredMethods
+                           ?.Where(method => method.Name == methodName)
+                           .Where(method => method.IsStatic)
+                           .FirstOrDefault(method => {
+                               if ( parametersType == null || parametersType.Length == 0 )
+                                   return method.GetParameters().Length == 0;
+
+                               if ( parametersType.Length != method.GetParameters().Length )
+                                   return false;
+
+                               return !method.GetParameters()
+                                             .Where((t, i) => t.ParameterType != parametersType[i])
+                                             .Any();
+                           });
         }
 
         #endregion Helpers function
