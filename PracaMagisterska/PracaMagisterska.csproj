@@ -286,6 +286,7 @@
     <Compile Include="Utils\ConsoleHelper.cs" />
     <Compile Include="Utils\DiagnosticHelper.cs" />
     <Compile Include="Utils\Rewriters\AddConstModifier.cs" />
+    <Compile Include="Utils\Rewriters\MagicalNumberRemoval.cs" />
     <Compile Include="Utils\Rewriters\NotUsedParameterRemoval.cs" />
     <Compile Include="Utils\Rewriters\EmtpyStatementRemoval .cs" />
     <Compile Include="Utils\Rewriters\IRefactor.cs" />
