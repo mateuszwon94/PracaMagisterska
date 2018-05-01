@@ -57,6 +57,6 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
                                           VisitLocalDeclarationStatement((LocalDeclarationStatementSyntax)nodeToRefactor))
                              .SyntaxTree;
 
-        private SemanticModel semanticModel_;
+        private readonly SemanticModel semanticModel_;
     }
 }

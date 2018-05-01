@@ -88,8 +88,8 @@ namespace PracaMagisterska.WPF {
         /// <param name="root"><see cref="SyntaxNode"/> in which diagnostics are searched</param>
         /// <param name="semanticModel"><see cref="semanticModel"/> which is used to flow analysis</param>
         /// <returns>Diagnostics with possible const values</returns>
-        public static IEnumerable<DiagnosticHelper> FindPossibleConstVariables(
-            this SyntaxNode root, SemanticModel semanticModel)
+        public static IEnumerable<DiagnosticHelper> FindPossibleConstVariables(this SyntaxNode root,
+                                                                               SemanticModel semanticModel)
             => root.DescendantNodes()
                    .OfType<LocalDeclarationStatementSyntax>()
                    .Where(declaration => {
@@ -124,6 +124,17 @@ namespace PracaMagisterska.WPF {
                                if ( variableType.SpecialType != SpecialType.System_String )
                                    return false;
                            } else if ( variableType.IsReferenceType && constantValue.Value != null )
+                               return false;
+                       }
+
+                       // Perform data flow analysis on the local declaration.
+                       DataFlowAnalysis dataFlowAnalysis = semanticModel.AnalyzeDataFlow(declaration);
+
+                       // Retrieve the local symbol for each variable in the local declaration
+                       // and ensure that it is not written outside of the data flow analysis region.
+                       foreach ( VariableDeclaratorSyntax variable in declaration.Declaration.Variables ) {
+                           ISymbol variableSymbol = semanticModel.GetDeclaredSymbol(variable);
+                           if ( dataFlowAnalysis.WrittenOutside.Contains(variableSymbol) ) 
                                return false;
                        }
 
