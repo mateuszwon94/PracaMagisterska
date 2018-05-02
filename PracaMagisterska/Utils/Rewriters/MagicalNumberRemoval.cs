@@ -24,21 +24,29 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
                 BlockSyntax statementList = SyntaxFactory.Block()
                                                          .WithOpenBraceToken(SyntaxFactory.MissingToken(SyntaxKind.OpenBraceToken))
                                                          .WithCloseBraceToken(SyntaxFactory.MissingToken(SyntaxKind.CloseBraceToken));
-
-                string variableName = "magicalNumber";
-                for ( int i = 0; i < numericalNodes.Count; ++i ) {
-                    LocalDeclarationStatementSyntax expresion = (LocalDeclarationStatementSyntax)SyntaxFactory.ParseStatement("var " + variableName + (i + 1) + " = " + numericalNodes[i].ToFullString() + ";")
-                                                                                                 .WithTriviaFrom(node)
-                                                                                                 .WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia("\n"));
+                
+                foreach ( SyntaxNode numericalNode in numericalNodes ) {
+                    var expresion = (LocalDeclarationStatementSyntax)SyntaxFactory.ParseStatement($"var {FindFreeVariableName(node.SyntaxTree.GetRoot())} = {numericalNode.ToFullString()};")
+                                                                                  .WithTriviaFrom(node)
+                                                                                  .WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia("\n"));
 
                     statementList = statementList.AddStatements(expresion);
 
-                    node = node.ReplaceNode(numericalNodes[i], SyntaxFactory.IdentifierName(expresion.Declaration.Variables[0].Identifier));
+                    node = node.ReplaceNode(numericalNode, SyntaxFactory.IdentifierName(expresion.Declaration.Variables[0].Identifier));
                 }
 
                 return statementList.AddStatements(node.WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia("\n")));
             } else {
                 return node;
+            }
+        }
+
+        private string FindFreeVariableName(SyntaxNode root) {
+            for ( int i = 1; true ; ++i ) {
+                if ( root.DescendantTokens()
+                         .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
+                         .All(identifier => identifier.Text != $"magicalNumber{i}") )
+                    return $"magicalNumber{i}";
             }
         }
 

@@ -53,7 +53,7 @@ namespace PracaMagisterska.WPF {
         public static IEnumerable<DiagnosticHelper> FindMagicalNumbersInExpresions(this SyntaxNode root)
             => root.DescendantNodes()
                    .Where(node => Settings.SyntaxKindsForMagicalNumberSearch.Any(kind => kind == node.Kind()))
-                   .Where(node => node.DescendantTokens().Any(s => s.Kind() == SyntaxKind.NumericLiteralToken))
+                   .Where(node => node.DescendantNodes().Any(s => s.Kind() == SyntaxKind.NumericLiteralExpression))
                    .Select(node => DiagnosticHelper.Create(node, "Numerical literal found in expression", new MagicalNumberRemoval()));
 
         /// <summary>
