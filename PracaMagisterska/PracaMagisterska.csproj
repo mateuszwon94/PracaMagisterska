@@ -279,12 +279,16 @@
     <Compile Include="SharpDevelop\ITextMarker.cs" />
     <Compile Include="SharpDevelop\TextMarkerService.cs" />
     <Compile Include="Testers\ITestable.cs" />
+    <Compile Include="Testers\Lesson0.cs" />
+    <Compile Include="Testers\Lesson1.cs" />
+    <Compile Include="Testers\Tester.cs" />
     <Compile Include="Utils\CodeLocation.cs" />
     <Compile Include="Utils\CompilationHelper.cs" />
     <Compile Include="Utils\Completion\MagicalNumbersFinderHelper.cs" />
     <Compile Include="Utils\Completion\SymbolCompletionData.cs" />
     <Compile Include="Utils\ConsoleHelper.cs" />
     <Compile Include="Utils\DiagnosticHelper.cs" />
+    <Compile Include="Testers\Lesson.cs" />
     <Compile Include="Utils\Rewriters\AddConstModifier.cs" />
     <Compile Include="Utils\Rewriters\MagicalNumberRemoval.cs" />
     <Compile Include="Utils\Rewriters\NotUsedParameterRemoval.cs" />
@@ -293,7 +297,6 @@
     <Compile Include="View\Credits.xaml.cs">
       <DependentUpon>Credits.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utils\LessonsAbout.cs" />
     <Compile Include="View\GameMenu.xaml.cs">
       <DependentUpon>GameMenu.xaml</DependentUpon>
     </Compile>

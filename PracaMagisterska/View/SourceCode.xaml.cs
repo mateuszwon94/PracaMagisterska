@@ -33,8 +33,10 @@ using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Text;
 using PracaMagisterska.WPF.Exceptions;
+using PracaMagisterska.WPF.Testers;
 using PracaMagisterska.WPF.Utils;
 using PracaMagisterska.WPF.Utils.Completion;
+using static PracaMagisterska.WPF.Utils.CompilationHelper;
 
 namespace PracaMagisterska.WPF.View {
     /// <summary>
@@ -44,19 +46,15 @@ namespace PracaMagisterska.WPF.View {
         /// <summary>
         /// Constructor. Initialize all components and sets basic fields.
         /// </summary>
-        /// <param name="title">Title of the page</param>
-        /// <param name="lessonNo">Lesson number</param>
-        /// <param name="info">Info about the lesson</param>
-        public SourceCode(string title, int lessonNo, string info = null) {
+        /// <param name="currentLesson">Specyfic <see cref="Lesson"/> object for current lesson</param>
+        public SourceCode(Lesson currentLesson) {
             InitializeComponent();
 
-            lessonNo_         = lessonNo;
-            LessonTitle       = title;
-            TitleTextBox.Text = LessonTitle;
-                        
+            CurrentLesson                  = currentLesson;
+            TitleTextBox.Text              = CurrentLesson.Title;
+            LessonInfoTextBlock.Text       = CurrentLesson.Info;
+            SourceCodeTextBox.Text         = CurrentLesson.DefaultCode;
             DiagnosticListView.ItemsSource = lastDiagnostics_;
-
-            LessonInfoTextBlock.Text = !string.IsNullOrEmpty(info) ? info : "Póki co brak opisu! :(";
 
             // Create marker service
             textMarkerService_ = new TextMarkerService(SourceCodeTextBox.Document);
@@ -70,7 +68,7 @@ namespace PracaMagisterska.WPF.View {
                                                  ?.AddService(typeof(ITextMarkerService), textMarkerService_);
 
             SourceCodeTextBox.TextArea.TextEntered += SourceCodeTextBox_TextArea_TextEntered;
-            
+
             SourceCodeTextBox.Focus();
 
             // Handle real-time diagnostic updation
@@ -84,12 +82,14 @@ namespace PracaMagisterska.WPF.View {
 
             dispacherTimer_.Interval = TimeSpan.FromSeconds(2);
             dispacherTimer_.Start();
+
+            UpdateDiagnostic();
         }
 
         /// <summary>
-        /// Lesson title display ind header
+        /// Object represent current lesson
         /// </summary>
-        public string LessonTitle { get; private set; } = string.Empty;
+        public Lesson CurrentLesson { get; }
 
         /// <summary>
         /// Event function. Called when Compile Button is clicked
@@ -232,8 +232,8 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="filterFunction">Function use to filetr displayed options</param>
         private async void InvokeCompletionWindow(Func<ISymbol, bool> filterFunction = null) {
             if ( filterFunction == null ) filterFunction = r => true;
-            var recomendedSymbols = await CompilationHelper.GetRecmoendations(SourceCodeTextBox.Text,
-                                                                              SourceCodeTextBox.CaretOffset);
+            var recomendedSymbols = await GetRecmoendations(SourceCodeTextBox.Text,
+                                                            SourceCodeTextBox.CaretOffset);
 
             if ( recomendedSymbols.Any(filterFunction) ) {
                 // Prepare completion window
@@ -318,11 +318,6 @@ namespace PracaMagisterska.WPF.View {
             else if ( !ConsoleHelper.IsVisible )
                 ConsoleHelper.Show(clear: false);
         }
-
-        /// <summary>
-        /// Lesson number
-        /// </summary>
-        private readonly int lessonNo_;
 
         /// <summary>
         /// Collectione used by DiagnosticListView to display diagnostic info

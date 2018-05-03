@@ -11,8 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PracaMagisterska.WPF.Testers;
 using PracaMagisterska.WPF.Utils;
-using static PracaMagisterska.WPF.Utils.LessonsAbout;
 
 namespace PracaMagisterska.WPF.View {
     /// <summary>
@@ -23,24 +23,21 @@ namespace PracaMagisterska.WPF.View {
         /// <summary>
         /// Constructor. Initialize all components
         /// </summary>
-        public GameMenu() => InitializeComponent();
+        public GameMenu() {
+            InitializeComponent();
+            LessonsListView.ItemsSource = Lesson.AllLessons;
+        }
 
         /// <summary>
-        /// Event function. Called when any of LessonButtons is clicked
+        /// Event function. Called when user select specyfic lesson.
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
-        private void LessonButton_OnClick(object sender, RoutedEventArgs e) {
-            if ( sender is Button b ) {
-                // get lesson number from button name
-                int lessonNo = int.Parse(b.Name
-                                          .Replace("Lesson", string.Empty)
-                                          .Replace("Button", string.Empty));
+        private void LessonsListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+            LessonsListView.SelectedItem = null;
 
-                NavigationService?.Navigate(new SourceCode($"Lekcja {lessonNo}. {LessonTitle[lessonNo]}",
-                                                           lessonNo,
-                                                           LessonInfo[lessonNo]));
-            }
+            if (e.AddedItems.Count > 0)
+                NavigationService?.Navigate(new SourceCode((Lesson)e.AddedItems[0]));
         }
     }
 }

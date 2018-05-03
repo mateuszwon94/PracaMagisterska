@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using PracaMagisterska.WPF.Exceptions;
@@ -255,6 +256,40 @@ namespace PracaMagisterska.WPF.Utils {
                                              .Any();
                            });
         }
+
+        /// <summary>
+        /// Extension method for <see cref="SyntaxNode"/> which gets static method need by tests
+        /// </summary>
+        /// <param name="root">Assembly in which method should be defined</param>
+        /// <param name="className">Class name in which method should be defined</param>
+        /// <param name="methodName">Method name needed by test</param>
+        /// <param name="parametersType">Method parameters. If null method without parameters will be returned</param>
+        /// <returns>Described method</returns>
+        public static MethodDeclarationSyntax GetTestMethod(this SyntaxNode root,
+                                                            string          className,
+                                                            string          methodName,
+                                                            Type[]          parametersType = null)
+            => root.DescendantNodes()
+                   .OfType<ClassDeclarationSyntax>()
+                   .Where(c => c.Identifier.Text == className)
+                   .SelectMany(c => c.DescendantNodes())
+                   .OfType<MethodDeclarationSyntax>()
+                   .Where(method => method.Identifier.Text.Trim() == methodName)
+                   .Where(method => method.Modifiers.Any(t => t.Kind() == SyntaxKind.StaticKeyword))
+                   .FirstOrDefault(method => {
+                       // If there is no given parameters type try to find method without parameters
+                       if ( parametersType == null || parametersType.Length == 0 )
+                           return method.ParameterList.Parameters.Count == 0;
+
+                       // If number of parameters do not match it means this is not that function
+                       if ( parametersType.Length != method.ParameterList.Parameters.Count )
+                           return false;
+
+                       // Finds method in which all parameters are exacly the same
+                       return !method.ParameterList.Parameters
+                                     .Where((t, i) => t.Type.ToFullString().Trim() != parametersType[i].Name)
+                                     .Any();
+                   });
 
         #endregion Helpers function
     }
