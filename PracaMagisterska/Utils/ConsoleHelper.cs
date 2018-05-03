@@ -9,7 +9,7 @@ namespace PracaMagisterska.WPF.Utils {
     /// <summary>
     /// Helper class for handle console.
     /// </summary>
-    public class ConsoleHelper : IDisposable {
+    public class ConsoleHelper {
         #region Public
 
         /// <summary>
@@ -22,17 +22,6 @@ namespace PracaMagisterska.WPF.Utils {
             if ( systemMenu != IntPtr.Zero )
                 DeleteMenu(systemMenu, SC_CLOSE, MF_BYCOMMAND);
         }
-
-        /// <summary>
-        /// Cunstructor. Implemented only to be used in using() syntax.
-        /// </summary>
-        public ConsoleHelper() => Show();
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Destructor. Implemented only to be used in using() syntax.
-        /// </summary>
-        public void Dispose() => Hide();
 
         /// <summary>
         /// Method, which allows user to show Console and define its state.
@@ -56,18 +45,7 @@ namespace PracaMagisterska.WPF.Utils {
         #endregion Public
 
         #region Static fields
-
-        /// <summary>
-        /// Current console state.
-        /// </summary>
-        public static ConsoleState State {
-            get => state_;
-            set {
-                ShowWindow(console_, (int)value);
-                state_ = value;
-            }
-        }
-
+        
         /// <summary>
         /// Returns <value>true</value> if console is visible, elsewhere return <value>false</value>.
         /// </summary>
@@ -124,6 +102,17 @@ namespace PracaMagisterska.WPF.Utils {
         /// If the function fails, the return value is zero. </returns>
         [DllImport("user32.dll")]
         private static extern IntPtr DeleteMenu(IntPtr hMenu, uint uPosition, uint uFlags);
+
+        /// <summary>
+        /// Current console state.
+        /// </summary>
+        private static ConsoleState State {
+            get => state_;
+            set {
+                ShowWindow(console_, (int)value);
+                state_ = value;
+            }
+        }
 
         /// <summary>
         /// Position of close button on system menu.

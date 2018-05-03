@@ -102,40 +102,33 @@ namespace PracaMagisterska.WPF.View {
 
             // Get SyntaxTree from code
             SyntaxTree code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
-            
+
             // Compile and build code
-            CompileingIndicator.IsActive = true;
-            CompileButton.IsEnabled = false;
+            CompileingIndicator.IsActive                                = true;
+            CompileButton.IsEnabled                                     = false;
             (Assembly program, var diagnostics, bool isBuildSuccessful) = await code.Compile().Build();
-            CompileingIndicator.IsActive = false;
-            CompileButton.IsEnabled = true;
+            CompileingIndicator.IsActive                                = false;
+            CompileButton.IsEnabled                                     = true;
 
             // Write new diagnostic information
             UpdateDiagnostic(diagnostics);
 
             if ( isBuildSuccessful ) {
-                using (ConsoleHelper ch = new ConsoleHelper()) {
-                    try {
-                        // Run Main method
-                        await program.RunMain();
-                    } catch ( Exception ex ) {
-                        // Write to console any execution errors
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("There was execution errors!");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($"\t{ex}");
-                    }
+                ConsoleHelper.Show();
 
-                    if ( !Settings.AutoCloseConsole ) {
-                        // Wait for user to press ENTER to hide a console
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write("\n\tMain Window would not be responding until the Console would be active.");
-                        Console.Write("\n\tPlease, press ENTER to hide console.");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.ReadLine();
-                    }
+                try {
+                    // Run Main method
+                    await program.RunMain();
+                } catch ( Exception ex ) {
+                    // Write to console any execution errors
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("There was execution errors!");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"\t{ex}");
                 }
-                SourceCodeTextBox.Focus();
+
+                if ( Settings.AutoCloseConsole )
+                    ConsoleHelper.Hide();
             } else {
                 // Display PopUp information about failed compilation
                 await this.TryFindParent<MainWindow>()
@@ -305,13 +298,26 @@ namespace PracaMagisterska.WPF.View {
         }
 
         /// <summary>
-        /// Event funciont. Called when texe have been changed in SourceCodeTextBox.
+        /// Event funciont. Called when text have been changed in SourceCodeTextBox.
         /// Starts timer for future updation of diagnostic
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void SourceCodeTextBox_OnTextChanged(object sender, EventArgs e)
             => timer_.Start();
+
+        /// <summary>
+        /// Event funciont. Called when ShowHideConsole Button have been preesed.
+        /// Show/hide console window.
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void ShowHideConsoleButton_OnClick(object sender, RoutedEventArgs e) {
+            if ( ConsoleHelper.IsVisible )
+                ConsoleHelper.Hide();
+            else if ( !ConsoleHelper.IsVisible )
+                ConsoleHelper.Show(clear: false);
+        }
 
         /// <summary>
         /// Lesson number
