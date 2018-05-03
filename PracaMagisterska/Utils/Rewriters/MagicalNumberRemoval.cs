@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
-using static PracaMagisterska.WPF.Utils.CompilationHelper;
+using static PracaMagisterska.WPF.Utils.Extension;
 
 namespace PracaMagisterska.WPF.Utils.Rewriters {
     public class MagicalNumberRemoval : IRefactor {

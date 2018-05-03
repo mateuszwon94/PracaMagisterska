@@ -16,7 +16,7 @@ using PracaMagisterska.WPF.Exceptions;
 using static Microsoft.CodeAnalysis.Recommendations.Recommender;
 
 namespace PracaMagisterska.WPF.Utils {
-    public static class CompilationHelper {
+    public static class Extension {
         #region Defaults
 
         /// <summary>

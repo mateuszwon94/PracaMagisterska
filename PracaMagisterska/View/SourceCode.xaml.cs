@@ -36,7 +36,7 @@ using PracaMagisterska.WPF.Exceptions;
 using PracaMagisterska.WPF.Testers;
 using PracaMagisterska.WPF.Utils;
 using PracaMagisterska.WPF.Utils.Completion;
-using static PracaMagisterska.WPF.Utils.CompilationHelper;
+using static PracaMagisterska.WPF.Utils.Extension;
 
 namespace PracaMagisterska.WPF.View {
     /// <summary>

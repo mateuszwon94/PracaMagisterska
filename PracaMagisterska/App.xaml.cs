@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using PracaMagisterska.WPF.Utils;
+using static PracaMagisterska.WPF.Utils.Extension;
 
 namespace PracaMagisterska.WPF {
     /// <summary>
@@ -14,7 +15,7 @@ namespace PracaMagisterska.WPF {
         /// </summary>
         static App() {
             ConsoleHelper.Hide();
-            CompilationHelper.GetRecmoendations("", 0);
+            GetRecmoendations("", 0);
         }
     }
 }
