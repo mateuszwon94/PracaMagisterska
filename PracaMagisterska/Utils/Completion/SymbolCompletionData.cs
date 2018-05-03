@@ -7,9 +7,14 @@ using Microsoft.CodeAnalysis;
 
 namespace PracaMagisterska.WPF.Utils.Completion {
     public class SymbolCompletionData : ICompletionData {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="recomendation">Recomendation symbol</param>
         public SymbolCompletionData(ISymbol recomendation) 
             => Recomendation = recomendation;
 
+        /// <inheritdoc/>
         public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs) {
             if ( IsFunction ) {
                 textArea.Document.Replace(completionSegment, Text + "()");
@@ -19,18 +24,39 @@ namespace PracaMagisterska.WPF.Utils.Completion {
             }
         }
 
+        /// <summary>
+        /// Recomendation
+        /// </summary>
         public ISymbol Recomendation { get; }
 
+        /// <summary>
+        /// True if this recomendation is a function
+        /// </summary>
         public bool IsFunction => Recomendation.Kind == SymbolKind.Method;
 
+        /// <summary>
+        /// Image for recomendation. Always null
+        /// </summary>
         public ImageSource Image { get; } = null;
 
+        /// <summary>
+        /// Text of recomendation
+        /// </summary>
         public string Text => Recomendation.Name;
 
+        /// <summary>
+        /// Full description of recomendation
+        /// </summary>
         public object Description => Recomendation.ToDisplayString();
 
+        /// <summary>
+        /// Contex of recomendation
+        /// </summary>
         public object Content => Description;
 
+        /// <summary>
+        /// Priority of recomendation
+        /// </summary>
         public double Priority { get; } = 1;
     }
 }

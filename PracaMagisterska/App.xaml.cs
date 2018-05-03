@@ -8,7 +8,9 @@ namespace PracaMagisterska.WPF {
     public partial class App : Application {
         /// <inheritdoc />
         /// <summary>
-        /// Static constructor. Hiding console at program startup.
+        /// Static constructor.
+        /// Hiding console at program startup.
+        /// Gets recomendation list for empty string to speed up future recomendation. (First take some time)
         /// </summary>
         static App() {
             ConsoleHelper.Hide();

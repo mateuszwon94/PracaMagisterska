@@ -6,6 +6,10 @@ using Microsoft.CodeAnalysis.Simplification;
 
 namespace PracaMagisterska.WPF.Utils.Rewriters {
     public class AddConstModifier : CSharpSyntaxRewriter, IRefactor {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="semanticModel">Semantic model which is used for refactoring</param>
         public AddConstModifier(SemanticModel semanticModel) 
             => semanticModel_ = semanticModel;
 
@@ -42,12 +46,10 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
             }
 
             SyntaxTriviaList leadingTrivia = node.GetLeadingTrivia();
-            return node = node.WithLeadingTrivia(new SyntaxTrivia())
-                              .AddModifiers(SyntaxFactory.Token(leadingTrivia,
-                                                                SyntaxKind.ConstKeyword,
-                                                                SyntaxTriviaList.Create(SyntaxFactory.Space)));
-
-
+            return node.WithLeadingTrivia(new SyntaxTrivia())
+                       .AddModifiers(SyntaxFactory.Token(leadingTrivia,
+                                                         SyntaxKind.ConstKeyword,
+                                                         SyntaxTriviaList.Create(SyntaxFactory.Space)));
         }
 
         /// <inheritdoc />
@@ -57,6 +59,9 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
                                           VisitLocalDeclarationStatement((LocalDeclarationStatementSyntax)nodeToRefactor))
                              .SyntaxTree;
 
+        /// <summary>
+        /// Semantic model of code
+        /// </summary>
         private readonly SemanticModel semanticModel_;
     }
 }

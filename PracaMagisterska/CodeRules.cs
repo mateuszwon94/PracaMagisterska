@@ -138,6 +138,7 @@ namespace PracaMagisterska.WPF {
                                return false;
                        }
 
+                       // Finally, it can be const
                        return true;
                    }).Select(declaration => DiagnosticHelper.Create(declaration, "Variable can be cons", new AddConstModifier(semanticModel)));
     }

@@ -241,12 +241,15 @@ namespace PracaMagisterska.WPF.Utils {
                            ?.Where(method => method.Name == methodName)
                            .Where(method => method.IsStatic)
                            .FirstOrDefault(method => {
+                               // If there is no given parameters type try to find method without parameters
                                if ( parametersType == null || parametersType.Length == 0 )
                                    return method.GetParameters().Length == 0;
 
+                               // If number of parameters do not match it means this is not that function
                                if ( parametersType.Length != method.GetParameters().Length )
                                    return false;
 
+                               // Finds method in which all parameters are exacly the same
                                return !method.GetParameters()
                                              .Where((t, i) => t.ParameterType != parametersType[i])
                                              .Any();

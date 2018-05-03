@@ -22,14 +22,11 @@ namespace PracaMagisterska.WPF.View {
     /// Interaction logic for Settings.xaml
     /// </summary>
     public partial class Settings : Page {
-        private static readonly ObservableCollection<MagicalNumbersFinderHelper> magicalNumberFinders_ =
-            new ObservableCollection<MagicalNumbersFinderHelper>(MagicalNumbersFinderHelper.All);
-
         public static readonly HashSet<SyntaxKind> SyntaxKindsForMagicalNumberSearch = new HashSet<SyntaxKind>();
 
         /// <inheritdoc />
         /// <summary>
-        /// Static constructor. Sets all settings.
+        /// Static constructor. Sets all settings to default.
         /// </summary>
         static Settings() {
             AutoCloseConsole = false;
@@ -70,12 +67,24 @@ namespace PracaMagisterska.WPF.View {
         private void AutoCloseConsoleCheckBox_Unchecked(object sender, RoutedEventArgs e)
             => AutoCloseConsole = false;
 
+        /// <summary>
+        /// Event function. Called when selection in MagicalNumberFinder ListView has changed
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
         private void MagicalNumberFinderListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-            foreach ( MagicalNumbersFinderHelper item in e.AddedItems.Cast<MagicalNumbersFinderHelper>() ) 
+            foreach ( var item in e.AddedItems.Cast<MagicalNumbersFinderHelper>() ) 
                 SyntaxKindsForMagicalNumberSearch.Add(item.SyntaxKind);
 
-            foreach ( MagicalNumbersFinderHelper item in e.RemovedItems.Cast<MagicalNumbersFinderHelper>() ) 
+            foreach ( var item in e.RemovedItems.Cast<MagicalNumbersFinderHelper>() ) 
                 SyntaxKindsForMagicalNumberSearch.Remove(item.SyntaxKind);
         }
+
+        /// <summary>
+        /// Item source for MagicalNumberFinderListView.
+        /// Contains all posible expresion in which magical number cann apear
+        /// </summary>
+        private static readonly ObservableCollection<MagicalNumbersFinderHelper> magicalNumberFinders_ =
+            new ObservableCollection<MagicalNumbersFinderHelper>(MagicalNumbersFinderHelper.All);
     }
 }

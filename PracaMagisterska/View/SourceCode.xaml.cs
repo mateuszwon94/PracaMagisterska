@@ -73,6 +73,7 @@ namespace PracaMagisterska.WPF.View {
             
             SourceCodeTextBox.Focus();
 
+            // Handle real-time diagnostic updation
             dispacherTimer_.Tick += (sender, args) => {
                 if ( timer_.Elapsed >= TimeSpan.FromSeconds(1) ) {
                     UpdateDiagnostic();
@@ -202,6 +203,7 @@ namespace PracaMagisterska.WPF.View {
 
         /// <summary>
         /// Event function. Called when BackButton is clicked
+        /// Returns to select lesson page
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
@@ -237,14 +239,16 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="filterFunction">Function use to filetr displayed options</param>
         private async void InvokeCompletionWindow(Func<ISymbol, bool> filterFunction = null) {
             if ( filterFunction == null ) filterFunction = r => true;
-            List<ISymbol> recomendedSymbols = (await CompilationHelper.GetRecmoendations(SourceCodeTextBox.Text,
-                                                                                        SourceCodeTextBox.CaretOffset)).ToList();
+            var recomendedSymbols = await CompilationHelper.GetRecmoendations(SourceCodeTextBox.Text,
+                                                                              SourceCodeTextBox.CaretOffset);
 
             if ( recomendedSymbols.Any(filterFunction) ) {
+                // Prepare completion window
                 CompletionWindow completionWindow = new CompletionWindow(SourceCodeTextBox.TextArea) {
-                    FontFamily                    = SourceCodeTextBox.FontFamily
+                    FontFamily                    = SourceCodeTextBox.FontFamily,
                 };
 
+                // Add completion options
                 foreach ( ISymbol recomendation in recomendedSymbols.Where(filterFunction) )
                     completionWindow.CompletionList
                                     .CompletionData
@@ -294,7 +298,7 @@ namespace PracaMagisterska.WPF.View {
             var newCode    = diagnostic?.Refactor?.Refactor(diagnostic.SyntaxNode);
 
             if ( newCode != null ) {
-                SourceCodeTextBox.Text = newCode.GetRoot().ToFullString();
+                SourceCodeTextBox.Text = newCode.ToString();
 
                 UpdateDiagnostic();
             }

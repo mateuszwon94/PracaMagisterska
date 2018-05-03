@@ -22,10 +22,17 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
             
             return RemoveMagicalNumber(block, root);
         }
-        
+
+        /// <summary>
+        /// Recurrent function for removeing bagical number from last statement in given BlockSyntax.
+        /// </summary>
+        /// <param name="oldBlock">BlockSyntax in which a statement is defined</param>
+        /// <param name="root">Root in which a statement was defind orignally</param>
+        /// <returns>New BlockSyntax with removed magical number in a statement</returns>
         private BlockSyntax RemoveMagicalNumber(BlockSyntax oldBlock, SyntaxNode root) {
             StatementSyntax node = oldBlock.Statements.Last();
 
+            // Find all magical numbers in a statement
             List<SyntaxNode> numericalNodes = node.DescendantNodes()
                                                   .Where(n => n.Kind() == SyntaxKind.NumericLiteralExpression)
                                                   .ToList();
@@ -34,7 +41,7 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
                 var expresion = (LocalDeclarationStatementSyntax)SyntaxFactory.ParseStatement($"var {FindFreeVariableName(root, oldBlock)} = {numericalNodes[0].ToFullString()};")
                                                                               .WithLeadingTrivia(node.GetLeadingTrivia())
                                                                               .WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia("\n"));
-
+                
                 return RemoveMagicalNumber(oldBlock.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia)
                                                    .AddStatements(expresion)
                                                    .AddStatements(node.ReplaceNode(numericalNodes[0],
@@ -47,6 +54,12 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
             }
         }
 
+        /// <summary>
+        /// Finds first possible variable name.
+        /// </summary>
+        /// <param name="root">Root in which used names should be searched</param>
+        /// <param name="block">BlockSyntax in which used names should be searched</param>
+        /// <returns>First avaliable name which starts with "magicalNumber"</returns>
         private string FindFreeVariableName(SyntaxNode root, SyntaxNode block) {
             for ( int i = 1; true ; ++i ) {
                 if ( root.DescendantTokens()
@@ -59,13 +72,15 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
 
         /// <inheritdoc />
         public SyntaxTree Refactor(SyntaxNode nodeToRefactor) {
+            // Retrive statement from given node
             while ( !(nodeToRefactor is StatementSyntax) ) 
                 nodeToRefactor = nodeToRefactor.Parent;
 
             return nodeToRefactor.SyntaxTree.GetRoot()
-                          .ReplaceNode(nodeToRefactor, VisitStatement((StatementSyntax)nodeToRefactor,
-                                                                      nodeToRefactor.SyntaxTree.GetRoot()))
-                          .SyntaxTree;
+                                 .ReplaceNode(nodeToRefactor,
+                                              VisitStatement((StatementSyntax)nodeToRefactor,
+                                                             nodeToRefactor.SyntaxTree.GetRoot()))
+                                 .SyntaxTree;
         }
     }
 }
