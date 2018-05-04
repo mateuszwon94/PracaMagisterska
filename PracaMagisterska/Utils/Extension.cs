@@ -191,10 +191,11 @@ namespace PracaMagisterska.WPF.Utils {
         /// </summary>
         /// <param name="assembly">Assembly</param>
         /// <param name="parameters">Parameters of entry method</param>
-        public static async Task RunMain(this Assembly assembly, string[] parameters = null) {
-            await Run(assembly,
-                parameters: parameters == null ? new object[] {new string[] { }} : new object[] {parameters});
-        }
+        public static void RunMain(this Assembly assembly, string[] parameters = null)
+            => Run(assembly,
+                   parameters: parameters == null ? 
+                                   new object[] {new string[] { }} : 
+                                   new object[] {parameters});
 
         /// <summary>
         /// Helper function, which runs specified method of assembly with params
@@ -202,15 +203,13 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="assembly">Assembly</param>
         /// <param name="entryPoint">Method to run</param>
         /// <param name="parameters">Parameters of entry method</param>
-        public static async Task Run(this Assembly assembly, MethodInfo entryPoint = null, object[] parameters = null) {
+        public static void Run(this Assembly assembly, MethodInfo entryPoint = null, object[] parameters = null) {
             if ( entryPoint == null )
                 entryPoint = assembly.EntryPoint;
             
-            await Task.Run(() => {
-                entryPoint.Invoke(null, entryPoint.GetParameters().Length > 0 ? 
-                                      parameters : // invoked if method is Main(string[] args)
-                                      null); // invoked if method is Main()
-            });
+            entryPoint.Invoke(null, entryPoint.GetParameters().Length > 0 ? 
+                                    parameters : // invoked if method is Main(string[] args)
+                                    null); // invoked if method is Main()
         }
 
         /// <summary>
@@ -219,13 +218,11 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="compilation">Compilation to which references would be added</param>
         /// <param name="references">References to be added</param>
         /// <returns>A new <see cref="CSharpCompilation"/> with added references</returns>
-        public static CSharpCompilation AddReferences(this CSharpCompilation compilation,
-                                                      IEnumerable<MetadataReference> references) {
-            foreach ( MetadataReference reference in references )
-                compilation = compilation.AddReferences(reference);
-
-            return compilation;
-        }
+        public static CSharpCompilation AddReferences(this CSharpCompilation         compilation,
+                                                      IEnumerable<MetadataReference> references)
+            => references.Aggregate(compilation,
+                                    (current, reference) => current.AddReferences(reference));
+        
 
         /// <summary>
         /// Extension method for <see cref="Assembly"/> which gets static method need by tests
@@ -290,7 +287,7 @@ namespace PracaMagisterska.WPF.Utils {
                                      .Where((t, i) => t.Type.ToFullString().Trim() != parametersType[i].Name)
                                      .Any();
                    });
-
+        
         #endregion Helpers function
     }
 }

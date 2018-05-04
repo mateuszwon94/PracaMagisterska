@@ -19,16 +19,18 @@ namespace PracaMagisterska.WPF.Testers {
         /// </summary>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
         /// <param name="parameters">parameters of tested method</param>
+        /// <param name="elapsedMilisecond">Time of test case execution in miliseconds</param>
         /// <returns>True if method returns proper output, false otherwise</returns>
-        bool Test(Assembly assembly, params object[] parameters);
+        bool Test(Assembly assembly, out double elapsedMilisecond, params object[] parameters);
 
         /// <summary>
         /// Runs all test cases for specific lesson
         /// </summary>
         /// <param name="root">SyntaxNode which is root of a program. Use in StaticTest</param>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
+        /// <param name="elapsedMilisecond">Time of all executed test cases in miliseconds</param>
         /// <returns>True if all test cases return proper output, false otherwise</returns>
-        bool RunAllTests(SyntaxNode root, Assembly assembly);
+        bool RunAllTests(SyntaxNode root, Assembly assembly, out double elapsedMilisecond);
 
         /// <summary>
         /// Runs all static tests for specific lesson
@@ -41,21 +43,24 @@ namespace PracaMagisterska.WPF.Testers {
         /// Runs all sample test cases for specific lesson
         /// </summary>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
+        /// <param name="elapsedMilisecond">Time of all executed test cases in miliseconds</param>
         /// <returns>True if all test cases return proper output, false otherwise</returns>
-        bool RunSampleTests(Assembly assembly);
+        bool RunSampleTests(Assembly assembly, out double elapsedMilisecond);
 
         /// <summary>
         /// Runs all real test cases for specific lesson
         /// </summary>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
+        /// <param name="elapsedMilisecond">Time of all executed test cases in miliseconds</param>
         /// <returns>True if all test cases return proper output, false otherwise</returns>
-        bool RunRealTests(Assembly assembly);
+        bool RunRealTests(Assembly assembly, out double elapsedMilisecond);
 
         /// <summary>
         /// Runs some random test cases for specific lesson
         /// </summary>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
+        /// <param name="elapsedMilisecond">Time of all executed test cases in miliseconds</param>
         /// <returns>True if all test cases return proper output, false otherwise</returns>
-        bool RunRandomTests(Assembly assembly);
+        bool RunRandomTests(Assembly assembly, out double elapsedMilisecond);
     }
 }

@@ -49,7 +49,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="currentLesson">Specyfic <see cref="Lesson"/> object for current lesson</param>
         public SourceCode(Lesson currentLesson) {
             InitializeComponent();
-
+            
             CurrentLesson                  = currentLesson;
             TitleTextBox.Text              = CurrentLesson.Title;
             LessonInfoTextBlock.Text       = CurrentLesson.Info;
@@ -84,6 +84,7 @@ namespace PracaMagisterska.WPF.View {
             dispacherTimer_.Start();
 
             UpdateDiagnostic();
+            EnbleAllButtons();
         }
 
         /// <summary>
@@ -96,45 +97,8 @@ namespace PracaMagisterska.WPF.View {
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
-        private async void CompileButton_OnClick(object sender, RoutedEventArgs e) {
-            // Remove all markers from code
-            textMarkerService_.RemoveAll(marker => true);
-
-            // Get SyntaxTree from code
-            SyntaxTree code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
-
-            // Compile and build code
-            CompileingIndicator.IsActive                                = true;
-            CompileButton.IsEnabled                                     = false;
-            (Assembly program, var diagnostics, bool isBuildSuccessful) = await code.Compile().Build();
-            CompileingIndicator.IsActive                                = false;
-            CompileButton.IsEnabled                                     = true;
-
-            // Write new diagnostic information
-            UpdateDiagnostic(diagnostics);
-
-            if ( isBuildSuccessful ) {
-                ConsoleHelper.Show();
-
-                try {
-                    // Run Main method
-                    await program.RunMain();
-                } catch ( Exception ex ) {
-                    // Write to console any execution errors
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("There was execution errors!");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"\t{ex}");
-                }
-
-                if ( Settings.AutoCloseConsole )
-                    ConsoleHelper.Hide();
-            } else {
-                // Display PopUp information about failed compilation
-                await this.TryFindParent<MainWindow>()
-                          .ShowMessageAsync("Kompilacja zakończona", "Kompilacja niepowiodła się");
-            }
-        }
+        private void RunButton_OnClick(object sender, RoutedEventArgs e) 
+            => RunProgram((assembly, _) => assembly.RunMain(), OutputKind.ConsoleApplication);
 
         /// <summary>
         /// Update diagnostic in DiagnosticListView
@@ -320,6 +284,145 @@ namespace PracaMagisterska.WPF.View {
         }
 
         /// <summary>
+        /// Event function. Called when AllTests Button is clicked
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void AllTestsButton_OnClick(object sender, RoutedEventArgs e)
+            => RunProgram((assembly, tree) => {
+                var result = CurrentLesson.RunAllTests(tree.GetRoot(),
+                                                       assembly,
+                                                       out double elapsedTime);
+
+                if ( result ) {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("All test were succeful.");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine("Collecting information about provided solution.");
+                    Console.WriteLine($"Execution time: {elapsedTime} ms.");
+                    int linesOfCode = tree.GetRoot()
+                                          .GetLinesOfCodeByMethod()
+                                          .Aggregate(0, (currentResult, pair) => currentResult + pair.Value);
+                    Console.WriteLine($"Line of code in methods: {linesOfCode}");
+                    int statementCount = tree.GetRoot()
+                                             .GetNumberOfStatementsByMethod()
+                                             .Aggregate(0, (currentResult, pair) => currentResult + pair.Value);
+                    Console.WriteLine($"Number of statements in methods: {statementCount}");
+                }
+            });
+
+        /// <summary>
+        /// Event function. Called when RandomTests Button is clicked
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void RandomTestsButton_OnClick(object sender, RoutedEventArgs e)
+            => RunProgram((assembly, _) => CurrentLesson.RunRandomTests(assembly, out double _));
+
+        /// <summary>
+        /// Event function. Called when RealTests Button is clicked
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void RealTestsButton_OnClick(object sender, RoutedEventArgs e)
+            => RunProgram((assembly, _) => CurrentLesson.RunRealTests(assembly, out double _));
+
+
+        /// <summary>
+        /// Event function. Called when SimpleTests Button is clicked
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void SimpleTestsButton_OnClick(object sender, RoutedEventArgs e)
+            => RunProgram((assembly, _) => CurrentLesson.RunSampleTests(assembly, out double _));
+
+        /// <summary>
+        /// Event function. Called when StaticTests Button is clicked
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void StaticTestsButton_OnClick(object sender, RoutedEventArgs e)
+            => RunProgram((_, tree) => CurrentLesson.RunStaticTests(tree.GetRoot()));
+
+        /// <summary>
+        /// Run program compiled from source sode editor.
+        /// </summary>
+        /// <param name="runAction">How program should be executed</param>
+        /// <param name="outputKind">Output type of compilation</param>
+        private async void RunProgram(Action<Assembly, SyntaxTree> runAction, OutputKind outputKind = OutputKind.DynamicallyLinkedLibrary) {
+            // Remove all markers from code
+            textMarkerService_.RemoveAll(marker => true);
+
+            // Get SyntaxTree from code
+            SyntaxTree code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
+
+            CompileingIndicator.IsActive = true;
+            DisaableAllButtons();
+
+            // Compile and build code
+            var compilationResult = await code.Compile(compilationOptions: new CSharpCompilationOptions(outputKind))
+                                              .Build();
+
+            CompileingIndicator.IsActive = false;
+            EnbleAllButtons();
+
+            // Write new diagnostic information
+            UpdateDiagnostic(compilationResult.diagnostics);
+
+            if ( compilationResult.isBuildSuccesful ) {
+                ConsoleHelper.Show();
+
+                try {
+                    // Run Main method
+                    runAction(compilationResult.assembly, code);
+                } catch ( Exception ex ) {
+                    // Write to console any execution errors
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("There was execution errors!");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"\t{ex}");
+                }
+
+                Console.WriteLine("Execution ended.");
+
+                if ( Settings.AutoCloseConsole )
+                    ConsoleHelper.Hide();
+            } else {
+                // Display PopUp information about failed compilation
+                await this.TryFindParent<MainWindow>()
+                          .ShowMessageAsync("Kompilacja zakończona", "Kompilacja niepowiodła się");
+            }
+        }
+
+        /// <summary>
+        /// Disables all buttons related to running or testing.
+        /// </summary>
+        private void DisaableAllButtons() {
+            RunButton.IsEnabled = false;
+            StaticTestsButton.IsEnabled = false;
+            SimpleTestsButton.IsEnabled = false;
+            RealTestsButton.IsEnabled = false;
+            RandomTestsButton.IsEnabled = false;
+            AllTestsButton.IsEnabled = false;
+        }
+
+        /// <summary>
+        /// Enables all buttons related to running or testing.
+        /// If specyfic tests type do not exist for current lesson related button won't be enabled.
+        /// </summary>
+        private void EnbleAllButtons() {
+            RunButton.IsEnabled         = true;
+            StaticTestsButton.IsEnabled = CurrentLesson.HasStaticTest;
+            SimpleTestsButton.IsEnabled = CurrentLesson.HasSimpleTest;
+            RealTestsButton.IsEnabled   = CurrentLesson.HasRealTest;
+            RandomTestsButton.IsEnabled = CurrentLesson.HasRandomTests;
+            AllTestsButton.IsEnabled    = CurrentLesson.HasStaticTest ||
+                                          CurrentLesson.HasSimpleTest ||
+                                          CurrentLesson.HasRealTest ||
+                                          CurrentLesson.HasRandomTests;
+        }
+
+        /// <summary>
         /// Collectione used by DiagnosticListView to display diagnostic info
         /// </summary>
         private readonly ObservableCollection<DiagnosticHelper> lastDiagnostics_ = new ObservableCollection<DiagnosticHelper>();
@@ -332,11 +435,11 @@ namespace PracaMagisterska.WPF.View {
         /// <summary>
         /// Timer used to update diagnostic
         /// </summary>
-        private static readonly Stopwatch timer_ = new Stopwatch();
+        private readonly Stopwatch timer_ = new Stopwatch();
 
         /// <summary>
         /// Timer used to update diagnostic
         /// </summary>
-        private static readonly DispatcherTimer dispacherTimer_ = new DispatcherTimer();
+        private readonly DispatcherTimer dispacherTimer_ = new DispatcherTimer();
     }
 }

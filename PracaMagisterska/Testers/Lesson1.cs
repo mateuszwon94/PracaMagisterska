@@ -11,7 +11,7 @@ namespace PracaMagisterska.WPF.Testers {
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Lesson1() : base(1, "Zmienne są najważniejsze", 0.25f)
+        public Lesson1() : base(1, "Zmienne są najważniejsze", 0.25f) 
             => HasStaticTest = true;
 
         /// <inheritdoc cref="Tester.Solution"/>
@@ -27,7 +27,7 @@ namespace PracaMagisterska.WPF.Testers {
         public override string DefaultCode { get; } = defaultProgramTemplate_.Replace("{ReturnType}", "void")
                                                                              .Replace("{Parameters}", string.Empty)
                                                                              .Replace("{Body}",
-                                                                                      @"string imie = ""Wpisz swoje imie""");
+                                                                                      @"string imie = ""Wpisz swoje imie"";");
 
         /// <inheritdoc cref="Lesson.Info"/>
         public override string Info { get; } =

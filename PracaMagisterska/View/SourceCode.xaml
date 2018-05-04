@@ -31,7 +31,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <TextBlock x:Name="TitleTextBox"
@@ -47,17 +46,19 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"
+                <ColumnDefinition Width="300"
                                   MaxWidth="400"
-                                  MinWidth="200" />
+                                  MinWidth="250" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="3*" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
@@ -94,11 +95,33 @@
                         x:Name="FixButton"
                         FontFamily="{StaticResource ConsolasFont}"
                         FontSize="20"
-                        Margin="0,5,5,0"
+                        Margin="0,5,0,5"
                         Height="35"
                         MinWidth="90"
                         Content="Napraw"
                         Click="FixButton_OnClick" />
+
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="BackButton"
+                            Grid.Column="0"
+                            Height="35"
+                            FontSize="20"
+                            Margin="0,0,5,0"
+                            FontFamily="{StaticResource ConsolasFont}"
+                            Content="Wstecz"
+                            Click="BackButton_OnClick" />
+                    <Button x:Name="ShowHideConsoleButton"
+                            Grid.Column="1"
+                            Height="35"
+                            FontSize="20"
+                            FontFamily="{StaticResource ConsolasFont}"
+                            Content="Pokaż/Ukryj Konsolę"
+                            Click="ShowHideConsoleButton_OnClick" />
+                </Grid>
             </Grid>
 
             <GridSplitter Grid.Column="1"
@@ -123,44 +146,65 @@
                                    VerticalScrollBarVisibility="Auto"
                                    KeyDown="SourceCodeTextBox_OnKeyDown"
                                    TextChanged="SourceCodeTextBox_OnTextChanged"/>
-        </Grid>
 
-        <Grid Grid.Row="2"
-              Margin="0,5,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Grid.Column="0">
-                <Button x:Name="BackButton"
-                        Width="125"
+            <StackPanel Orientation="Vertical"
+                        Grid.Column="3"
+                        Margin="5,0,0,0">
+                <Button x:Name="RunButton"
+                        Width="150"
                         Height="35"
                         FontSize="20"
-                        Margin="0,0,5,0"
+                        Margin="0,0,0,10"
                         FontFamily="{StaticResource ConsolasFont}"
-                        Content="Wstecz"
-                        Click="BackButton_OnClick" />
-                <Button x:Name="ShowHideConsoleButton"
-                        Width="250"
+                        Content="Uruchom"
+                        Click="RunButton_OnClick" />
+                <TextBlock FontSize="20"
+                           Margin="0,0,0,10"
+                           FontFamily="{StaticResource ConsolasFont}"
+                           Text="Uruchom testy:"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+                <Button x:Name="StaticTestsButton"
+                        Width="150"
                         Height="35"
                         FontSize="20"
+                        Margin="0,0,0,10"
                         FontFamily="{StaticResource ConsolasFont}"
-                        Content="Pokaż/Ukryj Konsolę"
-                        Click="ShowHideConsoleButton_OnClick" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Grid.Column="1">
-                <Button x:Name="CompileButton"
-                        Width="125"
+                        Content="Statyczne"
+                        Click="StaticTestsButton_OnClick" />
+                <Button x:Name="SimpleTestsButton"
+                        Width="150"
                         Height="35"
                         FontSize="20"
-                        Margin="5,0,5,0"
+                        Margin="0,0,0,10"
                         FontFamily="{StaticResource ConsolasFont}"
-                        Content="Kompiluj"
-                        Click="CompileButton_OnClick" />
+                        Content="Proste"
+                        Click="SimpleTestsButton_OnClick" />
+                <Button x:Name="RealTestsButton"
+                        Width="150"
+                        Height="35"
+                        FontSize="20"
+                        Margin="0,0,0,10"
+                        FontFamily="{StaticResource ConsolasFont}"
+                        Content="Realne"
+                        Click="RealTestsButton_OnClick" />
+                <Button x:Name="RandomTestsButton"
+                        Width="150"
+                        Height="35"
+                        FontSize="20"
+                        Margin="0,0,0,10"
+                        FontFamily="{StaticResource ConsolasFont}"
+                        Content="Losowe"
+                        Click="RandomTestsButton_OnClick" />
+                <Button x:Name="AllTestsButton"
+                        Width="150"
+                        Height="35"
+                        FontSize="20"
+                        Margin="0,0,0,10"
+                        FontFamily="{StaticResource ConsolasFont}"
+                        Content="Wszystkie"
+                        Click="AllTestsButton_OnClick" />
                 <controls:ProgressRing x:Name="CompileingIndicator"
                                        IsActive="False"
                                        Width="35"

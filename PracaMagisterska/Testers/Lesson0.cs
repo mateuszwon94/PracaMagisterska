@@ -11,10 +11,7 @@ namespace PracaMagisterska.WPF.Testers {
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Lesson0() : base(0, "Witaj Świecie", 0f) {
-            HasRandomTests = false;
-            HasStaticTest = false;
-        }
+        public Lesson0() : base(0, "Witaj Świecie", 0f) { }
 
         /// <inheritdoc cref="Tester.Solution"/>
         protected override object Solution(params object[] parameters) 
