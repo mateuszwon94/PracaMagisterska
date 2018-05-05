@@ -27,7 +27,8 @@ namespace PracaMagisterska.WPF.Testers {
         /// </summary>
         /// <param name="parameters">Parameters needed to solve a problem</param>
         /// <returns>Solution object</returns>
-        protected abstract object Solution(params object[] parameters);
+        protected virtual object Solution(params object[] parameters)
+            => null;
 
         /// <summary>
         /// Function used in random test to randomize parameters
@@ -37,7 +38,8 @@ namespace PracaMagisterska.WPF.Testers {
             => null;
 
         /// <inheritdoc cref="ITestable.StaticTest" />
-        public abstract bool StaticTest(MethodDeclarationSyntax testMethod);
+        public virtual bool StaticTest(MethodDeclarationSyntax testMethod)
+            => true;
 
         /// <inheritdoc cref="ITestable.Test" />
         public bool Test(Assembly assembly, out double elapsedMilisecond, params object[] parameters) {
@@ -62,8 +64,8 @@ namespace PracaMagisterska.WPF.Testers {
         }
 
         /// <inheritdoc cref="ITestable.RunAllTests" />
-        public bool RunAllTests(SyntaxNode root, Assembly assembly, out double elapsedMilisecond) {
-            bool result = RunStaticTests(root);
+        public bool RunAllTests(SyntaxTree tree, Assembly assembly, out double elapsedMilisecond) {
+            bool result = RunStaticTests(tree);
             elapsedMilisecond = 0.0;
 
             result            &= RunSampleTests(assembly, out double elapsed);
@@ -79,11 +81,11 @@ namespace PracaMagisterska.WPF.Testers {
         }
 
         /// <inheritdoc cref="ITestable.RunStaticTests" />
-        public bool RunStaticTests(SyntaxNode root) {
+        public bool RunStaticTests(SyntaxTree tree) {
             if ( HasStaticTest ) {
                 WriteLineColor("Uruchamiam testy statyczne.", ConsoleColor.Green);
 
-                if ( !StaticTest(root.GetTestMethod(ClassName, MethodName, ParametersType)) ) {
+                if ( !StaticTest(tree.GetTestMethod(ClassName, MethodName, ParametersType)) ) {
                     WriteLineColor("Test zakończony niepowodzeniem.", ConsoleColor.Red);
 
                     return false;
@@ -215,16 +217,16 @@ namespace PracaMagisterska.WPF.Testers {
         /// <summary>
         /// Parameters type in TestMethod
         /// </summary>
-        protected abstract Type[] ParametersType { get; }
+        protected virtual Type[] ParametersType { get; } = null;
 
         /// <summary>
         /// Parameters for RealTestCases
         /// </summary>
-        protected abstract List<object[]> RealTestCases { get; }
+        protected virtual List<object[]> RealTestCases { get; } = null;
 
         /// <summary>
         /// Parameters for SimpleTestCases
         /// </summary>
-        protected abstract List<object[]> SimpleTestCases { get; }
+        protected virtual List<object[]> SimpleTestCases { get; } = null;
     }
 }

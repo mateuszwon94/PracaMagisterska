@@ -40,7 +40,7 @@ namespace PracaMagisterska.WPF.Utils {
         /// Default compilation option. Usually used to compile project
         /// </summary>
         public static readonly CSharpCompilationOptions DefaultCompilationOptions =
-            new CSharpCompilationOptions(OutputKind.ConsoleApplication)
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
                 .WithOptimizationLevel(OptimizationLevel.Release);
 
         #endregion Defaults
@@ -261,11 +261,12 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="methodName">Method name needed by test</param>
         /// <param name="parametersType">Method parameters. If null method without parameters will be returned</param>
         /// <returns>Described method</returns>
-        public static MethodDeclarationSyntax GetTestMethod(this SyntaxNode root,
+        public static MethodDeclarationSyntax GetTestMethod(this SyntaxTree tree,
                                                             string          className,
                                                             string          methodName,
                                                             Type[]          parametersType = null)
-            => root.DescendantNodes()
+            => tree.GetRoot()
+                   .DescendantNodes()
                    .OfType<ClassDeclarationSyntax>()
                    .Where(c => c.Identifier.Text == className)
                    .SelectMany(c => c.DescendantNodes())
@@ -282,8 +283,14 @@ namespace PracaMagisterska.WPF.Utils {
                            return false;
 
                        // Finds method in which all parameters are exacly the same
+                       var semanticModel = tree.Compile(out _).GetSemanticModel(tree);
+
                        return !method.ParameterList.Parameters
-                                     .Where((t, i) => t.Type.ToFullString().Trim() != parametersType[i].Name)
+                                     .Where((t, i) => semanticModel
+                                                      .GetDeclaredSymbol(method.ParameterList
+                                                                               .Parameters[i])
+                                                      .Type.Name !=
+                                                      parametersType[i].Name)
                                      .Any();
                    });
 

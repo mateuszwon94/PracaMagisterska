@@ -14,7 +14,7 @@ namespace PracaMagisterska.WPF {
         /// Gets recomendation list for empty string to speed up future recomendation. (First take some time)
         /// </summary>
         static App() {
-            ConsoleHelper.Hide();
+            ConsoleHelper.HideConsole();
             GetRecmoendations("", 0);
         }
     }

@@ -26,18 +26,18 @@ namespace PracaMagisterska.WPF.Testers {
         /// <summary>
         /// Runs all test cases for specific lesson
         /// </summary>
-        /// <param name="root">SyntaxNode which is root of a program. Use in StaticTest</param>
+        /// <param name="tree">Tree with lesson's code. Use in StaticTest</param>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
         /// <param name="elapsedMilisecond">Time of all executed test cases in miliseconds</param>
         /// <returns>True if all test cases return proper output, false otherwise</returns>
-        bool RunAllTests(SyntaxNode root, Assembly assembly, out double elapsedMilisecond);
+        bool RunAllTests(SyntaxTree tree, Assembly assembly, out double elapsedMilisecond);
 
         /// <summary>
         /// Runs all static tests for specific lesson
         /// </summary>
-        /// <param name="root">Root of lesson's code.</param>
+        /// <param name="tree">Tree with lesson's code.</param>
         /// <returns>True if all tests are passed, false otherwise</returns>
-        bool RunStaticTests(SyntaxNode root);
+        bool RunStaticTests(SyntaxTree tree);
 
         /// <summary>
         /// Runs all sample test cases for specific lesson

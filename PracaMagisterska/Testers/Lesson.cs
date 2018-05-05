@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PracaMagisterska.WPF.View;
@@ -33,7 +34,7 @@ namespace PracaMagisterska.WPF.Testers {
         /// <summary>
         /// Info for user what have to be done in this lesson
         /// </summary>
-        public virtual string Info { get; } = string.Empty;
+        public abstract string Info { get; }
 
         /// <summary>
         /// Lesson title
@@ -43,7 +44,7 @@ namespace PracaMagisterska.WPF.Testers {
         /// <summary>
         /// Default code displayed in source code editor
         /// </summary>
-        public virtual string DefaultCode { get; } = string.Empty;
+        public abstract string DefaultCode { get; }
 
         /// <summary>
         /// Lesson dificulty
@@ -124,6 +125,9 @@ class Program {
         public static ObservableCollection<Lesson> AllLessons = new ObservableCollection<Lesson> {
             new Lesson0(),
             new Lesson1(),
+            new Lesson2(),
         };
+
+        protected static readonly Random random_ = new Random();
     }
 }

@@ -276,7 +276,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="e">Arguments</param>
         private void AllTestsButton_OnClick(object sender, RoutedEventArgs e)
             => RunProgram((assembly, tree) => {
-                var result = CurrentLesson.RunAllTests(tree.GetRoot(), assembly, out double elapsedTime);
+                var result = CurrentLesson.RunAllTests(tree, assembly, out double elapsedTime);
 
                 if ( result ) {
                     WriteLineColor("All test were succeful.", ConsoleColor.Green);
@@ -324,7 +324,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void StaticTestsButton_OnClick(object sender, RoutedEventArgs e)
-            => RunProgram((_, tree) => CurrentLesson.RunStaticTests(tree.GetRoot()));
+            => RunProgram((_, tree) => CurrentLesson.RunStaticTests(tree));
 
         /// <summary>
         /// Run program compiled from source sode editor.
