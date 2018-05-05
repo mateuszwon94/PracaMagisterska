@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -39,7 +38,8 @@ namespace PracaMagisterska.WPF {
         /// <param name="root"><see cref="SyntaxNode"/> in which diagnostics are searched</param>
         /// <param name="semanticModel"><see cref="semanticModel"/> which is used to flow analysis</param>
         /// <returns>All diagnostic found</returns>
-        public static IEnumerable<DiagnosticHelper> GetAllCustomDiagnostic(this SyntaxNode root, SemanticModel semanticModel)
+        public static IEnumerable<DiagnosticHelper> GetAllCustomDiagnostic(this SyntaxNode root,
+                                                                           SemanticModel   semanticModel)
             => root.FindMagicalNumbersInExpresions()
                    .Concat(root.FindMethodsNotUsingAllParameters())
                    .Concat(root.FindPossibleConstVariables(semanticModel))
@@ -54,7 +54,8 @@ namespace PracaMagisterska.WPF {
             => root.DescendantNodes()
                    .Where(node => Settings.SyntaxKindsForMagicalNumberSearch.Any(kind => kind == node.Kind()))
                    .Where(node => node.DescendantNodes().Any(s => s.Kind() == SyntaxKind.NumericLiteralExpression))
-                   .Select(node => DiagnosticHelper.Create(node, "Numerical literal found in expression", new MagicalNumberRemoval()));
+                   .Select(node => DiagnosticHelper.Create(node, "Numerical literal found in expression",
+                                                           new MagicalNumberRemoval()));
 
         /// <summary>
         /// This method finds all method which is not using all of its parameters
@@ -70,7 +71,8 @@ namespace PracaMagisterska.WPF {
                                                                    .Select(s => s.ValueText)
                                                                    .Distinct()
                                                                    .Contains(parameter.Identifier.ValueText)))
-                   .Select(method => DiagnosticHelper.Create(method, "Method not using all given parrameters", new NotUsedParameterRemoval()));
+                   .Select(method => DiagnosticHelper.Create(method, "Method not using all given parrameters",
+                                                             new NotUsedParameterRemoval()));
 
         /// <summary>
         /// This method finds all empty statements
@@ -80,7 +82,8 @@ namespace PracaMagisterska.WPF {
         public static IEnumerable<DiagnosticHelper> FindEmptyStatement(this SyntaxNode root)
             => root.DescendantNodes()
                    .OfType<EmptyStatementSyntax>()
-                   .Select(statement => DiagnosticHelper.Create(statement, "Empty statement", new EmtpyStatementRemoval()));
+                   .Select(statement => DiagnosticHelper.Create(statement, "Empty statement",
+                                                                new EmtpyStatementRemoval()));
 
         /// <summary>
         /// This method finds all posible const value
@@ -89,7 +92,7 @@ namespace PracaMagisterska.WPF {
         /// <param name="semanticModel"><see cref="semanticModel"/> which is used to flow analysis</param>
         /// <returns>Diagnostics with possible const values</returns>
         public static IEnumerable<DiagnosticHelper> FindPossibleConstVariables(this SyntaxNode root,
-                                                                               SemanticModel semanticModel)
+                                                                               SemanticModel   semanticModel)
             => root.DescendantNodes()
                    .OfType<LocalDeclarationStatementSyntax>()
                    .Where(declaration => {
@@ -108,8 +111,8 @@ namespace PracaMagisterska.WPF {
                            if ( !constantValue.HasValue )
                                return false;
 
-                           TypeSyntax variableTypeName = declaration.Declaration.Type;
-                           ITypeSymbol variableType = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;
+                           TypeSyntax  variableTypeName = declaration.Declaration.Type;
+                           ITypeSymbol variableType     = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;
 
                            // Ensure that the initializer value can be converted to the type of the
                            // local declaration without a user-defined conversion.
@@ -134,12 +137,14 @@ namespace PracaMagisterska.WPF {
                        // and ensure that it is not written outside of the data flow analysis region.
                        foreach ( VariableDeclaratorSyntax variable in declaration.Declaration.Variables ) {
                            ISymbol variableSymbol = semanticModel.GetDeclaredSymbol(variable);
-                           if ( dataFlowAnalysis.WrittenOutside.Contains(variableSymbol) ) 
+                           if ( dataFlowAnalysis.WrittenOutside.Contains(variableSymbol) )
                                return false;
                        }
 
                        // Finally, it can be const
                        return true;
-                   }).Select(declaration => DiagnosticHelper.Create(declaration, "Variable can be cons", new AddConstModifier(semanticModel)));
+                   })
+                   .Select(declaration => DiagnosticHelper.Create(declaration, "Variable can be cons",
+                                                                  new AddConstModifier(semanticModel)));
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PracaMagisterska.WPF.Testers {
@@ -14,11 +13,11 @@ namespace PracaMagisterska.WPF.Testers {
         public Lesson0() : base(0, "Witaj Świecie", 0f) { }
 
         /// <inheritdoc cref="Tester.Solution"/>
-        protected override object Solution(params object[] parameters) 
+        protected override object Solution(params object[] parameters)
             => null;
 
         /// <inheritdoc cref="Tester.Solution"/>
-        public override bool StaticTest(MethodDeclarationSyntax testMethod) 
+        public override bool StaticTest(MethodDeclarationSyntax testMethod)
             => true;
 
         /// <inheritdoc cref="Lesson.DefaultCode"/>

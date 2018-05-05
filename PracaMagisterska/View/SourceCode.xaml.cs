@@ -1,38 +1,23 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.CodeCompletion;
-using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.SharpDevelop.Editor;
 using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MahApps.Metro.Controls.Dialogs;
-using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.MSBuild;
-using Microsoft.CodeAnalysis.Text;
-using PracaMagisterska.WPF.Exceptions;
 using PracaMagisterska.WPF.Testers;
 using PracaMagisterska.WPF.Utils;
 using PracaMagisterska.WPF.Utils.Completion;
@@ -49,7 +34,8 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="currentLesson">Specyfic <see cref="Lesson"/> object for current lesson</param>
         public SourceCode(Lesson currentLesson) {
             InitializeComponent();
-            
+
+            // Initialize with defaults
             CurrentLesson                  = currentLesson;
             TitleTextBox.Text              = CurrentLesson.Title;
             LessonInfoTextBlock.Text       = CurrentLesson.Info;
@@ -97,7 +83,7 @@ namespace PracaMagisterska.WPF.View {
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
-        private void RunButton_OnClick(object sender, RoutedEventArgs e) 
+        private void RunButton_OnClick(object sender, RoutedEventArgs e)
             => RunProgram((assembly, _) => assembly.RunMain(), OutputKind.ConsoleApplication);
 
         /// <summary>
@@ -148,7 +134,7 @@ namespace PracaMagisterska.WPF.View {
 
                     ITextMarker marker = textMarkerService_.Create(line.Offset, line.Length);
                     marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
-                    if (diagnostic.Severity == DiagnosticHelper.SeverityType.Error)
+                    if ( diagnostic.Severity == DiagnosticHelper.SeverityType.Error )
                         marker.MarkerColor = Colors.Red;
                     else if ( diagnostic.Severity == DiagnosticHelper.SeverityType.Warning )
                         marker.MarkerColor = Colors.Yellow;
@@ -202,7 +188,7 @@ namespace PracaMagisterska.WPF.View {
             if ( recomendedSymbols.Any(filterFunction) ) {
                 // Prepare completion window
                 CompletionWindow completionWindow = new CompletionWindow(SourceCodeTextBox.TextArea) {
-                    FontFamily                    = SourceCodeTextBox.FontFamily,
+                    FontFamily = SourceCodeTextBox.FontFamily,
                 };
 
                 // Add completion options
@@ -223,10 +209,8 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void SourceCodeTextBox_TextArea_TextEntered(object sender, TextCompositionEventArgs e) {
-            if ( e.Text == "." ) {
-                // Display completation window
-                InvokeCompletionWindow();
-            }
+            // Display completation window
+            if ( e.Text == "." ) InvokeCompletionWindow();
         }
 
         /// <summary>
@@ -290,9 +274,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="e">Arguments</param>
         private void AllTestsButton_OnClick(object sender, RoutedEventArgs e)
             => RunProgram((assembly, tree) => {
-                var result = CurrentLesson.RunAllTests(tree.GetRoot(),
-                                                       assembly,
-                                                       out double elapsedTime);
+                var result = CurrentLesson.RunAllTests(tree.GetRoot(), assembly, out double elapsedTime);
 
                 if ( result ) {
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -317,7 +299,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void RandomTestsButton_OnClick(object sender, RoutedEventArgs e)
-            => RunProgram((assembly, _) => CurrentLesson.RunRandomTests(assembly, out double _));
+            => RunProgram((assembly, _) => CurrentLesson.RunRandomTests(assembly, out var _));
 
         /// <summary>
         /// Event function. Called when RealTests Button is clicked
@@ -325,7 +307,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void RealTestsButton_OnClick(object sender, RoutedEventArgs e)
-            => RunProgram((assembly, _) => CurrentLesson.RunRealTests(assembly, out double _));
+            => RunProgram((assembly, _) => CurrentLesson.RunRealTests(assembly, out var _));
 
 
         /// <summary>
@@ -334,7 +316,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void SimpleTestsButton_OnClick(object sender, RoutedEventArgs e)
-            => RunProgram((assembly, _) => CurrentLesson.RunSampleTests(assembly, out double _));
+            => RunProgram((assembly, _) => CurrentLesson.RunSampleTests(assembly, out var _));
 
         /// <summary>
         /// Event function. Called when StaticTests Button is clicked
@@ -349,7 +331,8 @@ namespace PracaMagisterska.WPF.View {
         /// </summary>
         /// <param name="runAction">How program should be executed</param>
         /// <param name="outputKind">Output type of compilation</param>
-        private async void RunProgram(Action<Assembly, SyntaxTree> runAction, OutputKind outputKind = OutputKind.DynamicallyLinkedLibrary) {
+        private async void RunProgram(Action<Assembly, SyntaxTree> runAction,
+                                      OutputKind                   outputKind = OutputKind.DynamicallyLinkedLibrary) {
             // Remove all markers from code
             textMarkerService_.RemoveAll(marker => true);
 
@@ -360,21 +343,21 @@ namespace PracaMagisterska.WPF.View {
             DisaableAllButtons();
 
             // Compile and build code
-            var compilationResult = await code.Compile(compilationOptions: new CSharpCompilationOptions(outputKind))
-                                              .Build();
+            var (assembly, diagnostics, isBuildSuccesful) = await code.Compile(compilationOptions: new CSharpCompilationOptions(outputKind))
+                                                                      .Build();
 
             CompileingIndicator.IsActive = false;
             EnbleAllButtons();
 
             // Write new diagnostic information
-            UpdateDiagnostic(compilationResult.diagnostics);
+            UpdateDiagnostic(diagnostics);
 
-            if ( compilationResult.isBuildSuccesful ) {
+            if ( isBuildSuccesful ) {
                 ConsoleHelper.Show();
 
                 try {
                     // Run Main method
-                    runAction(compilationResult.assembly, code);
+                    runAction(assembly, code);
                 } catch ( Exception ex ) {
                     // Write to console any execution errors
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -398,12 +381,12 @@ namespace PracaMagisterska.WPF.View {
         /// Disables all buttons related to running or testing.
         /// </summary>
         private void DisaableAllButtons() {
-            RunButton.IsEnabled = false;
+            RunButton.IsEnabled         = false;
             StaticTestsButton.IsEnabled = false;
             SimpleTestsButton.IsEnabled = false;
-            RealTestsButton.IsEnabled = false;
+            RealTestsButton.IsEnabled   = false;
             RandomTestsButton.IsEnabled = false;
-            AllTestsButton.IsEnabled = false;
+            AllTestsButton.IsEnabled    = false;
         }
 
         /// <summary>

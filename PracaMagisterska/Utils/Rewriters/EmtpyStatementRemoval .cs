@@ -9,13 +9,13 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
         /// </summary>
         /// <param name="node">Visited statement</param>
         /// <returns>null, becouse statement should be removed</returns>
-        public override SyntaxNode VisitEmptyStatement(EmptyStatementSyntax node) 
+        public override SyntaxNode VisitEmptyStatement(EmptyStatementSyntax node)
             => null;
 
         /// <inheritdoc />
         public SyntaxTree Refactor(SyntaxNode nodeToRefactor)
             => nodeToRefactor.SyntaxTree.GetRoot()
-                             .ReplaceNode(nodeToRefactor, 
+                             .ReplaceNode(nodeToRefactor,
                                           VisitEmptyStatement((EmptyStatementSyntax)nodeToRefactor))
                              .SyntaxTree;
     }

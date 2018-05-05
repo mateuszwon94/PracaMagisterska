@@ -1,8 +1,4 @@
-﻿using System;
-using System.Dynamic;
-using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis;
 using PracaMagisterska.WPF.Utils.Rewriters;
 using PracaMagisterska.WPF.View;
 
@@ -25,29 +21,34 @@ namespace PracaMagisterska.WPF.Utils {
                 severity = SeverityType.Warning;
             else if ( diagnostic.Severity == DiagnosticSeverity.Info )
                 severity = SeverityType.Info;
-            
+
             // Create helper object
             return new DiagnosticHelper {
                 Severity    = severity,
                 Location    = new CodeLocation(diagnostic.Location),
                 Information = diagnostic.GetMessage(),
-                SyntaxNode  = diagnostic.Location
-                                        .SourceTree
-                                        ?.GetRoot()
-                                        .FindNode(diagnostic.Location.SourceSpan),
+                SyntaxNode = diagnostic.Location
+                                       .SourceTree
+                                       ?.GetRoot()
+                                       .FindNode(diagnostic.Location.SourceSpan),
             };
         }
 
-        public static DiagnosticHelper Create(SyntaxNode syntaxNode, string information, IRefactor refactor) {
-            // Create helper object
-            return new DiagnosticHelper {
+        /// <summary>
+        /// Create helper object
+        /// </summary>
+        /// <param name="syntaxNode">SyntaxNode in which diagnostic apears</param>
+        /// <param name="information">Information what is wrong</param>
+        /// <param name="refactor">Object, which allows refactoring of this issue</param>
+        /// <returns>New DiagnosticHelper object</returns>
+        public static DiagnosticHelper Create(SyntaxNode syntaxNode, string information, IRefactor refactor)
+            => new DiagnosticHelper {
                 Severity    = SeverityType.Info,
                 Location    = new CodeLocation(syntaxNode.GetLocation()),
                 Information = information,
                 Refactor    = refactor,
                 SyntaxNode  = syntaxNode
             };
-        }
 
         /// <summary>
         /// SeverityType of information
@@ -83,11 +84,11 @@ namespace PracaMagisterska.WPF.Utils {
         /// Possible type of information
         /// </summary>
         public enum SeverityType {
-            None = 0,
+            None           = 0,
             ExecutionError = 1,
-            Error = 2,
-            Warning = 3,
-            Info = 4,
+            Error          = 2,
+            Warning        = 3,
+            Info           = 4,
         }
     }
 }

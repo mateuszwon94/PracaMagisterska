@@ -1,29 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.CodeAnalysis.CSharp;
-using PracaMagisterska.WPF.Utils.Completion;
+using PracaMagisterska.WPF.Utils;
 
 namespace PracaMagisterska.WPF.View {
     /// <summary>
     /// Interaction logic for Settings.xaml
     /// </summary>
     public partial class Settings : Page {
-        public static readonly HashSet<SyntaxKind> SyntaxKindsForMagicalNumberSearch = new HashSet<SyntaxKind>();
-
         /// <inheritdoc />
         /// <summary>
         /// Static constructor. Sets all settings to default.
@@ -31,7 +18,7 @@ namespace PracaMagisterska.WPF.View {
         static Settings() {
             AutoCloseConsole = false;
 
-            foreach ( MagicalNumbersFinderHelper magicalNumberFinder in magicalNumberFinders_ ) 
+            foreach ( MagicalNumbersFinderHelper magicalNumberFinder in magicalNumberFinders_ )
                 SyntaxKindsForMagicalNumberSearch.Add(magicalNumberFinder.SyntaxKind);
         }
 
@@ -73,12 +60,17 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void MagicalNumberFinderListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-            foreach ( var item in e.AddedItems.Cast<MagicalNumbersFinderHelper>() ) 
+            foreach ( var item in e.AddedItems.Cast<MagicalNumbersFinderHelper>() )
                 SyntaxKindsForMagicalNumberSearch.Add(item.SyntaxKind);
 
-            foreach ( var item in e.RemovedItems.Cast<MagicalNumbersFinderHelper>() ) 
+            foreach ( var item in e.RemovedItems.Cast<MagicalNumbersFinderHelper>() )
                 SyntaxKindsForMagicalNumberSearch.Remove(item.SyntaxKind);
         }
+
+        /// <summary>
+        /// SyntaxKind of expression in which MagicalNumber should be searched
+        /// </summary>
+        public static readonly HashSet<SyntaxKind> SyntaxKindsForMagicalNumberSearch = new HashSet<SyntaxKind>();
 
         /// <summary>
         /// Item source for MagicalNumberFinderListView.

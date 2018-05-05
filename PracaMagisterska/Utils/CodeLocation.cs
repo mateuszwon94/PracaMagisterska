@@ -10,9 +10,9 @@ namespace PracaMagisterska.WPF.Utils {
             // Specific location based on lacation of diagnostic
             if ( location.IsInSource ) {
                 FileLinePositionSpan pos = location.GetLineSpan();
-                Location                 = LocationType.InSource;
-                Line                     = pos.StartLinePosition.Line + 1;
-                Column                   = pos.StartLinePosition.Character + 1;
+                Location = LocationType.InSource;
+                Line     = pos.StartLinePosition.Line + 1;
+                Column   = pos.StartLinePosition.Character + 1;
             } else if ( location.IsInMetadata ) {
                 Location = LocationType.InMetadata;
             }

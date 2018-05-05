@@ -11,7 +11,8 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
         /// <param name="node">Visited statement</param>
         /// <returns>null, becouse statement should be removed</returns>
         public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node) {
-            ParameterListSyntax newParameterList = node.ParameterList.WithParameters(new SeparatedSyntaxList<ParameterSyntax>());
+            ParameterListSyntax newParameterList = node.ParameterList
+                                                       .WithParameters(new SeparatedSyntaxList<ParameterSyntax>());
             foreach ( ParameterSyntax parameter in node.ParameterList.Parameters ) {
                 if ( node.Body.Statements
                          .SelectMany(statement => statement.DescendantTokens())

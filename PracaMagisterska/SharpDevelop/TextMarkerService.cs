@@ -122,8 +122,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
                     foregroundBrush.Freeze();
                 }
 
-                ChangeLinePart(
-                               Math.Max(marker.StartOffset, lineStart),
+                ChangeLinePart(Math.Max(marker.StartOffset, lineStart),
                                Math.Min(marker.EndOffset, lineEnd),
                                element => {
                                    if ( foregroundBrush != null ) {
@@ -135,8 +134,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
                                                                                       marker.FontStyle ?? tf.Style,
                                                                                       marker.FontWeight ?? tf.Weight,
                                                                                       tf.Stretch));
-                               }
-                              );
+                               });
             }
         }
 
@@ -161,8 +159,8 @@ namespace ICSharpCode.AvalonEdit.AddIn {
             foreach ( TextMarker marker in markers.FindOverlappingSegments(viewStart, viewEnd - viewStart) ) {
                 if ( marker.BackgroundColor != null ) {
                     BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder {
-                        AlignToWholePixels               = true,
-                        CornerRadius                     = 3
+                        AlignToWholePixels = true,
+                        CornerRadius       = 3
                     };
                     geoBuilder.AddSegment(textView, marker);
                     Geometry geometry = geoBuilder.CreateGeometry();
@@ -211,7 +209,7 @@ namespace ICSharpCode.AvalonEdit.AddIn {
                         }
 
                         if ( (marker.MarkerTypes & TextMarkerTypes.DottedUnderline) != 0 ) {
-                            Pen usedPen   = new Pen(usedBrush, 1) {
+                            Pen usedPen = new Pen(usedBrush, 1) {
                                 DashStyle = DashStyles.Dot
                             };
                             usedPen.Freeze();
@@ -262,15 +260,17 @@ namespace ICSharpCode.AvalonEdit.AddIn {
 
         public event EventHandler Deleted;
 
-        public bool IsDeleted => !this.IsConnectedToCollection;
+        public bool IsDeleted
+            => !this.IsConnectedToCollection;
 
-        public void Delete() { service.Remove(this); }
+        public void Delete()
+            => service.Remove(this);
 
-        internal void OnDeleted() {
-            Deleted?.Invoke(this, EventArgs.Empty);
-        }
+        internal void OnDeleted()
+            => Deleted?.Invoke(this, EventArgs.Empty);
 
-        void Redraw() { service.Redraw(this); }
+        void Redraw()
+            => service.Redraw(this);
 
         Color? backgroundColor;
 

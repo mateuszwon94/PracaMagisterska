@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -48,10 +47,10 @@ namespace PracaMagisterska.WPF.Testers {
                 Console.WriteLine();
             }
 
-            var properResult  = Solution(parameters);
-            var method        = assembly.GetTestMethod(ClassName, MethodName, ParametersType);
-            var timer         = Stopwatch.StartNew();
-            var userResult    = method.Invoke(null, parameters);
+            var properResult = Solution(parameters);
+            var method       = assembly.GetTestMethod(ClassName, MethodName, ParametersType);
+            var timer        = Stopwatch.StartNew();
+            var userResult   = method.Invoke(null, parameters);
             elapsedMilisecond = timer.Elapsed.TotalMilliseconds;
 
             bool isResultOk = properResult.Equals(userResult);
@@ -63,7 +62,7 @@ namespace PracaMagisterska.WPF.Testers {
 
         /// <inheritdoc cref="ITestable.RunAllTests" />
         public bool RunAllTests(SyntaxNode root, Assembly assembly, out double elapsedMilisecond) {
-            bool    result    = RunStaticTests(root);
+            bool result = RunStaticTests(root);
             elapsedMilisecond = 0.0;
 
             result            &= RunSampleTests(assembly, out double elapsed);
@@ -84,7 +83,7 @@ namespace PracaMagisterska.WPF.Testers {
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Uruchamiam testy statyczne.");
                 Console.ForegroundColor = ConsoleColor.White;
-                
+
                 if ( !StaticTest(root.GetTestMethod(ClassName, MethodName, ParametersType)) ) {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Test zakończony niepowodzeniem.");
@@ -110,7 +109,7 @@ namespace PracaMagisterska.WPF.Testers {
                 Console.WriteLine("Uruchamiam podstawowe testy.");
                 Console.ForegroundColor = ConsoleColor.White;
 
-                if ( AllAndAggregate(SimpleTestCases, assembly, out elapsedMilisecond)) {
+                if ( AllAndAggregate(SimpleTestCases, assembly, out elapsedMilisecond) ) {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Testy zakończone powodzeniem.\n\n");
                     Console.ForegroundColor = ConsoleColor.White;

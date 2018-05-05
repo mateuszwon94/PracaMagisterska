@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PracaMagisterska.WPF.Testers {
@@ -11,7 +10,7 @@ namespace PracaMagisterska.WPF.Testers {
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Lesson1() : base(1, "Zmienne są najważniejsze", 0.25f) 
+        public Lesson1() : base(1, "Zmienne są najważniejsze", 0.25f)
             => HasStaticTest = true;
 
         /// <inheritdoc cref="Tester.Solution"/>

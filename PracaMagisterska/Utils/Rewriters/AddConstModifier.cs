@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Simplification;
@@ -10,7 +9,7 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
         /// Constructor.
         /// </summary>
         /// <param name="semanticModel">Semantic model which is used for refactoring</param>
-        public AddConstModifier(SemanticModel semanticModel) 
+        public AddConstModifier(SemanticModel semanticModel)
             => semanticModel_ = semanticModel;
 
         /// <summary>

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -12,7 +10,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
-using PracaMagisterska.WPF.Exceptions;
 using static Microsoft.CodeAnalysis.Recommendations.Recommender;
 
 namespace PracaMagisterska.WPF.Utils {
@@ -59,33 +56,33 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="additionalReferences">Additional Assemblies used in project</param>
         /// <param name="compilationOptions">Specyfic compilation option used in project</param>
         /// <returns>Rocomendation options</returns>
-        public static async Task<IEnumerable<ISymbol>> GetRecmoendations(string              text,
-                                                                         int                 offset,
-                                                                         IEnumerable<string> additionalNamespace = null,
+        public static async Task<IEnumerable<ISymbol>> GetRecmoendations(string                         text,
+                                                                         int                            offset,
+                                                                         IEnumerable<string>            additionalNamespace  = null,
                                                                          IEnumerable<MetadataReference> additionalReferences = null,
-                                                                         CSharpCompilationOptions compilationOptions = null) {
+                                                                         CSharpCompilationOptions       compilationOptions   = null) {
             // Preparation
-            var allNamespace = additionalNamespace == null
-                                   ? DefaultNamespaces
-                                   : DefaultNamespaces.Concat(additionalNamespace);
+            var allNamespace = additionalNamespace == null ?
+                                   DefaultNamespaces :
+                                   DefaultNamespaces.Concat(additionalNamespace);
 
-            var allReferences = additionalReferences == null
-                                    ? DefaultReferences
-                                    : DefaultReferences.Concat(additionalReferences);
+            var allReferences = additionalReferences == null ?
+                                    DefaultReferences :
+                                    DefaultReferences.Concat(additionalReferences);
 
-            var properCompilationOptions = compilationOptions == null
-                                               ? DefaultCompilationOptions.WithUsings(allNamespace)
-                                               : compilationOptions;
+            var properCompilationOptions = compilationOptions == null ?
+                                               DefaultCompilationOptions.WithUsings(allNamespace) :
+                                               compilationOptions;
 
             // Create AdHoc Workspace, Project and Document, which will be used to get all proper options
             string         name      = "Lesson";
             AdhocWorkspace workspace = new AdhocWorkspace();
-            Project        project   = workspace.AddProject(ProjectInfo.Create(ProjectId.CreateNewId(),
-                                                                               VersionStamp.Create(),
-                                                                               name, name,
-                                                                               LanguageNames.CSharp,
-                                                                               metadataReferences: allReferences,
-                                                                               compilationOptions: properCompilationOptions));
+            Project project = workspace.AddProject(ProjectInfo.Create(ProjectId.CreateNewId(),
+                                                                      VersionStamp.Create(),
+                                                                      name, name,
+                                                                      LanguageNames.CSharp,
+                                                                      metadataReferences: allReferences,
+                                                                      compilationOptions: properCompilationOptions));
             Document document = workspace.AddDocument(project.Id, "Main.cs", SourceText.From(text));
 
             return await GetRecommendedSymbolsAtPositionAsync(await document.GetSemanticModelAsync(),
@@ -105,17 +102,17 @@ namespace PracaMagisterska.WPF.Utils {
                                                 IEnumerable<MetadataReference> additionalReferences = null,
                                                 CSharpCompilationOptions       compilationOptions   = null) {
             // Preparation
-            var allNamespace = additionalNamespace == null
-                                   ? DefaultNamespaces
-                                   : DefaultNamespaces.Concat(additionalNamespace);
+            var allNamespace = additionalNamespace == null ?
+                                   DefaultNamespaces :
+                                   DefaultNamespaces.Concat(additionalNamespace);
 
-            var allReferences = additionalReferences == null
-                                    ? DefaultReferences
-                                    : DefaultReferences.Concat(additionalReferences);
+            var allReferences = additionalReferences == null ?
+                                    DefaultReferences :
+                                    DefaultReferences.Concat(additionalReferences);
 
-            var properCompilationOptions = compilationOptions == null
-                                               ? DefaultCompilationOptions.WithUsings(allNamespace)
-                                               : compilationOptions;
+            var properCompilationOptions = compilationOptions == null ?
+                                               DefaultCompilationOptions.WithUsings(allNamespace) :
+                                               compilationOptions;
 
             return CSharpCompilation.Create("Code")
                                     .WithOptions(properCompilationOptions)
@@ -154,26 +151,26 @@ namespace PracaMagisterska.WPF.Utils {
         /// <returns>Assemly with program (or null if builds fails), diagnostic information and bool if build was successful</returns>
         public static async
             Task<(Assembly assembly, IEnumerable<DiagnosticHelper> diagnostics, bool isBuildSuccesful)>
-            Build(this Compilation compilation) {
-            return await Task.Run(() => {
+            Build(this Compilation compilation)
+            => await Task.Run(() => {
                 using ( var ms = new MemoryStream() ) {
                     // Compilation to memory
                     EmitResult result = compilation.Emit(ms);
 
                     // Get all errors and warnings
                     var diagnostics = result.Diagnostics
-                                           .Where(diag => diag.IsWarningAsError ||
-                                                          diag.Severity == DiagnosticSeverity.Error ||
-                                                          diag.Severity == DiagnosticSeverity.Warning)
-                                           .Select(DiagnosticHelper.Create)
-                                           .Concat(compilation.SyntaxTrees
-                                                              .ElementAt(0)
-                                                              .GetRoot()
-                                                              .GetAllCustomDiagnostic(compilation
-                                                                                          .GetSemanticModel(compilation
-                                                                                                            .SyntaxTrees
-                                                                                                            .ElementAt(0))));
-                    
+                                            .Where(diag => diag.IsWarningAsError ||
+                                                           diag.Severity == DiagnosticSeverity.Error ||
+                                                           diag.Severity == DiagnosticSeverity.Warning)
+                                            .Select(DiagnosticHelper.Create)
+                                            .Concat(compilation.SyntaxTrees
+                                                               .ElementAt(0)
+                                                               .GetRoot()
+                                                               .GetAllCustomDiagnostic(compilation
+                                                                                           .GetSemanticModel(compilation
+                                                                                                             .SyntaxTrees
+                                                                                                             .ElementAt(0))));
+
                     if ( !result.Success ) {
                         // Builds failed
                         return (null, diagnostics, false);
@@ -184,7 +181,6 @@ namespace PracaMagisterska.WPF.Utils {
                     }
                 }
             });
-        }
 
         /// <summary>
         /// Helper function, which runs default EntryPoint of assembly with strings params
@@ -193,8 +189,8 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="parameters">Parameters of entry method</param>
         public static void RunMain(this Assembly assembly, string[] parameters = null)
             => Run(assembly,
-                   parameters: parameters == null ? 
-                                   new object[] {new string[] { }} : 
+                   parameters: parameters == null ?
+                                   new object[] {new string[] { }} :
                                    new object[] {parameters});
 
         /// <summary>
@@ -206,10 +202,10 @@ namespace PracaMagisterska.WPF.Utils {
         public static void Run(this Assembly assembly, MethodInfo entryPoint = null, object[] parameters = null) {
             if ( entryPoint == null )
                 entryPoint = assembly.EntryPoint;
-            
-            entryPoint.Invoke(null, entryPoint.GetParameters().Length > 0 ? 
-                                    parameters : // invoked if method is Main(string[] args)
-                                    null); // invoked if method is Main()
+
+            entryPoint.Invoke(null, entryPoint.GetParameters().Length > 0 ?
+                                        parameters : // invoked if method is Main(string[] args)
+                                        null);       // invoked if method is Main()
         }
 
         /// <summary>
@@ -222,7 +218,7 @@ namespace PracaMagisterska.WPF.Utils {
                                                       IEnumerable<MetadataReference> references)
             => references.Aggregate(compilation,
                                     (current, reference) => current.AddReferences(reference));
-        
+
 
         /// <summary>
         /// Extension method for <see cref="Assembly"/> which gets static method need by tests
@@ -232,7 +228,10 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="methodName">Method name needed by test</param>
         /// <param name="parametersType">Method parameters. If null method without parameters will be returned</param>
         /// <returns>Described method</returns>
-        public static MethodInfo GetTestMethod(this Assembly assembly, string className, string methodName, Type[] parametersType = null) {
+        public static MethodInfo GetTestMethod(this Assembly assembly,
+                                               string        className,
+                                               string        methodName,
+                                               Type[]        parametersType = null) {
             return assembly.DefinedTypes
                            .FirstOrDefault(type => type.Name == className)
                            ?.DeclaredMethods
@@ -287,7 +286,7 @@ namespace PracaMagisterska.WPF.Utils {
                                      .Where((t, i) => t.Type.ToFullString().Trim() != parametersType[i].Name)
                                      .Any();
                    });
-        
+
         #endregion Helpers function
     }
 }

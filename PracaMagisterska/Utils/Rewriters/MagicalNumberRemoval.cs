@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Text;
-using static PracaMagisterska.WPF.Utils.Extension;
 
 namespace PracaMagisterska.WPF.Utils.Rewriters {
     public class MagicalNumberRemoval : IRefactor {
@@ -18,8 +14,9 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
         public SyntaxNode VisitStatement(StatementSyntax node, SyntaxNode root) {
             BlockSyntax block = SyntaxFactory.Block(node)
                                              .WithOpenBraceToken(SyntaxFactory.MissingToken(SyntaxKind.OpenBraceToken))
-                                             .WithCloseBraceToken(SyntaxFactory.MissingToken(SyntaxKind.CloseBraceToken));
-            
+                                             .WithCloseBraceToken(SyntaxFactory
+                                                                      .MissingToken(SyntaxKind.CloseBraceToken));
+
             return RemoveMagicalNumber(block, root);
         }
 
@@ -38,17 +35,19 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
                                                   .ToList();
 
             if ( numericalNodes.Count > 0 ) {
-                var expresion = (LocalDeclarationStatementSyntax)SyntaxFactory.ParseStatement($"var {FindFreeVariableName(root, oldBlock)} = {numericalNodes[0].ToFullString()};")
-                                                                              .WithLeadingTrivia(node.GetLeadingTrivia())
-                                                                              .WithTrailingTrivia(SyntaxFactory.ParseTrailingTrivia("\n"));
-                
+                var expresion = (LocalDeclarationStatementSyntax)SyntaxFactory
+                                                                 .ParseStatement($"var {FindFreeVariableName(root, oldBlock)} = {numericalNodes[0].ToFullString()};")
+                                                                 .WithLeadingTrivia(node.GetLeadingTrivia())
+                                                                 .WithTrailingTrivia(SyntaxFactory
+                                                                                         .ParseTrailingTrivia("\n"));
+
                 return RemoveMagicalNumber(oldBlock.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia)
                                                    .AddStatements(expresion)
                                                    .AddStatements(node.ReplaceNode(numericalNodes[0],
                                                                                    SyntaxFactory.IdentifierName(expresion.Declaration
                                                                                                                          .Variables[0]
                                                                                                                          .Identifier))),
-                                                   root);
+                                           root);
             } else {
                 return oldBlock;
             }
@@ -61,7 +60,7 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
         /// <param name="block">BlockSyntax in which used names should be searched</param>
         /// <returns>First avaliable name which starts with "magicalNumber"</returns>
         private string FindFreeVariableName(SyntaxNode root, SyntaxNode block) {
-            for ( int i = 1; true ; ++i ) {
+            for ( int i = 1; true; ++i ) {
                 if ( root.DescendantTokens()
                          .Concat(block.DescendantTokens())
                          .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
@@ -73,7 +72,7 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
         /// <inheritdoc />
         public SyntaxTree Refactor(SyntaxNode nodeToRefactor) {
             // Retrive statement from given node
-            while ( !(nodeToRefactor is StatementSyntax) ) 
+            while ( !(nodeToRefactor is StatementSyntax) )
                 nodeToRefactor = nodeToRefactor.Parent;
 
             return nodeToRefactor.SyntaxTree.GetRoot()

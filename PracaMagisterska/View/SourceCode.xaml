@@ -77,7 +77,7 @@
                 <ListView x:Name="DiagnosticListView"
                           Grid.Row="1"
                           SelectionMode="Single"
-                          Margin="0,5,5,0" 
+                          Margin="0,5,5,0"
                           SelectionChanged="DiagnosticListView_OnSelectionChanged">
                     <ListView.View>
                         <GridView>
@@ -128,7 +128,7 @@
                           Margin="5,0,0,0"
                           Width="5"
                           HorizontalAlignment="Stretch" />
-            
+
             <!--  Editor  -->
             <avalonedit:TextEditor x:Name="SourceCodeTextBox"
                                    Grid.Column="2"
@@ -145,7 +145,7 @@
                                    HorizontalScrollBarVisibility="Auto"
                                    VerticalScrollBarVisibility="Auto"
                                    KeyDown="SourceCodeTextBox_OnKeyDown"
-                                   TextChanged="SourceCodeTextBox_OnTextChanged"/>
+                                   TextChanged="SourceCodeTextBox_OnTextChanged" />
 
             <StackPanel Orientation="Vertical"
                         Grid.Column="3"

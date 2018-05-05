@@ -275,7 +275,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CodeRules.cs" />
-    <Compile Include="Exceptions\CompilationException.cs" />
     <Compile Include="SharpDevelop\ITextMarker.cs" />
     <Compile Include="SharpDevelop\TextMarkerService.cs" />
     <Compile Include="Testers\ITestable.cs" />
@@ -284,7 +283,7 @@
     <Compile Include="Testers\Tester.cs" />
     <Compile Include="Utils\CodeLocation.cs" />
     <Compile Include="Utils\Extension.cs" />
-    <Compile Include="Utils\Completion\MagicalNumbersFinderHelper.cs" />
+    <Compile Include="Utils\MagicalNumbersFinderHelper.cs" />
     <Compile Include="Utils\Completion\SymbolCompletionData.cs" />
     <Compile Include="Utils\ConsoleHelper.cs" />
     <Compile Include="Utils\DiagnosticHelper.cs" />

@@ -55,10 +55,10 @@ namespace PracaMagisterska.WPF.Testers {
         /// </summary>
         public string Stars {
             get {
-                string value = string.Empty;
-                float dificulty = Dificulty;
+                string value     = string.Empty;
+                float  dificulty = Dificulty;
 
-                for ( int stars = 0; stars < 5; ++stars) {
+                for ( int stars = 0; stars < 5; ++stars ) {
                     // If dificulty was reduce to zero just fill with empty stars
                     if ( dificulty == 0f ) {
                         value += stars_[0f] + " ";
@@ -69,7 +69,7 @@ namespace PracaMagisterska.WPF.Testers {
                     foreach ( float d in stars_.Keys.OrderByDescending(k => k) ) {
                         if ( dificulty - d >= 0 ) {
                             dificulty -= d;
-                            value += stars_[d] + " ";
+                            value     += stars_[d] + " ";
                             break;
                         }
                     }
@@ -118,6 +118,9 @@ class Program {
     }
 }";
 
+        /// <summary>
+        /// Collection of all avaliable lessons
+        /// </summary>
         public static ObservableCollection<Lesson> AllLessons = new ObservableCollection<Lesson> {
             new Lesson0(),
             new Lesson1(),

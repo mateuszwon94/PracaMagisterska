@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows;
+﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace PracaMagisterska.WPF.Utils.Completion {
+namespace PracaMagisterska.WPF.Utils {
     public class MagicalNumbersFinderHelper {
         /// <summary>
         /// Constructor.
@@ -12,25 +10,25 @@ namespace PracaMagisterska.WPF.Utils.Completion {
         /// <param name="title">Title to be displayed in setting</param>
         /// <param name="example">Example of expresion</param>
         private MagicalNumbersFinderHelper(SyntaxKind syntaxKind, string title, string example) {
-            SyntaxKind  = syntaxKind;
-            Title       = title;
-            Example     = example;
+            SyntaxKind = syntaxKind;
+            Title      = title;
+            Example    = example;
         }
 
         /// <summary>
         /// SyntaxKind of expression
         /// </summary>
-        public SyntaxKind SyntaxKind  { get; }
+        public SyntaxKind SyntaxKind { get; }
 
         /// <summary>
         /// Title to be displayed in setting
         /// </summary>
-        public string     Title       { get; }
+        public string Title { get; }
 
         /// <summary>
         /// Example of expresion
         /// </summary>
-        public string     Example     { get; }
+        public string Example { get; }
 
         /// <summary>
         /// All expresion in which magical number can be found.

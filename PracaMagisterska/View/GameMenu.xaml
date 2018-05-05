@@ -61,7 +61,7 @@
         </ListView>
 
         <ScrollViewer Grid.Column="1"
-                      Margin="5,0,0,0" 
+                      Margin="5,0,0,0"
                       VerticalScrollBarVisibility="Visible"
                       HorizontalScrollBarVisibility="Disabled">
             <TextBlock x:Name="DescriptionTextBlock"

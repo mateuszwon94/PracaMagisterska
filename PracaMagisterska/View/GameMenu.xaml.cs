@@ -1,18 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Controls;
 using PracaMagisterska.WPF.Testers;
-using PracaMagisterska.WPF.Utils;
 
 namespace PracaMagisterska.WPF.View {
     /// <summary>
@@ -47,7 +34,7 @@ Pamiętaj, że zawsze masz do dyspozycji przycisk ""Uruchom"", który będzie ur
         private void LessonsListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
             LessonsListView.SelectedItem = null;
 
-            if (e.AddedItems.Count > 0)
+            if ( e.AddedItems.Count > 0 )
                 NavigationService?.Navigate(new SourceCode((Lesson)e.AddedItems[0]));
         }
     }

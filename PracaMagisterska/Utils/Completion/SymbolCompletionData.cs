@@ -11,7 +11,7 @@ namespace PracaMagisterska.WPF.Utils.Completion {
         /// Constructor.
         /// </summary>
         /// <param name="recomendation">Recomendation symbol</param>
-        public SymbolCompletionData(ISymbol recomendation) 
+        public SymbolCompletionData(ISymbol recomendation)
             => Recomendation = recomendation;
 
         /// <inheritdoc/>
