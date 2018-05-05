@@ -21,6 +21,8 @@ using MahApps.Metro.Controls.Dialogs;
 using PracaMagisterska.WPF.Testers;
 using PracaMagisterska.WPF.Utils;
 using PracaMagisterska.WPF.Utils.Completion;
+using static System.Console;
+using static PracaMagisterska.WPF.Utils.ConsoleHelper;
 using static PracaMagisterska.WPF.Utils.Extension;
 
 namespace PracaMagisterska.WPF.View {
@@ -262,9 +264,9 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="e">Arguments</param>
         private void ShowHideConsoleButton_OnClick(object sender, RoutedEventArgs e) {
             if ( ConsoleHelper.IsVisible )
-                ConsoleHelper.Hide();
+                HideConsole();
             else if ( !ConsoleHelper.IsVisible )
-                ConsoleHelper.Show(clear: false);
+                ShowConsole(clear: false);
         }
 
         /// <summary>
@@ -277,19 +279,17 @@ namespace PracaMagisterska.WPF.View {
                 var result = CurrentLesson.RunAllTests(tree.GetRoot(), assembly, out double elapsedTime);
 
                 if ( result ) {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("All test were succeful.");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine("Collecting information about provided solution.");
-                    Console.WriteLine($"Execution time: {elapsedTime} ms.");
+                    WriteLineColor("All test were succeful.", ConsoleColor.Green);
+                    WriteLine("Collecting information about provided solution.");
+                    WriteLine($"Execution time: {elapsedTime} ms.");
                     int linesOfCode = tree.GetRoot()
                                           .GetLinesOfCodeByMethod()
                                           .Aggregate(0, (currentResult, pair) => currentResult + pair.Value);
-                    Console.WriteLine($"Line of code in methods: {linesOfCode}");
+                    WriteLine($"Line of code in methods: {linesOfCode}");
                     int statementCount = tree.GetRoot()
                                              .GetNumberOfStatementsByMethod()
                                              .Aggregate(0, (currentResult, pair) => currentResult + pair.Value);
-                    Console.WriteLine($"Number of statements in methods: {statementCount}");
+                    WriteLine($"Number of statements in methods: {statementCount}");
                 }
             });
 
@@ -353,23 +353,21 @@ namespace PracaMagisterska.WPF.View {
             UpdateDiagnostic(diagnostics);
 
             if ( isBuildSuccesful ) {
-                ConsoleHelper.Show();
+                ShowConsole();
 
                 try {
                     // Run Main method
                     runAction(assembly, code);
                 } catch ( Exception ex ) {
                     // Write to console any execution errors
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("There was execution errors!");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"\t{ex}");
+                    WriteLineColor("There was execution errors!", ConsoleColor.Red);
+                    WriteLine($"\t{ex}");
                 }
 
-                Console.WriteLine("Execution ended.");
+                WriteLine("Execution ended.");
 
                 if ( Settings.AutoCloseConsole )
-                    ConsoleHelper.Hide();
+                    HideConsole();
             } else {
                 // Display PopUp information about failed compilation
                 await this.TryFindParent<MainWindow>()

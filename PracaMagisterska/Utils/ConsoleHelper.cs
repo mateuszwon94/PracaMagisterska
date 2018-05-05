@@ -20,10 +20,32 @@ namespace PracaMagisterska.WPF.Utils {
         }
 
         /// <summary>
+        /// Writes colored text onto Standard Output
+        /// </summary>
+        /// <param name="text">Text to write</param>
+        /// <param name="color">Color of text</param>
+        public static void WriteColor(string text, ConsoleColor color = ConsoleColor.White) {
+            Console.ForegroundColor = color;
+            Console.Write(text);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        /// <summary>
+        /// Writes colored text onto Standard Output and add new line
+        /// </summary>
+        /// <param name="text">Text to write</param>
+        /// <param name="color">Color of text</param>
+        public static void WriteLineColor(string text, ConsoleColor color = ConsoleColor.White) {
+            Console.ForegroundColor = color;
+            Console.WriteLine(text);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        /// <summary>
         /// Method, which allows user to show Console and define its state.
         /// </summary>
         /// <param name="state">Initial state of console</param>
-        public static void Show(ConsoleState state = ConsoleState.Show, bool clear = true) {
+        public static void ShowConsole(ConsoleState state = ConsoleState.Show, bool clear = true) {
             if ( clear ) Console.Clear();
 
             State                   = state;
@@ -33,7 +55,7 @@ namespace PracaMagisterska.WPF.Utils {
         /// <summary>
         /// Hide console.
         /// </summary>
-        public static void Hide() {
+        public static void HideConsole() {
             Console.ForegroundColor = ConsoleColor.White;
             State                   = ConsoleState.Hide;
         }

@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PracaMagisterska.WPF.Utils;
 using System.Diagnostics;
+using static PracaMagisterska.WPF.Utils.ConsoleHelper;
 
 namespace PracaMagisterska.WPF.Testers {
     /// <summary>
@@ -80,21 +81,15 @@ namespace PracaMagisterska.WPF.Testers {
         /// <inheritdoc cref="ITestable.RunStaticTests" />
         public bool RunStaticTests(SyntaxNode root) {
             if ( HasStaticTest ) {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Uruchamiam testy statyczne.");
-                Console.ForegroundColor = ConsoleColor.White;
+                WriteLineColor("Uruchamiam testy statyczne.", ConsoleColor.Green);
 
                 if ( !StaticTest(root.GetTestMethod(ClassName, MethodName, ParametersType)) ) {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Test zakończony niepowodzeniem.");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    WriteLineColor("Test zakończony niepowodzeniem.", ConsoleColor.Red);
 
                     return false;
                 }
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Testy zakończone powodzeniem.\n\n");
-                Console.ForegroundColor = ConsoleColor.White;
+                WriteLineColor("Testy zakończone powodzeniem.\n\n", ConsoleColor.Green);
             }
 
             return true;
@@ -105,18 +100,12 @@ namespace PracaMagisterska.WPF.Testers {
             elapsedMilisecond = 0.0;
 
             if ( HasSimpleTest ) {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Uruchamiam podstawowe testy.");
-                Console.ForegroundColor = ConsoleColor.White;
+                WriteLineColor("Uruchamiam podstawowe testy.", ConsoleColor.Green);
 
                 if ( AllAndAggregate(SimpleTestCases, assembly, out elapsedMilisecond) ) {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Testy zakończone powodzeniem.\n\n");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    WriteLineColor("Testy zakończone powodzeniem.\n\n", ConsoleColor.Green);
                 } else {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Test zakończony niepowodzeniem.");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    WriteLineColor("Test zakończony niepowodzeniem.", ConsoleColor.Red);
 
                     return false;
                 }
@@ -130,18 +119,12 @@ namespace PracaMagisterska.WPF.Testers {
             elapsedMilisecond = 0.0;
 
             if ( HasRealTest ) {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Uruchamiam zaawansowane testy.");
-                Console.ForegroundColor = ConsoleColor.White;
+                WriteLineColor("Uruchamiam rzeczywiste testy.", ConsoleColor.Green);
 
                 if ( AllAndAggregate(RealTestCases, assembly, out elapsedMilisecond) ) {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Testy zakończone powodzeniem.\n\n");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    WriteLineColor("Testy zakończone powodzeniem.\n\n", ConsoleColor.Green);
                 } else {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Test zakończony niepowodzeniem.");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    WriteLineColor("Test zakończony niepowodzeniem.", ConsoleColor.Red);
 
                     return false;
                 }
@@ -154,16 +137,12 @@ namespace PracaMagisterska.WPF.Testers {
         public bool RunRandomTests(Assembly assembly, out double elapsedMilisecond) {
             elapsedMilisecond = 0.0;
             if ( HasRandomTests ) {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Uruchamiam testy losowe.");
-                Console.ForegroundColor = ConsoleColor.White;
+                WriteLineColor("Uruchamiam testy losowe.", ConsoleColor.Green);
 
                 for ( int i = 0; i < RandomTestCount; ++i ) {
                     var result = Test(assembly, out double elapsed, GenerateParamaters());
                     if ( !result ) {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Test zakończony niepowodzeniem.");
-                        Console.ForegroundColor = ConsoleColor.White;
+                        WriteLineColor("Test zakończony niepowodzeniem.", ConsoleColor.Red);
 
                         return false;
                     }
@@ -171,9 +150,7 @@ namespace PracaMagisterska.WPF.Testers {
                     elapsedMilisecond += elapsed;
                 }
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Testy zakończone powodzeniem.\n\n");
-                Console.ForegroundColor = ConsoleColor.White;
+                WriteLineColor("Testy zakończone powodzeniem.\n\n", ConsoleColor.Green);
             }
 
             return true;
