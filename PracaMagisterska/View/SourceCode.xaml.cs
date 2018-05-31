@@ -21,6 +21,7 @@ using MahApps.Metro.Controls.Dialogs;
 using PracaMagisterska.WPF.Testers;
 using PracaMagisterska.WPF.Utils;
 using PracaMagisterska.WPF.Utils.Completion;
+using PracaMagisterska.WPF.Utils.Exceptions;
 using static System.Console;
 using static PracaMagisterska.WPF.Utils.ConsoleHelper;
 using static PracaMagisterska.WPF.Utils.Extension;
@@ -339,20 +340,22 @@ namespace PracaMagisterska.WPF.View {
             // Get SyntaxTree from code
             SyntaxTree code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
 
-            CompileingIndicator.IsActive = true;
-            DisaableAllButtons();
 
-            // Compile and build code
-            var (assembly, diagnostics, isBuildSuccesful) = await code.Compile(compilationOptions: new CSharpCompilationOptions(outputKind))
-                                                                      .Build();
+            try {
+                CompileingIndicator.IsActive = true;
+                DisaableAllButtons();
 
-            CompileingIndicator.IsActive = false;
-            EnbleAllButtons();
+                // Compile and build code
+                var assembly = await code.Compile(out var diagnostics, 
+                                                  compilationOptions: new CSharpCompilationOptions(outputKind))
+                                         .Build();
 
-            // Write new diagnostic information
-            UpdateDiagnostic(diagnostics);
+                CompileingIndicator.IsActive = false;
+                EnbleAllButtons();
 
-            if ( isBuildSuccesful ) {
+                // Write new diagnostic information
+                UpdateDiagnostic(diagnostics);
+
                 ShowConsole();
 
                 try {
@@ -368,7 +371,13 @@ namespace PracaMagisterska.WPF.View {
 
                 if ( Settings.AutoCloseConsole )
                     HideConsole();
-            } else {
+            } catch ( BuildFailedException ex ) {
+                CompileingIndicator.IsActive = false;
+                EnbleAllButtons();
+
+                // Write new diagnostic information
+                UpdateDiagnostic(ex.Diagnostics);
+
                 // Display PopUp information about failed compilation
                 await this.TryFindParent<MainWindow>()
                           .ShowMessageAsync("Kompilacja zakończona", "Kompilacja niepowiodła się");

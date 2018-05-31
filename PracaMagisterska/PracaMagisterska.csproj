@@ -288,6 +288,7 @@
     <Compile Include="Testers\Lesson2.cs" />
     <Compile Include="Testers\Tester.cs" />
     <Compile Include="Utils\CodeLocation.cs" />
+    <Compile Include="Utils\Exceptions\BuildFailedException.cs" />
     <Compile Include="Utils\Extension.cs" />
     <Compile Include="Utils\MagicalNumbersFinderHelper.cs" />
     <Compile Include="Utils\Completion\SymbolCompletionData.cs" />

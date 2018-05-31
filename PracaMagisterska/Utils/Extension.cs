@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
+using PracaMagisterska.WPF.Utils.Exceptions;
 using static Microsoft.CodeAnalysis.Recommendations.Recommender;
 
 namespace PracaMagisterska.WPF.Utils {
@@ -32,7 +34,6 @@ namespace PracaMagisterska.WPF.Utils {
         /// </summary>
         public static readonly IEnumerable<MetadataReference> DefaultReferences = new[] {
             MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(IEnumerable).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(IQueryable<>).Assembly.Location)
         };
 
@@ -121,6 +122,33 @@ namespace PracaMagisterska.WPF.Utils {
         }
 
         /// <summary>
+        /// Converts Roslyn Diagnostic obiect to my DiagnosticHelper
+        /// </summary>
+        /// <param name="diagnostics">Array of roslyn diagnostics</param>
+        /// <returns>Enumerable of DiagnosticHelpers</returns>
+        public static IEnumerable<DiagnosticHelper> AsDiagnosticHelper(this ImmutableArray<Diagnostic> diagnostics) {
+            return diagnostics.Where(diag => diag.IsWarningAsError ||
+                                             diag.Severity == DiagnosticSeverity.Error ||
+                                             diag.Severity == DiagnosticSeverity.Warning)
+                              .Select(DiagnosticHelper.Create);
+        }
+
+        /// <summary>
+        /// Concats Diagnostcis from Roslyn with all custom diagnostic
+        /// </summary>
+        /// <param name="diagnostics">DiagnosticHelpers provided by Roslyn</param>
+        /// <param name="syntaxTree">SyntaxTree with code</param>
+        /// <param name="semanticModel">SemanticModel of given SyntaxTree</param>
+        /// <returns>Concated diagnostics</returns>
+        public static IEnumerable<DiagnosticHelper> WithAllCustomDiagnostics(
+            this IEnumerable<DiagnosticHelper> diagnostics,
+            SyntaxTree                         syntaxTree,
+            SemanticModel                      semanticModel) {
+            return diagnostics.Concat(syntaxTree.GetRoot()
+                                                .GetAllCustomDiagnostic(semanticModel));
+        }
+
+        /// <summary>
         /// Helper method, which compiles <paramref name="syntaxTree"/> to <see cref="Compilation"/> ovject
         /// </summary>
         /// <param name="syntaxTree"><see cref="SyntaxTree"/> of code to compile</param>
@@ -137,9 +165,9 @@ namespace PracaMagisterska.WPF.Utils {
             var compilation = syntaxTree.Compile(additionalNamespace, additionalReferences, compilationOptions);
 
             diagnostics = compilation.GetDiagnostics()
-                                     .Select(DiagnosticHelper.Create)
-                                     .Concat(syntaxTree.GetRoot()
-                                                       .GetAllCustomDiagnostic(compilation.GetSemanticModel(syntaxTree)));
+                                     .AsDiagnosticHelper()
+                                     .WithAllCustomDiagnostics(syntaxTree,
+                                                               compilation.GetSemanticModel(syntaxTree));
 
             return compilation;
         }
@@ -149,38 +177,30 @@ namespace PracaMagisterska.WPF.Utils {
         /// </summary>
         /// <param name="compilation"><see cref="Compilation"/> object for wwhich build will be performed</param>
         /// <returns>Assemly with program (or null if builds fails), diagnostic information and bool if build was successful</returns>
-        public static async
-            Task<(Assembly assembly, IEnumerable<DiagnosticHelper> diagnostics, bool isBuildSuccesful)>
-            Build(this Compilation compilation)
-            => await Task.Run(() => {
+        public static async Task<Assembly> Build(this Compilation compilation) {
+            return await Task.Run(() => {
                 using ( var ms = new MemoryStream() ) {
                     // Compilation to memory
                     EmitResult result = compilation.Emit(ms);
 
-                    // Get all errors and warnings
-                    var diagnostics = result.Diagnostics
-                                            .Where(diag => diag.IsWarningAsError ||
-                                                           diag.Severity == DiagnosticSeverity.Error ||
-                                                           diag.Severity == DiagnosticSeverity.Warning)
-                                            .Select(DiagnosticHelper.Create)
-                                            .Concat(compilation.SyntaxTrees
-                                                               .ElementAt(0)
-                                                               .GetRoot()
-                                                               .GetAllCustomDiagnostic(compilation
-                                                                                           .GetSemanticModel(compilation
-                                                                                                             .SyntaxTrees
-                                                                                                             .ElementAt(0))));
-
-                    if ( !result.Success ) {
-                        // Builds failed
-                        return (null, diagnostics, false);
-                    } else {
-                        // Build successed 
+                    if ( result.Success ) { // Build successed 
                         ms.Seek(0, SeekOrigin.Begin);
-                        return (Assembly.Load(ms.ToArray()), diagnostics, true);
+                        return Assembly.Load(ms.ToArray());
+                    } else { // Builds failed
+                        var syntaxTree = compilation.SyntaxTrees
+                                                    .ElementAt(0);
+
+                        // Get all errors and warnings
+                        var diagnostics = result.Diagnostics
+                                                .AsDiagnosticHelper()
+                                                .WithAllCustomDiagnostics(syntaxTree,
+                                                                          compilation.GetSemanticModel(syntaxTree));
+
+                        throw new BuildFailedException(diagnostics);
                     }
                 }
             });
+        }
 
         /// <summary>
         /// Helper function, which runs default EntryPoint of assembly with strings params
