@@ -289,12 +289,14 @@
     <Compile Include="Testers\Tester.cs" />
     <Compile Include="Utils\CodeLocation.cs" />
     <Compile Include="Utils\Exceptions\BuildFailedException.cs" />
+    <Compile Include="Utils\Exceptions\InvalidIdentifierException.cs" />
     <Compile Include="Utils\Extension.cs" />
     <Compile Include="Utils\MagicalNumbersFinderHelper.cs" />
     <Compile Include="Utils\Completion\SymbolCompletionData.cs" />
     <Compile Include="Utils\ConsoleHelper.cs" />
     <Compile Include="Utils\DiagnosticHelper.cs" />
     <Compile Include="Testers\Lesson.cs" />
+    <Compile Include="Utils\Rewriters\SymbolRenamer.cs" />
     <Compile Include="Utils\Rewriters\AddConstModifier.cs" />
     <Compile Include="Utils\Rewriters\MagicalNumberRemoval.cs" />
     <Compile Include="Utils\Rewriters\NotUsedParameterRemoval.cs" />

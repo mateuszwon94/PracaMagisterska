@@ -18,10 +18,12 @@ using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MahApps.Metro.Controls.Dialogs;
+using Microsoft.CodeAnalysis.Text;
 using PracaMagisterska.WPF.Testers;
 using PracaMagisterska.WPF.Utils;
 using PracaMagisterska.WPF.Utils.Completion;
 using PracaMagisterska.WPF.Utils.Exceptions;
+using PracaMagisterska.WPF.Utils.Rewriters;
 using static System.Console;
 using static PracaMagisterska.WPF.Utils.ConsoleHelper;
 using static PracaMagisterska.WPF.Utils.Extension;
@@ -57,6 +59,7 @@ namespace PracaMagisterska.WPF.View {
                                                  ?.AddService(typeof(ITextMarkerService), textMarkerService_);
 
             SourceCodeTextBox.TextArea.TextEntered += SourceCodeTextBox_TextArea_TextEntered;
+            SourceCodeTextBox.TextArea.SelectionChanged += SourceCodeTextBox_TextArea_SelectionChanged;
 
             SourceCodeTextBox.Focus();
 
@@ -75,6 +78,11 @@ namespace PracaMagisterska.WPF.View {
             UpdateDiagnostic();
             EnbleAllButtons();
         }
+
+        /// <summary>
+        /// Represent current code in SourceCodeTextBox
+        /// </summary>
+        public SyntaxTree Code;
 
         /// <summary>
         /// Object represent current lesson
@@ -115,7 +123,8 @@ namespace PracaMagisterska.WPF.View {
 
             if ( !string.IsNullOrEmpty(SourceCodeTextBox.Text.Trim()) ) {
                 // Get SyntaxTree from code
-                CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text).Compile(out var diagnostics);
+                Code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
+                Code.Compile(out var diagnostics);
 
                 // Write new diagnostic information
                 UpdateDiagnostic(diagnostics);
@@ -254,8 +263,11 @@ namespace PracaMagisterska.WPF.View {
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
-        private void SourceCodeTextBox_OnTextChanged(object sender, EventArgs e)
-            => timer_.Start();
+        private void SourceCodeTextBox_OnTextChanged(object sender, EventArgs e) {
+            timer_.Start();
+
+            Code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
+        }
 
         /// <summary>
         /// Event funciont. Called when ShowHideConsole Button have been preesed.
@@ -328,6 +340,66 @@ namespace PracaMagisterska.WPF.View {
             => RunProgram((_, tree) => CurrentLesson.RunStaticTests(tree));
 
         /// <summary>
+        /// Event function. Called when selection in TextArea in SourceCodeTextBox has changed
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private void SourceCodeTextBox_TextArea_SelectionChanged(object sender, EventArgs e) {
+            if ( SourceCodeTextBox.SelectionLength == 0 ) // deselection
+                syntaxTokenToRename_ = default;
+            else { //selection
+                Code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
+
+                // Get TextSpan of selected text
+                TextSpan selectionSpan = new TextSpan(SourceCodeTextBox.SelectionStart,
+                                                      SourceCodeTextBox.SelectionLength);
+
+                // Get SyntaxToken which is selected
+                syntaxTokenToRename_ = Code.GetRoot()
+                                           .DescendantTokens()
+                                           .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
+                                           .FirstOrDefault(token => token.Span.Contains(selectionSpan));
+            }
+
+            if ( syntaxTokenToRename_ != default ) {
+                // Enable renaming
+                NewNameTextBox.Text      = syntaxTokenToRename_.ToString();
+                NewNameTextBox.IsEnabled = true;
+                RenameButton.IsEnabled   = true;
+            } else {
+                // Disable renaming
+                NewNameTextBox.Text      = "Zaznacz identyfikator";
+                NewNameTextBox.IsEnabled = false;
+                RenameButton.IsEnabled   = false;
+            }
+        }
+
+        /// <summary>
+        /// Event function. Called when Rename Button is clicked
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Arguments</param>
+        private async void RenameButton_OnClick(object sender, RoutedEventArgs e) {
+            try {
+                // Get SyntaxTree with renamed symbol
+                var newCode = Code.Compile()
+                                  .GetSemanticModel(Code)
+                                  .RenameSymbol(syntaxTokenToRename_, NewNameTextBox.Text.Trim());
+
+                if ( newCode != null ) {
+                    SourceCodeTextBox.Text = newCode.ToString();
+
+                    UpdateDiagnostic();
+                }
+            } catch ( InvalidIdentifierException ) {
+                // Display PopUp information about failed compilation
+                await this.TryFindParent<MainWindow>()
+                          .ShowMessageAsync("Zmiana nazwy nie powiodła się", 
+                                            "Podany identyfikator jest niepoprawny lub jest już używany");
+            }
+        }
+
+        /// <summary>
         /// Run program compiled from source sode editor.
         /// </summary>
         /// <param name="runAction">How program should be executed</param>
@@ -338,15 +410,14 @@ namespace PracaMagisterska.WPF.View {
             textMarkerService_.RemoveAll(marker => true);
 
             // Get SyntaxTree from code
-            SyntaxTree code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
-
+            Code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
 
             try {
                 CompileingIndicator.IsActive = true;
                 DisaableAllButtons();
 
                 // Compile and build code
-                var assembly = await code.Compile(out var diagnostics, 
+                var assembly = await Code.Compile(out var diagnostics, 
                                                   compilationOptions: new CSharpCompilationOptions(outputKind))
                                          .Build();
 
@@ -360,7 +431,7 @@ namespace PracaMagisterska.WPF.View {
 
                 try {
                     // Run Main method
-                    runAction(assembly, code);
+                    runAction(assembly, Code);
                 } catch ( Exception ex ) {
                     // Write to console any execution errors
                     WriteLineColor("There was execution errors!", ConsoleColor.Red);
@@ -431,5 +502,10 @@ namespace PracaMagisterska.WPF.View {
         /// Timer used to update diagnostic
         /// </summary>
         private readonly DispatcherTimer dispacherTimer_ = new DispatcherTimer();
+
+        /// <summary>
+        /// Node which will be use to renaming
+        /// </summary>
+        private SyntaxToken syntaxTokenToRename_;
     }
 }

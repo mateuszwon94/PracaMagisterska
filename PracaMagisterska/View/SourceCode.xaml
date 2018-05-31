@@ -46,9 +46,9 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300"
-                                  MaxWidth="400"
-                                  MinWidth="250" />
+                <ColumnDefinition Width="400"
+                                  MaxWidth="500"
+                                  MinWidth="300" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -60,6 +60,7 @@
                     <RowDefinition Height="3*" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <!--  Lesson information  -->
@@ -68,8 +69,9 @@
                                Margin="0,0,5,0"
                                FontSize="15"
                                TextWrapping="Wrap"
-                               MaxWidth="400"
-                               MinWidth="200"
+                               Width="400"
+                               MaxWidth="500"
+                               MinWidth="300"
                                FontFamily="{StaticResource ConsolasFont}" />
                 </ScrollViewer>
 
@@ -101,7 +103,31 @@
                         Content="Napraw"
                         Click="FixButton_OnClick" />
 
-                <Grid Grid.Row="3">
+                <Grid Grid.Row="3"
+                      Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="RenameButton"
+                            Grid.Column="0"
+                            IsEnabled="False"
+                            Height="35"
+                            FontSize="20"
+                            Margin="0,0,5,0"
+                            FontFamily="{StaticResource ConsolasFont}"
+                            Content="Zmień nazwę"
+                            Click="RenameButton_OnClick" />
+                    <TextBox x:Name="NewNameTextBox"
+                             Grid.Column="1"
+                             IsEnabled="False"
+                             Height="35"
+                             FontSize="20"
+                             Text="Zaznacz identyfikator"
+                             FontFamily="{StaticResource ConsolasFont}" />
+                </Grid>
+
+                <Grid Grid.Row="4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="2*" />
