@@ -11,21 +11,6 @@
       Title="SorceSode"
       d:DesignHeight="720"
       d:DesignWidth="1080">
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
-                <!-- this window should be green -->
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Green.xaml" />
-                <!-- and should use the light theme -->
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
 
     <Grid Margin="10,10,10,10">
         <Grid.RowDefinitions>
@@ -119,11 +104,12 @@
                             Content="Zmień nazwę"
                             Click="RenameButton_OnClick" />
                     <TextBox x:Name="NewNameTextBox"
+                             controls:TextBoxHelper.Watermark="Zaznacz identyfikator"
                              Grid.Column="1"
                              IsEnabled="False"
                              Height="35"
                              FontSize="20"
-                             Text="Zaznacz identyfikator"
+                             Text=""
                              FontFamily="{StaticResource ConsolasFont}" />
                 </Grid>
 
