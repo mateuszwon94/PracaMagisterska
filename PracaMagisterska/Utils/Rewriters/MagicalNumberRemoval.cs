@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -30,20 +32,19 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
             StatementSyntax node = oldBlock.Statements.Last();
 
             // Find all magical numbers in a statement
-            List<SyntaxNode> numericalNodes = node.DescendantNodes()
-                                                  .Where(n => n.Kind() == SyntaxKind.NumericLiteralExpression)
-                                                  .ToList();
+            var numericalNode = node.DescendantNodes()
+                                     .FirstOrDefault(n => n.IsKind(SyntaxKind.NumericLiteralExpression));
 
-            if ( numericalNodes.Count > 0 ) {
+            if ( numericalNode != null ) {
                 var expresion = (LocalDeclarationStatementSyntax)SyntaxFactory
-                                                                 .ParseStatement($"var {FindFreeVariableName(root, oldBlock)} = {numericalNodes[0].ToFullString()};")
+                                                                 .ParseStatement($"var {FindFreeVariableName(root, oldBlock)} = {numericalNode.ToFullString()};")
                                                                  .WithLeadingTrivia(node.GetLeadingTrivia())
                                                                  .WithTrailingTrivia(SyntaxFactory
                                                                                          .ParseTrailingTrivia("\n"));
-
+                
                 return RemoveMagicalNumber(oldBlock.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia)
                                                    .AddStatements(expresion)
-                                                   .AddStatements(node.ReplaceNode(numericalNodes[0],
+                                                   .AddStatements(node.ReplaceNode(numericalNode,
                                                                                    SyntaxFactory.IdentifierName(expresion.Declaration
                                                                                                                          .Variables[0]
                                                                                                                          .Identifier))),

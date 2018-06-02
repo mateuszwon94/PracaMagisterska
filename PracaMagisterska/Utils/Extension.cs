@@ -51,13 +51,13 @@ namespace PracaMagisterska.WPF.Utils {
         /// <summary>
         /// Helper method, which provides Recomendations for given offset in given string
         /// </summary>
-        /// <param name="text">Text for which recomendation will be searched</param>
+        /// <param name="sourceCode">Text for which recomendation will be searched</param>
         /// <param name="offset">Position in which recomendation is required</param>
         /// <param name="additionalNamespace">Additional namespaces used in project</param>
         /// <param name="additionalReferences">Additional Assemblies used in project</param>
         /// <param name="compilationOptions">Specyfic compilation option used in project</param>
         /// <returns>Rocomendation options</returns>
-        public static async Task<IEnumerable<ISymbol>> GetRecmoendations(string                         text,
+        public static async Task<IEnumerable<ISymbol>> GetRecmoendations(string                         sourceCode,
                                                                          int                            offset,
                                                                          IEnumerable<string>            additionalNamespace  = null,
                                                                          IEnumerable<MetadataReference> additionalReferences = null,
@@ -84,7 +84,7 @@ namespace PracaMagisterska.WPF.Utils {
                                                                       LanguageNames.CSharp,
                                                                       metadataReferences: allReferences,
                                                                       compilationOptions: properCompilationOptions));
-            Document document = workspace.AddDocument(project.Id, "Main.cs", SourceText.From(text));
+            Document document = workspace.AddDocument(project.Id, "Main.cs", SourceText.From(sourceCode));
 
             return await GetRecommendedSymbolsAtPositionAsync(await document.GetSemanticModelAsync(),
                                                               offset, workspace);

@@ -16,7 +16,7 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
             foreach ( ParameterSyntax parameter in node.ParameterList.Parameters ) {
                 if ( node.Body.Statements
                          .SelectMany(statement => statement.DescendantTokens())
-                         .Select(s => s.ValueText)
+                         .Select(token => token.ValueText)
                          .Distinct()
                          .Contains(parameter.Identifier.ValueText) )
                     newParameterList = newParameterList.AddParameters(parameter);

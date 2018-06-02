@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -32,14 +33,14 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
                 throw new InvalidIdentifierException();
 
             // Get all spans in which identifier is used
-            IEnumerable<TextSpan> renameSpans = semanticModel.GetSpansForRename(syntaxToken)
-                                                             .OrderBy(nameSpan => nameSpan);
+            IEnumerable<TextSpan> renameSpans = semanticModel.GetSpansForRename(syntaxToken);
 
             // Actual renameing
             SourceText newSourceText = semanticModel.SyntaxTree
                                                     .GetText()
                                                     .WithChanges(renameSpans.Select(nameSpan => new TextChange(nameSpan,
                                                                                                                newName)));
+                                                                                                               
             return semanticModel.SyntaxTree.WithChangedText(newSourceText);
         }
 
@@ -51,19 +52,17 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
         /// <returns></returns>
         private static IEnumerable<TextSpan> GetSpansForRename(this SemanticModel semanticModel,
                                                                SyntaxToken        syntaxToken) {
-            SyntaxNode syntaxNode = syntaxToken.Parent;
-
             // Get symbol from given SyntaxToken
-            ISymbol symbol = semanticModel.GetSymbolInfo(syntaxNode).Symbol 
-                             ?? semanticModel.GetDeclaredSymbol(syntaxNode);
+            ISymbol symbol = semanticModel.GetSymbolInfo(syntaxToken.Parent).Symbol 
+                             ?? semanticModel.GetDeclaredSymbol(syntaxToken.Parent);
 
-            // If symbol was not found
+            // If symbol was not found return empty sequence
             if ( symbol == null )
-                return null; 
+                return new TextSpan[0];
 
             // Get definition of symbol
             var definitions = symbol.Locations
-                                    .Where(location => location.SourceTree == syntaxNode.SyntaxTree)
+                                    .Where(location => location.SourceTree == syntaxToken.SyntaxTree)
                                     .Select(location => location.SourceSpan);
 
             // Get usages of symbol

@@ -52,9 +52,9 @@ namespace PracaMagisterska.WPF {
         /// <returns>Diagnostics with magical number</returns>
         public static IEnumerable<DiagnosticHelper> FindMagicalNumbersInExpresions(this SyntaxNode root)
             => root.DescendantNodes()
-                   .Where(node => Settings.SyntaxKindsForMagicalNumberSearch.Any(kind => kind == node.Kind()))
-                   .Where(node => node.DescendantNodes().Any(s => s.Kind() == SyntaxKind.NumericLiteralExpression))
-                   .Select(node => DiagnosticHelper.Create(node, "Numerical literal found in expression",
+                   .Where(node => Settings.SyntaxKindsForMagicalNumberSearch.Any(node.IsKind))
+                   .Where(node => node.DescendantNodes().Any(s => s.IsKind(SyntaxKind.NumericLiteralExpression)))
+                   .Select(node => DiagnosticHelper.Create(node, "Numerical literal in expression",
                                                            new MagicalNumberRemoval()));
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace PracaMagisterska.WPF {
                                                                    .Select(s => s.ValueText)
                                                                    .Distinct()
                                                                    .Contains(parameter.Identifier.ValueText)))
-                   .Select(method => DiagnosticHelper.Create(method, "Method not using all given parrameters",
+                   .Select(method => DiagnosticHelper.Create(method, "Method not using all parrameters",
                                                              new NotUsedParameterRemoval()));
 
         /// <summary>
@@ -95,24 +95,25 @@ namespace PracaMagisterska.WPF {
                                                                                SemanticModel   semanticModel)
             => root.DescendantNodes()
                    .OfType<LocalDeclarationStatementSyntax>()
+                   .Where(declaration => !declaration.Modifiers.Any(SyntaxKind.ConstKeyword))
                    .Where(declaration => {
-                       // already const?
-                       if ( declaration.Modifiers.Any(SyntaxKind.ConstKeyword) )
-                           return false;
+                       // Retrieve detailed information about the declared type of the local declaration
+                       TypeSyntax variableTypeName = declaration.Declaration.Type;
+                       ITypeSymbol variableType     = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;
 
-                       // Ensure that all variables in the local declaration have initializers that
-                       // are assigned with constant values.
+                       // Perform data flow analysis on the local declaration.
+                       DataFlowAnalysis dataFlowAnalysis = semanticModel.AnalyzeDataFlow(declaration);
+
+                       // Retrieve the local symbol for each variable in the local declaration
                        foreach ( VariableDeclaratorSyntax variable in declaration.Declaration.Variables ) {
+                           // Ensure that variable has initializers that are assigned with constant values.
                            EqualsValueClauseSyntax initializer = variable.Initializer;
                            if ( initializer == null )
                                return false;
 
-                           Optional<object> constantValue = semanticModel.GetConstantValue(initializer.Value);
+                           var constantValue = semanticModel.GetConstantValue(initializer.Value);
                            if ( !constantValue.HasValue )
                                return false;
-
-                           TypeSyntax  variableTypeName = declaration.Declaration.Type;
-                           ITypeSymbol variableType     = semanticModel.GetTypeInfo(variableTypeName).ConvertedType;
 
                            // Ensure that the initializer value can be converted to the type of the
                            // local declaration without a user-defined conversion.
@@ -128,14 +129,8 @@ namespace PracaMagisterska.WPF {
                                    return false;
                            } else if ( variableType.IsReferenceType && constantValue.Value != null )
                                return false;
-                       }
 
-                       // Perform data flow analysis on the local declaration.
-                       DataFlowAnalysis dataFlowAnalysis = semanticModel.AnalyzeDataFlow(declaration);
-
-                       // Retrieve the local symbol for each variable in the local declaration
-                       // and ensure that it is not written outside of the data flow analysis region.
-                       foreach ( VariableDeclaratorSyntax variable in declaration.Declaration.Variables ) {
+                           // Ensure that variable is not written outside of the data flow analysis region.
                            ISymbol variableSymbol = semanticModel.GetDeclaredSymbol(variable);
                            if ( dataFlowAnalysis.WrittenOutside.Contains(variableSymbol) )
                                return false;

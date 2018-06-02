@@ -53,7 +53,7 @@ namespace PracaMagisterska.WPF.Utils {
             new MagicalNumbersFinderHelper(SyntaxKind.GreaterThanExpression,           "Większe niż",                                    "a > 1"),
             new MagicalNumbersFinderHelper(SyntaxKind.GreaterThanOrEqualExpression,    "Nie mniejsze niż",                               "a >= 1"),
             new MagicalNumbersFinderHelper(SyntaxKind.IsExpression,                    "Operator is",                                    "a is 1"),
-            new MagicalNumbersFinderHelper(SyntaxKind.CoalesceExpression,              "Koalescencja",                                   "a ?? 1"),
+            new MagicalNumbersFinderHelper(SyntaxKind.CoalesceExpression,              "Łączenia",                                       "a ?? 1"),
             new MagicalNumbersFinderHelper(SyntaxKind.AddAssignmentExpression,         "Dodawanie z przypisaniem",                       "a += 1"),
             new MagicalNumbersFinderHelper(SyntaxKind.SubtractAssignmentExpression,    "Odejmowanie z przypisaniem",                     "a -= 1"),
             new MagicalNumbersFinderHelper(SyntaxKind.MultiplyAssignmentExpression,    "Mnożenie z przypisaniem",                        "a *= 1"),
