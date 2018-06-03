@@ -303,6 +303,7 @@
     <Compile Include="Utils\Rewriters\NotUsedParameterRemoval.cs" />
     <Compile Include="Utils\Rewriters\EmtpyStatementRemoval .cs" />
     <Compile Include="Utils\Rewriters\IRefactor.cs" />
+    <Compile Include="Utils\StatementCounter.cs" />
     <Compile Include="View\Credits.xaml.cs">
       <DependentUpon>Credits.xaml</DependentUpon>
     </Compile>

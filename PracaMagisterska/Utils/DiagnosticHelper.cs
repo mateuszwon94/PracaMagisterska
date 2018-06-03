@@ -85,10 +85,9 @@ namespace PracaMagisterska.WPF.Utils {
         /// </summary>
         public enum SeverityType {
             None           = 0,
-            ExecutionError = 1,
-            Error          = 2,
-            Warning        = 3,
-            Info           = 4,
+            Error          = 1,
+            Warning        = 2,
+            Info           = 3,
         }
     }
 }

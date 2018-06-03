@@ -16,7 +16,7 @@ namespace PracaMagisterska.WPF.Utils {
             console_ = GetConsoleWindow();
             IntPtr systemMenu = GetSystemMenu(console_, false);
             if ( systemMenu != IntPtr.Zero )
-                DeleteMenu(systemMenu, SC_CLOSE, MF_BYCOMMAND);
+                DeleteMenu(systemMenu, SC_CLOSE);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace PracaMagisterska.WPF.Utils {
         /// <returns>If the function succeeds, the return value is nonzero.
         /// If the function fails, the return value is zero. </returns>
         [DllImport("user32.dll")]
-        private static extern IntPtr DeleteMenu(IntPtr hMenu, uint uPosition, uint uFlags);
+        private static extern bool DeleteMenu(IntPtr hMenu, uint uPosition, uint uFlags = MF_BYCOMMAND);
 
         /// <summary>
         /// Current console state.

@@ -174,15 +174,13 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void DiagnosticListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if ( e.AddedItems.Count > 0 ) {
-                DiagnosticHelper selectedItem = (DiagnosticHelper)e.AddedItems[0];
+            if ( e.AddedItems.Count > 0 && 
+                 e.AddedItems[0] is DiagnosticHelper selectedItem &&
+                 selectedItem.Location.Location == CodeLocation.LocationType.InSource ) {
+                 DocumentLine line = SourceCodeTextBox.Document
+                                                     .GetLineByNumber(selectedItem.Location.Line);
 
-                if ( selectedItem.Location.Location == CodeLocation.LocationType.InSource ) {
-                    DocumentLine line = SourceCodeTextBox.Document
-                                                         .GetLineByNumber(selectedItem.Location.Line);
-
-                    SourceCodeTextBox.Select(line.Offset, line.Length);
-                }
+                 SourceCodeTextBox.Select(line.Offset, line.Length);
             } else if ( e.RemovedItems.Count > 0 && DiagnosticListView.SelectedItem == null ) {
                 SourceCodeTextBox.Select(0, 0);
             }
@@ -247,7 +245,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void FixButton_OnClick(object sender, RoutedEventArgs e) {
-            var diagnostic = (DiagnosticHelper)DiagnosticListView.SelectedItem;
+            var diagnostic = DiagnosticListView.SelectedItem as DiagnosticHelper;
             var newCode    = diagnostic?.Refactor?.Refactor(diagnostic.SyntaxNode);
 
             if ( newCode != null ) {
@@ -295,13 +293,8 @@ namespace PracaMagisterska.WPF.View {
                     WriteLineColor("All test were succeful.", ConsoleColor.Green);
                     WriteLine("Collecting information about provided solution.");
                     WriteLine($"Execution time: {elapsedTime} ms.");
-                    int linesOfCode = tree.GetRoot()
-                                          .GetLinesOfCodeByMethod()
-                                          .Aggregate(0, (currentResult, pair) => currentResult + pair.Value);
-                    WriteLine($"Line of code in methods: {linesOfCode}");
                     int statementCount = tree.GetRoot()
-                                             .GetNumberOfStatementsByMethod()
-                                             .Aggregate(0, (currentResult, pair) => currentResult + pair.Value);
+                                             .GetNumberOfStatements();
                     WriteLine($"Number of statements in methods: {statementCount}");
                 }
             });
@@ -351,8 +344,8 @@ namespace PracaMagisterska.WPF.View {
                 Code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
 
                 // Get TextSpan of selected text
-                TextSpan selectionSpan = new TextSpan(SourceCodeTextBox.SelectionStart,
-                                                      SourceCodeTextBox.SelectionLength);
+                var selectionSpan = new TextSpan(SourceCodeTextBox.SelectionStart,
+                                                 SourceCodeTextBox.SelectionLength);
 
                 // Get SyntaxToken which is selected
                 syntaxTokenToRename_ = Code.GetRoot()
