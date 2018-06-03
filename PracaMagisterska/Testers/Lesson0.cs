@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-namespace PracaMagisterska.WPF.Testers {
+﻿namespace PracaMagisterska.WPF.Testers {
     /// <summary>
     /// Abstract class representing lesson zero
     /// </summary>
