@@ -9,6 +9,7 @@ namespace PracaMagisterska.WPF.Utils.Rewriters {
         /// Visit Expression Statement and removes from it magical numbers
         /// </summary>
         /// <param name="node">Visited statement</param>
+        /// <param name="root">Root in which a statement was defind orignally</param>
         /// <returns>New block of code with replaced magical number in expresion</returns>
         public SyntaxNode VisitStatement(StatementSyntax node, SyntaxNode root) {
             BlockSyntax block = SyntaxFactory.Block(node)

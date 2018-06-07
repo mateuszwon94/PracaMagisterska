@@ -125,12 +125,11 @@ namespace PracaMagisterska.WPF.Utils {
         /// </summary>
         /// <param name="diagnostics">Array of roslyn diagnostics</param>
         /// <returns>Enumerable of DiagnosticHelpers</returns>
-        public static IEnumerable<DiagnosticHelper> AsDiagnosticHelper(this ImmutableArray<Diagnostic> diagnostics) {
-            return diagnostics.Where(diag => diag.IsWarningAsError ||
-                                             diag.Severity == DiagnosticSeverity.Error ||
-                                             diag.Severity == DiagnosticSeverity.Warning)
-                              .Select(DiagnosticHelper.Create);
-        }
+        public static IEnumerable<DiagnosticHelper> AsDiagnosticHelper(this ImmutableArray<Diagnostic> diagnostics)
+            => diagnostics.Where(diag => diag.IsWarningAsError ||
+                                         diag.Severity == DiagnosticSeverity.Error ||
+                                         diag.Severity == DiagnosticSeverity.Warning)
+                          .Select(DiagnosticHelper.Create);
 
         /// <summary>
         /// Concats Diagnostcis from Roslyn with all custom diagnostic
@@ -139,13 +138,11 @@ namespace PracaMagisterska.WPF.Utils {
         /// <param name="syntaxTree">SyntaxTree with code</param>
         /// <param name="semanticModel">SemanticModel of given SyntaxTree</param>
         /// <returns>Concated diagnostics</returns>
-        public static IEnumerable<DiagnosticHelper> WithAllCustomDiagnostics(
-            this IEnumerable<DiagnosticHelper> diagnostics,
-            SyntaxTree                         syntaxTree,
-            SemanticModel                      semanticModel) {
-            return diagnostics.Concat(syntaxTree.GetRoot()
-                                                .GetAllCustomDiagnostic(semanticModel));
-        }
+        public static IEnumerable<DiagnosticHelper> WithAllCustomDiagnostics(this IEnumerable<DiagnosticHelper> diagnostics,
+                                                                             SyntaxTree                         syntaxTree,
+                                                                             SemanticModel                      semanticModel)
+            => diagnostics.Concat(syntaxTree.GetRoot()
+                                            .GetAllCustomDiagnostic(semanticModel));
 
         /// <summary>
         /// Helper method, which compiles <paramref name="syntaxTree"/> to <see cref="Compilation"/> ovject
@@ -176,30 +173,30 @@ namespace PracaMagisterska.WPF.Utils {
         /// </summary>
         /// <param name="compilation"><see cref="Compilation"/> object for wwhich build will be performed</param>
         /// <returns>Assemly with program (or null if builds fails), diagnostic information and bool if build was successful</returns>
-        public static async Task<Assembly> Build(this Compilation compilation) {
-            return await Task.Run(() => {
+        public static async Task<Assembly> Build(this Compilation compilation)
+            => await Task.Run(() => {
                 using ( var ms = new MemoryStream() ) {
                     // Compilation to memory
                     EmitResult result = compilation.Emit(ms);
 
-                    if ( result.Success ) { // Build successed 
+                    if ( result.Success ) {
+                        // Build successed 
                         ms.Seek(0, SeekOrigin.Begin);
                         return Assembly.Load(ms.ToArray());
-                    } else { // Builds failed
+                    } else {
+                        // Builds failed
                         var syntaxTree = compilation.SyntaxTrees
                                                     .ElementAt(0);
 
                         // Get all errors and warnings
                         var diagnostics = result.Diagnostics
                                                 .AsDiagnosticHelper()
-                                                .WithAllCustomDiagnostics(syntaxTree,
-                                                                          compilation.GetSemanticModel(syntaxTree));
+                                                .WithAllCustomDiagnostics(syntaxTree, compilation.GetSemanticModel(syntaxTree));
 
                         throw new BuildFailedException(diagnostics);
                     }
                 }
             });
-        }
 
         /// <summary>
         /// Helper function, which runs default EntryPoint of assembly with strings params
@@ -250,27 +247,26 @@ namespace PracaMagisterska.WPF.Utils {
         public static MethodInfo GetTestMethod(this Assembly assembly,
                                                string        className,
                                                string        methodName,
-                                               Type[]        parametersType = null) {
-            return assembly.DefinedTypes
-                           .FirstOrDefault(type => type.Name == className)
-                           ?.DeclaredMethods
-                           ?.Where(method => method.Name == methodName)
-                           .Where(method => method.IsStatic)
-                           .FirstOrDefault(method => {
-                               // If there is no given parameters type try to find method without parameters
-                               if ( parametersType == null || parametersType.Length == 0 )
-                                   return method.GetParameters().Length == 0;
+                                               Type[]        parametersType = null)
+            => assembly.DefinedTypes
+                       .FirstOrDefault(type => type.Name == className)
+                       ?.DeclaredMethods
+                       ?.Where(method => method.Name == methodName)
+                       .Where(method => method.IsStatic)
+                       .FirstOrDefault(method => {
+                           // If there is no given parameters type try to find method without parameters
+                           if ( parametersType == null || parametersType.Length == 0 )
+                               return method.GetParameters().Length == 0;
 
-                               // If number of parameters do not match it means this is not that function
-                               if ( parametersType.Length != method.GetParameters().Length )
-                                   return false;
+                           // If number of parameters do not match it means this is not that function
+                           if ( parametersType.Length != method.GetParameters().Length )
+                               return false;
 
-                               // Finds method in which all parameters are exacly the same
-                               return !method.GetParameters()
-                                             .Where((t, i) => t.ParameterType != parametersType[i])
-                                             .Any();
-                           });
-        }
+                           // Finds method in which all parameters are exacly the same
+                           return !method.GetParameters()
+                                         .Where((t, i) => t.ParameterType != parametersType[i])
+                                         .Any();
+                       });
 
         /// <summary>
         /// Extension method for <see cref="SyntaxNode"/> which gets static method need by tests
