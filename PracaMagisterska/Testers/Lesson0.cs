@@ -2,15 +2,22 @@
     /// <summary>
     /// Abstract class representing lesson zero
     /// </summary>
-    public class Lesson0 : Lesson {
+    public sealed class Lesson0 : Lesson {
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Lesson0() : base(0, "Witaj Świecie", 0f) { }
-        
+        public Lesson0() : base(0, "Witaj Świecie", 0f, 0) 
+            => InitializeTest();
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public Lesson0(bool[] results) : base(0, "Witaj Świecie", 0f, results) 
+            => InitializeTest();
+
         /// <inheritdoc cref="Lesson.DefaultCode"/>
         public override string DefaultCode { get; } = defaultProgramWithMain_;
-
+        
         /// <inheritdoc cref="Lesson.Info"/>
         public override string Info { get; } =
 @"Oto twój pierwszy program. Przejdźmy linijka po linijce i wytłumacze Ci co się w nim dzieje.

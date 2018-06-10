@@ -7,9 +7,17 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static PracaMagisterska.WPF.Utils.ConsoleHelper;
 
 namespace PracaMagisterska.WPF.Testers {
-    public class Lesson2 : Lesson {
+    public sealed class Lesson2 : Lesson {
         /// <inheritdoc />
-        public Lesson2() : base(2, "Pierwsze warunki", 0.5f) {
+        public Lesson2() : base(2, "Pierwsze warunki", 0.5f)
+            => InitializeTest();
+
+        /// <inheritdoc />
+        public Lesson2(bool[] results) : base(2, "Pierwsze warunki", 0.5f, results)
+            => InitializeTest();
+
+        /// <inheritdoc />
+        protected override void InitializeTest() {
             HasStaticTest  = true;
             HasSimpleTest  = true;
             HasRealTest    = true;

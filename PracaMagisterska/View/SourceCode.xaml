@@ -221,6 +221,20 @@
                                        IsActive="False"
                                        Width="35"
                                        Height="35" />
+                <TextBlock FontSize="20"
+                           Margin="0,0,0,10"
+                           FontFamily="{StaticResource ConsolasFont}"
+                           Text="Ocena:"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+                <TextBlock x:Name="CurrentResultTextBlock"
+                           FontSize="20"
+                           Margin="0,0,0,10"
+                           FontFamily="{StaticResource SegoeFont}"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
             </StackPanel>
         </Grid>
     </Grid>

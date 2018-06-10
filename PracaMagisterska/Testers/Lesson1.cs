@@ -9,11 +9,19 @@ namespace PracaMagisterska.WPF.Testers {
     /// <summary>
     /// Abstract class representing lesson zero
     /// </summary>
-    public class Lesson1 : Lesson {
+    public sealed class Lesson1 : Lesson {
         /// <inheritdoc />
-        public Lesson1() : base(1, "Zmienne są najważniejsze", 0.25f)
+        public Lesson1() : base(1, "Zmienne są najważniejsze", 0.25f, 1)
+            => InitializeTest();
+
+        /// <inheritdoc />
+        public Lesson1(bool[] results ) : base(1, "Zmienne są najważniejsze", 0.25f, results) 
+            => InitializeTest();
+
+        /// <inheritdoc />
+        protected override void InitializeTest() 
             => HasStaticTest = true;
-        
+
         /// <inheritdoc cref="Tester.Solution"/>
         public override bool StaticTest(MethodDeclarationSyntax testMethod) {
             if ( !testMethod.DescendantNodes().Any(node => node.IsKind(SyntaxKind.AddExpression) ||

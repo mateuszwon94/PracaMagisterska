@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using PracaMagisterska.WPF.View;
 
 namespace PracaMagisterska.WPF.Testers {
@@ -15,10 +17,40 @@ namespace PracaMagisterska.WPF.Testers {
         /// <param name="no">Lesson number</param>
         /// <param name="title">Lesson title</param>
         /// <param name="dificulty">Lesson dificulty</param>
-        protected Lesson(int no, string title, float dificulty) {
+        /// <param name="resultStars">Number of result stars</param>
+        protected Lesson(int no, string title, float dificulty, int resultStars = 3) : base(resultStars: resultStars) {
             No        = no;
             Title     = title;
             Dificulty = dificulty;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="no">Lesson number</param>
+        /// <param name="title">Lesson title</param>
+        /// <param name="dificulty">Lesson dificulty</param>
+        /// <param name="results">Current results</param>
+        protected Lesson(int no, string title, float dificulty, bool[] results) : base(results: results) {
+            No        = no;
+            Title     = title;
+            Dificulty = dificulty;
+        }
+
+        /// <inheritdoc cref="ITestable.EvaluateSolution" />
+        public override async void EvaluateSolution(SyntaxTree userCode, double userTime, double referenceTime) {
+            if ( CurrentResults.Length >= 2 && userTime <= referenceTime * 2 )
+                CurrentResults[1] = true;
+
+            if ( CurrentResults.Length >= 3 ) {
+                SyntaxTree referenceTree;
+                using ( StreamReader stream = File.OpenText($"./TestCodes/{nameof(Lesson)}{No}.cs") ) 
+                    referenceTree = CSharpSyntaxTree.ParseText(await stream.ReadToEndAsync());
+
+                if ( userCode.GetRoot().GetNumberOfStatements() <=
+                     referenceTree.GetRoot().GetNumberOfStatements() * 1.5 )
+                    CurrentResults[2] = true;
+            }
         }
 
         /// <summary>
@@ -81,15 +113,9 @@ namespace PracaMagisterska.WPF.Testers {
         }
 
         /// <summary>
-        /// Dictionary in which key is dificulty level and valu is properly filled star
+        /// Initialize all present tests
         /// </summary>
-        private static Dictionary<float, string> stars_ = new Dictionary<float, string>() {
-            [0f]    = char.ConvertFromUtf32(0xE734),
-            [0.25f] = char.ConvertFromUtf32(0xF0E5),
-            [0.5f]  = char.ConvertFromUtf32(0xF0E7),
-            [0.75f] = char.ConvertFromUtf32(0xF0E9),
-            [1f]    = char.ConvertFromUtf32(0xE735),
-        };
+        protected virtual void InitializeTest() { }
 
         /// <summary>
         /// Template of default program
@@ -122,12 +148,11 @@ class Program {
         /// <summary>
         /// Collection of all avaliable lessons
         /// </summary>
-        public static ObservableCollection<Lesson> AllLessons = new ObservableCollection<Lesson> {
-            new Lesson0(),
-            new Lesson1(),
-            new Lesson2(),
-        };
+        public static readonly ObservableCollection<Lesson> AllLessons = new ObservableCollection<Lesson> { };
 
+        /// <summary>
+        /// Protected random number generator
+        /// </summary>
         protected static readonly Random random_ = new Random();
     }
 }

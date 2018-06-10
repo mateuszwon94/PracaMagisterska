@@ -18,6 +18,11 @@
                 <TextBlock Text="{Binding Stars}"
                            FontFamily="{StaticResource SegoeFont}" />
             </DataTemplate>
+            <DataTemplate x:Key="CurrentResultsTemplate"
+                          DataType="{x:Type testers:Lesson}">
+                <TextBlock Text="{Binding CurrentResultsStars}"
+                           FontFamily="{StaticResource SegoeFont}" />
+            </DataTemplate>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -38,6 +43,9 @@
                     <GridViewColumn DisplayMemberBinding="{Binding NoString}"
                                     Width="50"
                                     Header="N°" />
+                    <GridViewColumn CellTemplate="{StaticResource CurrentResultsTemplate}"
+                                    Width="100"
+                                    Header="Wynik" />
                     <GridViewColumn DisplayMemberBinding="{Binding Title}"
                                     Width="350"
                                     Header="Nazwa lekcji" />

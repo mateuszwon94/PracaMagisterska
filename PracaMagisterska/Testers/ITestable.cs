@@ -19,9 +19,10 @@ namespace PracaMagisterska.WPF.Testers {
         /// </summary>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
         /// <param name="parameters">parameters of tested method</param>
-        /// <param name="elapsedMilisecond">Time of test case execution in miliseconds</param>
+        /// <param name="userElapsedMilisecond">Time of test case execution in miliseconds</param>
+        /// <param name="referenceElapsedMilisecond">Reference time of test case execution in miliseconds</param>
         /// <returns>True if method returns proper output, false otherwise</returns>
-        bool Test(Assembly assembly, out double elapsedMilisecond, params object[] parameters);
+        bool Test(Assembly assembly, out double userElapsedMilisecond, out double referenceElapsedMilisecond, params object[] parameters);
 
         /// <summary>
         /// Runs all test cases for specific lesson
@@ -29,8 +30,9 @@ namespace PracaMagisterska.WPF.Testers {
         /// <param name="tree">Tree with lesson's code. Use in StaticTest</param>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
         /// <param name="elapsedMilisecond">Time of all executed test cases in miliseconds</param>
+        /// <param name="referenceTime">Reference time of all executed test cases in miliseconds</param>
         /// <returns>True if all test cases return proper output, false otherwise</returns>
-        bool RunAllTests(SyntaxTree tree, Assembly assembly, out double elapsedMilisecond);
+        bool RunAllTests(SyntaxTree tree, Assembly assembly, out double elapsedMilisecond, out double referenceTime);
 
         /// <summary>
         /// Runs all static tests for specific lesson
@@ -43,24 +45,35 @@ namespace PracaMagisterska.WPF.Testers {
         /// Runs all sample test cases for specific lesson
         /// </summary>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
-        /// <param name="elapsedMilisecond">Time of all executed test cases in miliseconds</param>
+        /// <param name="userElapsedMilisecond">Time of all executed test cases in miliseconds</param>
+        /// <param name="referenceElapsedMilisecond">Reference time of all executed test cases in miliseconds</param>
         /// <returns>True if all test cases return proper output, false otherwise</returns>
-        bool RunSampleTests(Assembly assembly, out double elapsedMilisecond);
+        bool RunSampleTests(Assembly assembly, out double userElapsedMilisecond, out double referenceElapsedMilisecond);
 
         /// <summary>
         /// Runs all real test cases for specific lesson
         /// </summary>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
-        /// <param name="elapsedMilisecond">Time of all executed test cases in miliseconds</param>
+        /// <param name="userElapsedMilisecond">Time of all executed test cases in miliseconds</param>
+        /// <param name="referenceElapsedMilisecond">Reference time of all executed test cases in miliseconds</param>
         /// <returns>True if all test cases return proper output, false otherwise</returns>
-        bool RunRealTests(Assembly assembly, out double elapsedMilisecond);
+        bool RunRealTests(Assembly assembly, out double userElapsedMilisecond, out double referenceElapsedMilisecond);
 
         /// <summary>
         /// Runs some random test cases for specific lesson
         /// </summary>
         /// <param name="assembly">Assembly in which tested method should be defined</param>
-        /// <param name="elapsedMilisecond">Time of all executed test cases in miliseconds</param>
+        /// <param name="userElapsedMilisecond">Time of all executed test cases in miliseconds</param>
+        /// <param name="referenceElapsedMilisecond">Reference time of all executed test cases in miliseconds</param>
         /// <returns>True if all test cases return proper output, false otherwise</returns>
-        bool RunRandomTests(Assembly assembly, out double elapsedMilisecond);
+        bool RunRandomTests(Assembly assembly, out double userElapsedMilisecond, out double referenceElapsedMilisecond);
+
+        /// <summary>
+        /// Evaluates user solution
+        /// </summary>
+        /// <param name="userCode">SyntaxTree with user code</param>
+        /// <param name="userTime">Execution time of user solution</param>
+        /// <param name="referenceTime">Reference execution time</param>
+        void EvaluateSolution(SyntaxTree userCode, double userTime, double referenceTime);
     }
 }

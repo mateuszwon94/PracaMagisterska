@@ -257,8 +257,12 @@
     <Compile Include="CodeRules.cs" />
     <Compile Include="SharpDevelop\ITextMarker.cs" />
     <Compile Include="SharpDevelop\TextMarkerService.cs" />
-    <None Include="TestCodes\Lesson1.cs" />
-    <None Include="TestCodes\Lesson2.cs" />
+    <None Include="TestCodes\Lesson1.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestCodes\Lesson2.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Include="Testers\ITestable.cs" />
     <Compile Include="Testers\Lesson0.cs" />
     <Compile Include="Testers\Lesson1.cs" />
@@ -382,7 +386,9 @@
     <Resource Include="Resources\Entypo-license.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="TestCodes\Lesson0.cs" />
+    <None Include="TestCodes\Lesson0.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

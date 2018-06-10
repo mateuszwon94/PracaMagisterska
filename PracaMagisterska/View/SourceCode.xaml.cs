@@ -46,6 +46,7 @@ namespace PracaMagisterska.WPF.View {
             LessonInfoTextBlock.Text       = CurrentLesson.Info;
             SourceCodeTextBox.Text         = CurrentLesson.DefaultCode;
             DiagnosticListView.ItemsSource = lastDiagnostics_;
+            CurrentResultTextBlock.Text    = CurrentLesson.CurrentResultsStars;
 
             // Create marker service
             textMarkerService_ = new TextMarkerService(SourceCodeTextBox.Document);
@@ -287,16 +288,20 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="e">Arguments</param>
         private void AllTestsButton_OnClick(object sender, RoutedEventArgs e)
             => RunProgram((assembly, tree) => {
-                var result = CurrentLesson.RunAllTests(tree, assembly, out double elapsedTime);
+                var result = CurrentLesson.RunAllTests(tree, assembly, out double elapsedTime, out double referenceTime);
 
                 if ( result ) {
                     WriteLineColor("All test were succeful.", ConsoleColor.Green);
                     WriteLine("Collecting information about provided solution.");
-                    WriteLine($"Execution time: {elapsedTime} ms.");
+                    WriteLine($"Execution time: {elapsedTime} ms (reference time: {referenceTime} ms)");
                     int statementCount = tree.GetRoot()
                                              .GetNumberOfStatements();
                     WriteLine($"Number of statements in methods: {statementCount}");
+
+                    CurrentLesson.EvaluateSolution(Code, elapsedTime, referenceTime);
                 }
+
+                CurrentResultTextBlock.Text = CurrentLesson.CurrentResultsStars;
             });
 
         /// <summary>
@@ -305,7 +310,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void RandomTestsButton_OnClick(object sender, RoutedEventArgs e)
-            => RunProgram((assembly, _) => CurrentLesson.RunRandomTests(assembly, out var _));
+            => RunProgram((assembly, _) => CurrentLesson.RunRandomTests(assembly, out var _, out var _));
 
         /// <summary>
         /// Event function. Called when RealTests Button is clicked
@@ -313,7 +318,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void RealTestsButton_OnClick(object sender, RoutedEventArgs e)
-            => RunProgram((assembly, _) => CurrentLesson.RunRealTests(assembly, out var _));
+            => RunProgram((assembly, _) => CurrentLesson.RunRealTests(assembly, out var _, out var _));
 
 
         /// <summary>
@@ -322,7 +327,7 @@ namespace PracaMagisterska.WPF.View {
         /// <param name="sender">Event sender</param>
         /// <param name="e">Arguments</param>
         private void SimpleTestsButton_OnClick(object sender, RoutedEventArgs e)
-            => RunProgram((assembly, _) => CurrentLesson.RunSampleTests(assembly, out var _));
+            => RunProgram((assembly, _) => CurrentLesson.RunSampleTests(assembly, out var _, out var _));
 
         /// <summary>
         /// Event function. Called when StaticTests Button is clicked
