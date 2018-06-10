@@ -42,19 +42,12 @@ namespace PracaMagisterska.WPF.Testers {
             : this(className, methodName)
             => CurrentResults = results;
 
-        /// <summary>
-        /// Method which is used to test user solution
-        /// </summary>
-        /// <param name="parameters">Parameters needed to solve a problem</param>
-        /// <returns>Solution object</returns>
-        protected virtual object Solution(params object[] parameters)
+        /// <inheritdoc cref="ITestable.Solution" />
+        public virtual object Solution(params object[] parameters)
             => null;
 
-        /// <summary>
-        /// Function used in random test to randomize parameters
-        /// </summary>
-        /// <returns>Random parameters</returns>
-        protected virtual object[] GenerateParamaters()
+        /// <inheritdoc cref="ITestable.GenerateParamaters" />
+        public virtual object[] GenerateParamaters()
             => null;
 
         /// <inheritdoc cref="ITestable.StaticTest" />

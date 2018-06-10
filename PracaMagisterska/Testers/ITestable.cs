@@ -75,5 +75,18 @@ namespace PracaMagisterska.WPF.Testers {
         /// <param name="userTime">Execution time of user solution</param>
         /// <param name="referenceTime">Reference execution time</param>
         void EvaluateSolution(SyntaxTree userCode, double userTime, double referenceTime);
+
+        /// <summary>
+        /// Method which is used to test user solution
+        /// </summary>
+        /// <param name="parameters">Parameters needed to solve a problem</param>
+        /// <returns>Solution object</returns>
+        object Solution(params object[] parameters);
+
+        /// <summary>
+        /// Function used in random test to randomize parameters
+        /// </summary>
+        /// <returns>Random parameters</returns>
+        object[] GenerateParamaters();
     }
 }

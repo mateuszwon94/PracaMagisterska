@@ -25,7 +25,7 @@ namespace PracaMagisterska.WPF.Testers {
         }
 
         /// <inheritdoc />
-        protected override object Solution(params object[] parameters) {
+        public override object Solution(params object[] parameters) {
             int x = (int)parameters[0],
                 y = (int)parameters[1];
 
@@ -59,7 +59,7 @@ namespace PracaMagisterska.WPF.Testers {
         };
 
         /// <inheritdoc />
-        protected override object[] GenerateParamaters()
+        public override object[] GenerateParamaters()
             => new object[] {
                 random_.Next(-1000, 1000),
                 random_.Next(-1000, 1000)
@@ -112,6 +112,6 @@ Jeżeli x lub y są mniejsze niż 0, to zwróć x % y.";
         /// <inheritdoc />
         public override string DefaultCode { get; } = defaultProgramTemplate_.Replace("{ReturnType}", "int")
                                                                              .Replace("{Parameters}", "int x, int y")
-                                                                             .Replace("{Body}", @"return if ( x == 0 ) return x + y;");
+                                                                             .Replace("{Body}", "if ( x == 0 ) return x + y;\n        else return x-y;");
     }
 }

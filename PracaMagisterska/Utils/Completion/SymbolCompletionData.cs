@@ -19,9 +19,8 @@ namespace PracaMagisterska.WPF.Utils.Completion {
             if ( IsFunction ) {
                 textArea.Document.Replace(completionSegment, Text + "()");
                 textArea.Caret.Offset--;
-            } else {
+            } else 
                 textArea.Document.Replace(completionSegment, Text);
-            }
         }
 
         /// <summary>
@@ -47,12 +46,12 @@ namespace PracaMagisterska.WPF.Utils.Completion {
         /// <summary>
         /// Full description of recomendation
         /// </summary>
-        public object Description => Recomendation.ToDisplayString();
+        public object Description => Content;
 
         /// <summary>
         /// Contex of recomendation
         /// </summary>
-        public object Content => Description;
+        public object Content => Recomendation.ToDisplayString();
 
         /// <summary>
         /// Priority of recomendation

@@ -293,6 +293,7 @@
     <Compile Include="View\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\SourceCode.EventFunctions.xaml.cs" />
     <Compile Include="View\SourceCode.xaml.cs">
       <DependentUpon>SourceCode.xaml</DependentUpon>
     </Compile>

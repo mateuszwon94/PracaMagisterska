@@ -82,6 +82,7 @@
                 <ListView x:Name="MagicalNumberFinderListView"
                           SelectionMode="Multiple"
                           Margin="0,5,5,0"
+                          FontFamily="{StaticResource ConsolasFont}"
                           SelectionChanged="MagicalNumberFinderListView_OnSelectionChanged">
                     <ListView.View>
                         <GridView>
