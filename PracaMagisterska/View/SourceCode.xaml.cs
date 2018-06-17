@@ -85,7 +85,7 @@ namespace PracaMagisterska.WPF.View {
             lastDiagnostics_.Clear();
 
             // Write new diagnostic information
-            WriteDiagnostic(diagnostics.OrderBy(diag => diag.Priotiy));
+            WriteDiagnostic(diagnostics.OrderBy(diag => diag.Priority));
 
             timer_.Reset();
         }
@@ -103,7 +103,7 @@ namespace PracaMagisterska.WPF.View {
             if ( !string.IsNullOrEmpty(SourceCodeTextBox.Text.Trim()) ) {
                 // Get SyntaxTree from code
                 Code = CSharpSyntaxTree.ParseText(SourceCodeTextBox.Text);
-                Code.Compile(out var diagnostics);
+                Code.Compile(DefaultCompilationOptions, out var diagnostics);
 
                 // Write new diagnostic information
                 UpdateDiagnostic(diagnostics);
@@ -114,7 +114,6 @@ namespace PracaMagisterska.WPF.View {
         /// Function writes diagnostic information to DiagnosticListView
         /// </summary>
         /// <param name="diagnostics">Diagnostic to be written</param>
-        /// <param name="severity">Severity of diagnostic</param>
         private void WriteDiagnostic(IEnumerable<DiagnosticHelper> diagnostics) {
             foreach ( DiagnosticHelper diagnostic in diagnostics ) {
                 lastDiagnostics_.Add(diagnostic);
@@ -179,8 +178,8 @@ namespace PracaMagisterska.WPF.View {
                 DisaableAllButtons();
 
                 // Compile and build code
-                var assembly = await Code.Compile(out var diagnostics, 
-                                                  compilationOptions: new CSharpCompilationOptions(outputKind))
+                var assembly = await Code.Compile(DefaultCompilationOptions.WithOutputKind(OutputKind.ConsoleApplication), 
+                                                  out var diagnostics)
                                          .Build();
 
                 CompileingIndicator.IsActive = false;

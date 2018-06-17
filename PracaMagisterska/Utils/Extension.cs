@@ -41,7 +41,8 @@ namespace PracaMagisterska.WPF.Utils {
         /// </summary>
         public static readonly CSharpCompilationOptions DefaultCompilationOptions =
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-                .WithOptimizationLevel(OptimizationLevel.Release);
+                .WithOptimizationLevel(OptimizationLevel.Release)
+                .WithUsings(DefaultNamespaces);
 
         #endregion Defaults
 
@@ -52,28 +53,10 @@ namespace PracaMagisterska.WPF.Utils {
         /// </summary>
         /// <param name="sourceCode">Text for which recomendation will be searched</param>
         /// <param name="offset">Position in which recomendation is required</param>
-        /// <param name="additionalNamespace">Additional namespaces used in project</param>
-        /// <param name="additionalReferences">Additional Assemblies used in project</param>
-        /// <param name="compilationOptions">Specyfic compilation option used in project</param>
+        /// <param name="compilationOptions">All compilation options</param>
         /// <returns>Rocomendation options</returns>
-        public static async Task<IEnumerable<ISymbol>> GetRecmoendations(string                         sourceCode,
-                                                                         int                            offset,
-                                                                         IEnumerable<string>            additionalNamespace  = null,
-                                                                         IEnumerable<MetadataReference> additionalReferences = null,
-                                                                         CSharpCompilationOptions       compilationOptions   = null) {
-            // Preparation
-            var allNamespace = additionalNamespace == null ?
-                                   DefaultNamespaces :
-                                   DefaultNamespaces.Concat(additionalNamespace);
-
-            var allReferences = additionalReferences == null ?
-                                    DefaultReferences :
-                                    DefaultReferences.Concat(additionalReferences);
-
-            var properCompilationOptions = compilationOptions == null ?
-                                               DefaultCompilationOptions.WithUsings(allNamespace) :
-                                               compilationOptions;
-
+        public static async Task<IEnumerable<ISymbol>> GetRecmoendations(string             sourceCode, 
+                                                                         int                offset) {
             // Create AdHoc Workspace, Project and Document, which will be used to get all proper options
             string         name      = "Lesson";
             AdhocWorkspace workspace = new AdhocWorkspace();
@@ -81,8 +64,8 @@ namespace PracaMagisterska.WPF.Utils {
                                                                       VersionStamp.Create(),
                                                                       name, name,
                                                                       LanguageNames.CSharp,
-                                                                      metadataReferences: allReferences,
-                                                                      compilationOptions: properCompilationOptions));
+                                                                      metadataReferences: DefaultReferences,
+                                                                      compilationOptions: DefaultCompilationOptions));
             Document document = workspace.AddDocument(project.Id, "Main.cs", SourceText.From(sourceCode));
 
             return await GetRecommendedSymbolsAtPositionAsync(await document.GetSemanticModelAsync(),
@@ -93,32 +76,14 @@ namespace PracaMagisterska.WPF.Utils {
         /// Helper method, which compiles <paramref name="syntaxTree"/> to <see cref="Compilation"/> ovject
         /// </summary>
         /// <param name="syntaxTree"><see cref="SyntaxTree"/> of code to compile</param>
-        /// <param name="additionalNamespace">Additional namespaces used in project</param>
-        /// <param name="additionalReferences">Additional Assemblies used in project</param>
-        /// <param name="compilationOptions">Specyfic compilation option used in project</param>
+        /// <param name="compilationOptions">All compilation options</param>
         /// <returns>Compilation with program</returns>
-        public static CSharpCompilation Compile(this SyntaxTree                syntaxTree,
-                                                IEnumerable<string>            additionalNamespace  = null,
-                                                IEnumerable<MetadataReference> additionalReferences = null,
-                                                CSharpCompilationOptions       compilationOptions   = null) {
-            // Preparation
-            var allNamespace = additionalNamespace == null ?
-                                   DefaultNamespaces :
-                                   DefaultNamespaces.Concat(additionalNamespace);
-
-            var allReferences = additionalReferences == null ?
-                                    DefaultReferences :
-                                    DefaultReferences.Concat(additionalReferences);
-
-            var properCompilationOptions = compilationOptions == null ?
-                                               DefaultCompilationOptions.WithUsings(allNamespace) :
-                                               compilationOptions;
-
-            return CSharpCompilation.Create("Code")
-                                    .WithOptions(properCompilationOptions)
-                                    .AddReferences(allReferences)
-                                    .AddSyntaxTrees(syntaxTree);
-        }
+        public static CSharpCompilation Compile(this SyntaxTree    syntaxTree,
+                                                CompilationOptions compilationOptions)
+            => CSharpCompilation.Create("Code")
+                                .WithOptions(compilationOptions as CSharpCompilationOptions)
+                                .AddReferences(DefaultReferences)
+                                .AddSyntaxTrees(syntaxTree);
 
         /// <summary>
         /// Converts Roslyn Diagnostic obiect to my DiagnosticHelper
@@ -149,16 +114,12 @@ namespace PracaMagisterska.WPF.Utils {
         /// </summary>
         /// <param name="syntaxTree"><see cref="SyntaxTree"/> of code to compile</param>
         /// <param name="diagnostics">Diagnostic information from this compilation</param>
-        /// <param name="additionalNamespace">Additional namespaces used in project</param>
-        /// <param name="additionalReferences">Additional Assemblies used in project</param>
-        /// <param name="compilationOptions">Specyfic compilation option used in project</param>
+        /// <param name="compilationOptions">All compilation options</param>
         /// <returns>Compilation with program</returns>
         public static CSharpCompilation Compile(this SyntaxTree                    syntaxTree,
-                                                out  IEnumerable<DiagnosticHelper> diagnostics,
-                                                IEnumerable<string>                additionalNamespace  = null,
-                                                IEnumerable<MetadataReference>     additionalReferences = null,
-                                                CSharpCompilationOptions           compilationOptions   = null) {
-            var compilation = syntaxTree.Compile(additionalNamespace, additionalReferences, compilationOptions);
+                                                CompilationOptions                 compilationOptions,
+                                                out IEnumerable<DiagnosticHelper> diagnostics) {
+            var compilation = syntaxTree.Compile(compilationOptions);
 
             diagnostics = compilation.GetDiagnostics()
                                      .AsDiagnosticHelper()
@@ -169,7 +130,7 @@ namespace PracaMagisterska.WPF.Utils {
         }
 
         /// <summary>
-        /// Helper method, which compiles <paramref name="syntaxTree"/> to <see cref="Assembly"/>
+        /// Helper method, which compiles <paramref name="compilation"/> to <see cref="Assembly"/>
         /// </summary>
         /// <param name="compilation"><see cref="Compilation"/> object for wwhich build will be performed</param>
         /// <returns>Assemly with program (or null if builds fails), diagnostic information and bool if build was successful</returns>
@@ -298,7 +259,7 @@ namespace PracaMagisterska.WPF.Utils {
                            return false;
 
                        // Finds method in which all parameters are exacly the same
-                       var semanticModel = tree.Compile(out _).GetSemanticModel(tree);
+                       var semanticModel = tree.Compile(DefaultCompilationOptions, out _).GetSemanticModel(tree);
 
                        return !method.ParameterList.Parameters
                                      .Where((t, i) => semanticModel

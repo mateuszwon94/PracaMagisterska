@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.Text;
 using PracaMagisterska.WPF.Utils;
 using PracaMagisterska.WPF.Utils.Exceptions;
 using PracaMagisterska.WPF.Utils.Rewriters;
+using static PracaMagisterska.WPF.Utils.Extension;
 
 namespace PracaMagisterska.WPF.View {
     public partial class SourceCode {
@@ -224,7 +225,7 @@ namespace PracaMagisterska.WPF.View {
         private async void RenameButton_OnClick(object sender, RoutedEventArgs e) {
             try {
                 // Get SyntaxTree with renamed symbol
-                var newCode = Code.Compile()
+                var newCode = Code.Compile(DefaultCompilationOptions)
                                   .GetSemanticModel(Code)
                                   .RenameSymbol(syntaxTokenToRename_, NewNameTextBox.Text.Trim());
 
@@ -235,9 +236,9 @@ namespace PracaMagisterska.WPF.View {
                 }
             } catch ( InvalidIdentifierException ) {
                 // Display PopUp information about failed compilation
-                // await this.TryFindParent<MainWindow>()
-                //          .ShowMessageAsync("Zmiana nazwy nie powiodła się",
-                //                            "Podany identyfikator jest niepoprawny lub jest już używany");
+                await this.TryFindParent<MainWindow>()
+                          .ShowMessageAsync("Zmiana nazwy nie powiodła się",
+                                            "Podany identyfikator jest niepoprawny lub jest już używany");
             }
         }
     }

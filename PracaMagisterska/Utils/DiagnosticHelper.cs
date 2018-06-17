@@ -63,7 +63,7 @@ namespace PracaMagisterska.WPF.Utils {
         /// <summary>
         /// Priority of diagnostic
         /// </summary>
-        public int Priotiy => (int)Severity;
+        public int Priority => (int)Severity;
 
         /// <summary>
         /// Information itself
