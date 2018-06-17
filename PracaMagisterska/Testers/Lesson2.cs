@@ -88,7 +88,7 @@ namespace PracaMagisterska.WPF.Testers {
 
         /// <inheritdoc />
         public override string Info { get; } =
-@"Warunki to jedna z najczęściej spotykanych konstrukcji. Jak sama nazwa wskazuje sprawdzają one warunek i wykonują, bądź nie wykonują, odpowiednią część kodu.
+@"Warunki to jedna z najczęściej spotykanych konstrukcji. Jak sama nazwa wskazuje, sprawdzają one warunek i wykonują, bądź nie wykonują, odpowiednią część kodu.
 Zapis wygląda następująco:
 if (warunek) instrukcja;
 lub:
@@ -102,10 +102,10 @@ lub:
 if (warunek1) instrukcja1;
 else if (warunek2) instrukcja2;
 Warunek musi zawsze być typu logicznego (bool).
-Twoja zadanie jest bardzo proste. Dostajesz dwie liczby całkowitoliczbowe (int). Zaimplementuj poniższe warunki:
-Jeśli x jest parzyste oraz y jest parzyste, to zwróc x + y.
+Twoje zadanie jest bardzo proste. Dostajesz dwie liczby całkowitoliczbowe (int). Zaimplementuj poniższe warunki:
+Jeśli x jest parzyste oraz y jest parzyste, to zwróć x + y.
 Jeśli x jest nieparzyste oraz y jest parzyste, to zwróć x - y.
-Jeśli x jest nieparzyste oraz y jest nieparzyste, to zwróc x * y.
+Jeśli x jest nieparzyste oraz y jest nieparzyste, to zwróć x * y.
 Jeśli x jest parzyste oraz y jest nieparzyste, to zwróć x / y.
 Jeżeli x lub y są mniejsze niż 0, to zwróć x % y.";
 
