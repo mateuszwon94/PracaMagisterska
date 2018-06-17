@@ -99,7 +99,7 @@ namespace PracaMagisterska.WPF.Testers {
 
         /// <inheritdoc cref="Lesson.Info"/>
         public override string Info { get; } =
-@"Zmienne lokalne używane są do przechowywania wartości w obręie danej funkcji. Przed użyciem należy je najpierw zadeklarować, np:
+@"Zmienne lokalne używane są do przechowywania wartości w obrębie danej funkcji. Przed użyciem należy je najpierw zadeklarować, np:
 int wiek;  // Deklaracja
 string name = ""Mateusz"";  // Deklaracja z definicją
 wiek = 24; // Definicja
@@ -135,8 +135,8 @@ Wszystkie typy liczbowe można ze sobą porównywać:
     > większe niż (>)
     > nie mniejsze niż/większe bądź równe (>=)
     > nie większe niż/mniejsze bądź równe (<=)
-Warto pamiętać w jakiej kolejności są przeprowadzane operacje. 
+Warto pamiętać, w jakiej kolejności są przeprowadzane operacje. 
 Pamiętaj, że zapis: i = i + 1, można uprościć do i += 1.
-Zadeklaruj zmienne różnych z podanych typów. Sprawdź jakie są ich zakresy wartości. Wypróbój wszystkie wspomniane operacje algebraiczne i bitowe.";
+Zadeklaruj zmienne różnych z podanych typów. Sprawdź, jakie są ich zakresy wartości. Wypróbuj wszystkie wspomniane operacje algebraiczne i bitowe.";
     }
 }
